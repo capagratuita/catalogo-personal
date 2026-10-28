@@ -14,7 +14,10 @@ export const onRequestGet = async ({ request, env }) => {
   const key = safeKey(url.searchParams.get('id')) || safeKey(url.searchParams.get('url'));
 
   if (!key) {
-    return new Response('Imagen no encontrada', { status: 404 });
+    return new Response('Imagen no encontrada', {
+      status: 404,
+      headers: { 'Cache-Control': 'no-store' },
+    });
   }
 
   const candidates = key.includes('.') ? [key] : EXTENSIONS.map(ext => `items/${key}.${ext}`);
@@ -31,5 +34,8 @@ export const onRequestGet = async ({ request, env }) => {
     });
   }
 
-  return new Response('Imagen no encontrada', { status: 404 });
+  return new Response('Imagen no encontrada', {
+    status: 404,
+    headers: { 'Cache-Control': 'no-store' },
+  });
 };

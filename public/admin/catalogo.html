@@ -78,11 +78,190 @@
             font-size: 0.9rem;
         }
 
+        .categorias-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .categorias-tabs {
+            display: flex;
+            gap: 0.25rem;
+            border-bottom: 1px solid #e5dcd5;
+        }
+
+        .categorias-tab {
+            margin-bottom: -1px;
+            padding: 0.5rem 0.9rem;
+            border: none;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            color: #8a7466;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .categorias-tab:hover {
+            color: #8B4513;
+        }
+
+        .categorias-tab.activa {
+            color: #8B4513;
+            border-bottom-color: #8B4513;
+        }
+
+        .categorias-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .categorias-ayuda {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #8a7466;
+        }
+
+        .categorias-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .categoria-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.6rem 0.35rem 0.8rem;
+            background: #f3e9e1;
+            color: #8B4513;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .categoria-chip button {
+            border: none;
+            background: transparent;
+            color: #8B4513;
+            cursor: pointer;
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .categoria-chip button:hover {
+            color: #d32f2f;
+        }
+
+        .categorias-add {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .categorias-add input {
+            flex: 1;
+        }
+
+        .btn-add-categoria {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .btn-add-categoria:hover {
+            background: #45a049;
+        }
+
+        .categorias-agendamiento {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            padding: 0.75rem;
+            background: #fbf7f3;
+            border: 1px dashed #d8c3b4;
+            border-radius: 8px;
+        }
+
+        .categorias-agendamiento-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .categorias-agendamiento-titulo {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #6b4a35;
+        }
+
+        .categorias-agendamiento-ayuda {
+            font-size: 0.8rem;
+            color: #8a7466;
+            line-height: 1.35;
+        }
+
+        .categorias-agendamiento-opciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .categorias-agendamiento-opciones label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 0;
+            padding: 0.35rem 0.65rem;
+            background: #ffffff;
+            border: 1px solid #ddd0c6;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            line-height: 1.2;
+            color: #5a463a;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .categorias-agendamiento-opciones label:hover {
+            border-color: #8B4513;
+        }
+
+        .categorias-agendamiento-opciones label.activa {
+            background: #f3e9e1;
+            border-color: #8B4513;
+            color: #8B4513;
+            font-weight: 600;
+        }
+
+        .categorias-agendamiento-opciones input[type="checkbox"] {
+            flex: 0 0 auto;
+            width: 1rem;
+            height: 1rem;
+            min-height: 0;
+            margin: 0;
+            padding: 0;
+            accent-color: #8B4513;
+        }
+
+        .categorias-agendamiento-opciones .sin-categorias {
+            font-size: 0.85rem;
+            color: #999;
+        }
+
         .items-container {
             margin-bottom: 1rem;
             border: 1px solid #ddd;
             border-radius: 5px;
-            max-height: 400px;
+            max-height: 600px;
             overflow-y: auto;
         }
 
@@ -110,6 +289,84 @@
         .item-row select {
             padding: 0.5rem;
             font-size: 0.9rem;
+        }
+
+        .item-row-edit {
+            display: block;
+            margin: 0.75rem;
+            border: 1px solid #e2d3c5;
+            border-radius: 8px;
+            background: #fffdfb;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .item-row-edit:nth-child(even) {
+            background: #faf6f2;
+        }
+
+        .item-fila {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .item-fila + .item-fila {
+            margin-top: 0.75rem;
+        }
+
+        .item-fila-principal {
+            grid-template-columns: 110px 140px minmax(160px, 1fr) 110px auto;
+            align-items: center;
+        }
+
+        .item-fila-secundaria {
+            grid-template-columns: minmax(150px, 1fr) auto auto 110px minmax(180px, 1.4fr);
+            align-items: center;
+        }
+
+        .item-row-edit .item-desc {
+            width: 100%;
+            min-height: 60px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .item-row-edit label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .item-row-edit label input {
+            width: auto;
+        }
+
+        .item-row-edit input,
+        .item-row-edit select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .item-row-edit .btn-remove-item {
+            justify-self: end;
+        }
+
+        @media (max-width: 768px) {
+            .item-fila-principal,
+            .item-fila-secundaria {
+                grid-template-columns: 1fr;
+            }
+
+            .item-row-edit .btn-remove-item {
+                justify-self: start;
+            }
         }
 
         .btn-add-item {
@@ -267,8 +524,38 @@
 
             <form id="form-catalogo">
                 <div class="form-group">
-                    <label for="catalogo-categorias">Categorías (separadas por comas)</label>
-                    <input type="text" id="catalogo-categorias" name="catalogo-categorias" placeholder="ej: pan, pasteles, servicios">
+                    <label>Categorías</label>
+                    <div class="categorias-editor">
+                        <div class="categorias-tabs" role="tablist" aria-label="Tipo de categoría">
+                            <button type="button" class="categorias-tab activa" data-tipo="producto" role="tab" aria-selected="true" aria-controls="panel-categorias-producto" onclick="cambiarTabCategorias('producto')">Productos</button>
+                            <button type="button" class="categorias-tab" data-tipo="servicio" role="tab" aria-selected="false" aria-controls="panel-categorias-servicio" onclick="cambiarTabCategorias('servicio')">Servicios</button>
+                        </div>
+
+                        <div class="categorias-panel" id="panel-categorias-producto" data-tipo="producto" role="tabpanel">
+                            <div class="categorias-chips" id="categorias-chips-producto"></div>
+                            <div class="categorias-add">
+                                <input type="text" class="categoria-input" id="catalogo-categoria-input-producto" data-tipo="producto" placeholder="Nueva categoría de producto">
+                                <button type="button" class="btn-add-categoria" onclick="agregarCategoria('producto')">+</button>
+                            </div>
+                            <p class="categorias-ayuda">Solo se asignan a productos.</p>
+                        </div>
+
+                        <div class="categorias-panel oculto" id="panel-categorias-servicio" data-tipo="servicio" role="tabpanel">
+                            <div class="categorias-chips" id="categorias-chips-servicio"></div>
+                            <div class="categorias-add">
+                                <input type="text" class="categoria-input" id="catalogo-categoria-input-servicio" data-tipo="servicio" placeholder="Nueva categoría de servicio">
+                                <button type="button" class="btn-add-categoria" onclick="agregarCategoria('servicio')">+</button>
+                            </div>
+                            <p class="categorias-ayuda">Solo se asignan a servicios.</p>
+                            <div class="categorias-agendamiento">
+                                <div class="categorias-agendamiento-info">
+                                    <span class="categorias-agendamiento-titulo">Agendamiento con Calendly</span>
+                                    <span class="categorias-agendamiento-ayuda">Marca las categorías de servicios que se reservan con Calendly. El resto va al carrito.</span>
+                                </div>
+                                <div class="categorias-agendamiento-opciones" id="categorias-agendamiento"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="items-container">
@@ -311,34 +598,53 @@
     <script>
         let catalogoActual = null;
         let itemIdCounter = 1;
+        let categoriasPorTipo = { producto: [], servicio: [] };
+        let categoriasAgendamiento = [];
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, caracter => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[caracter]));
+        }
 
         function obtenerCatalogo() {
-            const categoriasInput = document.getElementById('catalogo-categorias').value;
-            const categorias = categoriasInput.split(',').map(c => c.trim()).filter(c => c);
+            const categorias = {
+                producto: [...categoriasPorTipo.producto],
+                servicio: [...categoriasPorTipo.servicio]
+            };
 
             const items = [];
-            const itemRows = document.querySelectorAll('.item-row:not(.header)');
+            const itemRows = document.querySelectorAll('#items-container .item-row');
 
             itemRows.forEach(row => {
-                const inputs = row.querySelectorAll('input, select');
-                const item = {};
+                const item = {
+                    id: row.querySelector('.item-id').value,
+                    tipo: row.querySelector('.item-tipo').value,
+                    nombre: row.querySelector('.item-nombre').value,
+                    descripcion: row.querySelector('.item-desc').value,
+                    precio: parseFloat(row.querySelector('.item-precio').value) || 0,
+                    categoria: row.querySelector('.item-categoria').value,
+                    disponible: row.querySelector('.item-disponible input').checked,
+                    destacado: row.querySelector('.item-destacado input').checked,
+                    calendly_url: row.querySelector('.item-calendly').value || null
+                };
 
-                item.id = inputs[0].value;
-                item.tipo = inputs[1].value;
-                item.nombre = inputs[2].value;
-                item.descripcion = inputs[3].value;
-                item.precio = parseFloat(inputs[4].value) || 0;
-                item.categoria = inputs[5].value;
-                item.disponible = inputs[6].checked;
-                item.destacado = inputs[7].checked;
-                item.duracion_minutos = item.tipo === 'servicio' ? parseInt(inputs[8].value) || 0 : null;
-                item.calendly_url = inputs[9].value || null;
+                item.duracion_minutos = item.tipo === 'servicio'
+                    ? parseInt(row.querySelector('.item-duracion').value) || 0
+                    : null;
 
                 items.push(item);
             });
 
             return {
                 categorias: categorias,
+                categorias_agendamiento: [...new Set(
+                    categoriasAgendamiento.filter(categoria => categoriasPorTipo.servicio.includes(categoria))
+                )],
                 items: items
             };
         }
@@ -346,25 +652,31 @@
         function agregarItem() {
             const itemsContainer = document.getElementById('items-container');
             const nuevoItem = document.createElement('div');
-            nuevoItem.className = 'item-row';
+            nuevoItem.className = 'item-row item-row-edit';
             nuevoItem.innerHTML = `
-                <input type="text" placeholder="id-unico" required>
-                <select required>
-                    <option value="">Seleccionar...</option>
-                    <option value="producto">Producto</option>
-                    <option value="servicio">Servicio</option>
-                </select>
-                <input type="text" placeholder="Nombre del item" required>
-                <input type="text" placeholder="Descripción" required>
-                <input type="number" placeholder="Precio" step="0.01" required>
-                <select required>
-                    <option value="">Seleccionar categoría</option>
-                </select>
-                <input type="checkbox" checked>
-                <input type="checkbox">
-                <input type="number" placeholder="Minutos" value="0">
-                <input type="text" placeholder="URL de Calendly (opcional)">
-                <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">-</button>
+                <div class="item-fila item-fila-principal">
+                    <input class="item-id" type="text" placeholder="id-unico" required>
+                    <select class="item-tipo" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="producto">Producto</option>
+                        <option value="servicio">Servicio</option>
+                    </select>
+                    <input class="item-nombre" type="text" placeholder="Nombre del item" required>
+                    <input class="item-precio" type="number" placeholder="Precio" step="0.01" required>
+                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">×</button>
+                </div>
+                <div class="item-fila">
+                    <textarea class="item-desc" placeholder="Descripción (máx. 200 caracteres)" maxlength="200" required></textarea>
+                </div>
+                <div class="item-fila item-fila-secundaria">
+                    <select class="categoria-select item-categoria">
+                        <option value="">Seleccionar categoría (opcional)</option>
+                    </select>
+                    <label class="item-disponible"><input type="checkbox" checked> Disponible</label>
+                    <label class="item-destacado"><input type="checkbox"> Destacado</label>
+                    <input class="item-duracion" type="number" placeholder="Minutos" value="0">
+                    <input class="item-calendly" type="text" placeholder="URL de Calendly (opcional)">
+                </div>
             `;
 
             itemsContainer.appendChild(nuevoItem);
@@ -373,7 +685,7 @@
             actualizarOpcionesCategoria();
 
             // Generar ID automático si está vacío
-            const idInput = nuevoItem.querySelectorAll('input, select')[0];
+            const idInput = nuevoItem.querySelector('.item-id');
             if (!idInput.value) {
                 idInput.value = `item-${itemIdCounter++}`;
             }
@@ -382,27 +694,35 @@
         function eliminarItem(button) {
             const row = button.closest('.item-row');
             row.remove();
+            renderizarOpcionesAgendamiento();
         }
 
         function actualizarOpcionesCategoria() {
-            const categoriasInput = document.getElementById('catalogo-categorias').value;
-            const categorias = categoriasInput.split(',').map(c => c.trim()).filter(c => c);
+            document.querySelectorAll('#items-container .item-row').forEach(row => {
+                const tipo = row.querySelector('.item-tipo')?.value;
+                const select = row.querySelector('.categoria-select');
+                if (!select) return;
 
-            const selects = document.querySelectorAll('.item-row select:last-child');
+                const seleccionActual = select.value;
+                const categorias = tipo === 'producto' || tipo === 'servicio'
+                    ? categoriasPorTipo[tipo]
+                    : [];
 
-            selects.forEach(select => {
                 // Limpiar opciones existentes (excepto la primera)
                 while (select.options.length > 1) {
                     select.remove(1);
                 }
 
-                // Agregar opciones de categoría
+                // Agregar solo las categorías del tipo del item
                 categorias.forEach(categoria => {
                     const option = document.createElement('option');
                     option.value = categoria;
                     option.textContent = categoria;
                     select.appendChild(option);
                 });
+
+                // Mantener la selección previa si la categoría sigue existiendo
+                select.value = categorias.includes(seleccionActual) ? seleccionActual : '';
             });
         }
 
@@ -436,14 +756,150 @@
             previewContainer.innerHTML = html;
         }
 
+        function renderizarCategorias() {
+            ['producto', 'servicio'].forEach(tipo => {
+                const chips = document.getElementById(`categorias-chips-${tipo}`);
+                chips.innerHTML = '';
+
+                categoriasPorTipo[tipo].forEach((categoria, index) => {
+                    const chip = document.createElement('span');
+                    chip.className = 'categoria-chip';
+                    chip.textContent = categoria;
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = '×';
+                    btn.setAttribute('aria-label', `Eliminar categoría ${categoria}`);
+                    btn.addEventListener('click', () => eliminarCategoria(tipo, index));
+                    chip.appendChild(btn);
+
+                    chips.appendChild(chip);
+                });
+            });
+
+            renderizarOpcionesAgendamiento();
+            actualizarOpcionesCategoria();
+        }
+
+        function cambiarTabCategorias(tipo) {
+            document.querySelectorAll('.categorias-tab').forEach(tab => {
+                const activa = tab.dataset.tipo === tipo;
+                tab.classList.toggle('activa', activa);
+                tab.setAttribute('aria-selected', activa ? 'true' : 'false');
+            });
+
+            document.querySelectorAll('.categorias-panel').forEach(panel => {
+                panel.classList.toggle('oculto', panel.dataset.tipo !== tipo);
+            });
+        }
+
+        function renderizarOpcionesAgendamiento() {
+            const contenedor = document.getElementById('categorias-agendamiento');
+            contenedor.innerHTML = '';
+
+            const opciones = categoriasPorTipo.servicio;
+
+            if (opciones.length === 0) {
+                const mensaje = document.createElement('span');
+                mensaje.className = 'sin-categorias';
+                mensaje.textContent = 'Aún no hay categorías de servicio';
+                contenedor.appendChild(mensaje);
+                return;
+            }
+
+            opciones.forEach(categoria => {
+                const label = document.createElement('label');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = categoriasAgendamiento.includes(categoria);
+                label.classList.toggle('activa', checkbox.checked);
+                checkbox.addEventListener('change', () => {
+                    label.classList.toggle('activa', checkbox.checked);
+                    if (checkbox.checked) {
+                        if (!categoriasAgendamiento.includes(categoria)) {
+                            categoriasAgendamiento.push(categoria);
+                        }
+                    } else {
+                        categoriasAgendamiento = categoriasAgendamiento.filter(c => c !== categoria);
+                    }
+                });
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(categoria));
+                contenedor.appendChild(label);
+            });
+        }
+
+        function agregarCategoria(tipo) {
+            const input = document.getElementById(`catalogo-categoria-input-${tipo}`);
+            if (!input) return;
+
+            const nuevas = input.value.split(',').map(c => c.trim()).filter(c => c);
+            if (nuevas.length === 0) return;
+
+            nuevas.forEach(categoria => {
+                const existe = categoriasPorTipo[tipo].some(c => c.toLowerCase() === categoria.toLowerCase());
+                if (!existe) categoriasPorTipo[tipo].push(categoria);
+            });
+
+            input.value = '';
+            renderizarCategorias();
+        }
+
+        function eliminarCategoria(tipo, index) {
+            const categoria = categoriasPorTipo[tipo][index];
+            categoriasPorTipo[tipo].splice(index, 1);
+
+            if (tipo === 'servicio') {
+                categoriasAgendamiento = categoriasAgendamiento.filter(c => c !== categoria);
+            }
+
+            renderizarCategorias();
+        }
+
+        function normalizarCategorias(catalogo) {
+            if (catalogo.categorias && !Array.isArray(catalogo.categorias) && typeof catalogo.categorias === 'object') {
+                return {
+                    producto: Array.isArray(catalogo.categorias.producto) ? [...catalogo.categorias.producto] : [],
+                    servicio: Array.isArray(catalogo.categorias.servicio) ? [...catalogo.categorias.servicio] : []
+                };
+            }
+
+            const producto = new Set();
+            const servicio = new Set();
+            const items = Array.isArray(catalogo.items) ? catalogo.items : [];
+
+            items.forEach(item => {
+                if (!item.categoria) return;
+                if (item.tipo === 'producto') producto.add(item.categoria);
+                if (item.tipo === 'servicio') servicio.add(item.categoria);
+            });
+
+            if (Array.isArray(catalogo.categorias)) {
+                const usadas = new Set([...producto, ...servicio]);
+                catalogo.categorias.forEach(categoria => {
+                    if (usadas.has(categoria)) return;
+                    if (/servicio|cita|taller|consult/i.test(categoria)) {
+                        servicio.add(categoria);
+                    } else {
+                        producto.add(categoria);
+                    }
+                });
+            }
+
+            return { producto: [...producto], servicio: [...servicio] };
+        }
+
         async function cargarCatalogo() {
             try {
                 const catalogo = await window.admin.getContent('catalogo');
                 catalogoActual = catalogo;
+                categoriasPorTipo = normalizarCategorias(catalogo);
 
-                if (catalogo && catalogo.categorias && catalogo.categorias.length > 0) {
-                    document.getElementById('catalogo-categorias').value = catalogo.categorias.join(', ');
-                }
+                const servicios = new Set(categoriasPorTipo.servicio);
+                categoriasAgendamiento = Array.isArray(catalogo.categorias_agendamiento)
+                    ? catalogo.categorias_agendamiento.filter(c => servicios.has(c))
+                    : categoriasPorTipo.servicio.filter(c => /^citas?$/i.test(c));
 
                 if (catalogo && catalogo.items && catalogo.items.length > 0) {
                     // Limpiar container de items
@@ -453,13 +909,19 @@
                     // Agregar items existentes
                     catalogo.items.forEach(item => {
                         agregarItemConDatos(item);
+                        const match = /^item-(\d+)$/.exec(item.id || '');
+                        if (match) {
+                            itemIdCounter = Math.max(itemIdCounter, parseInt(match[1], 10) + 1);
+                        }
                     });
                 }
 
+                renderizarCategorias();
                 actualizarPreviewItems();
             } catch (error) {
                 console.error('Error cargando catálogo:', error);
                 // Si no hay catálogo, agregar un item vacío
+                renderizarCategorias();
                 agregarItem();
             }
         }
@@ -467,29 +929,37 @@
         function agregarItemConDatos(item) {
             const itemsContainer = document.getElementById('items-container');
             const nuevoItem = document.createElement('div');
-            nuevoItem.className = 'item-row';
+            nuevoItem.className = 'item-row item-row-edit';
 
-            const categorias = catalogoActual ? catalogoActual.categorias : [];
+            const categorias = item.tipo === 'servicio'
+                ? categoriasPorTipo.servicio
+                : (item.tipo === 'producto' ? categoriasPorTipo.producto : []);
 
             nuevoItem.innerHTML = `
-                <input type="text" placeholder="id-unico" value="${item.id || ''}" required>
-                <select required>
-                    <option value="">Seleccionar...</option>
-                    <option value="producto" ${item.tipo === 'producto' ? 'selected' : ''}>Producto</option>
-                    <option value="servicio" ${item.tipo === 'servicio' ? 'selected' : ''}>Servicio</option>
-                </select>
-                <input type="text" placeholder="Nombre del item" value="${item.nombre || ''}" required>
-                <input type="text" placeholder="Descripción" value="${item.descripcion || ''}" required>
-                <input type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
-                <select required>
-                    <option value="">Seleccionar categoría</option>
-                    ${categorias.map(cat => `<option value="${cat}" ${item.categoria === cat ? 'selected' : ''}>${cat}</option>`).join('')}
-                </select>
-                <input type="checkbox" ${item.disponible !== false ? 'checked' : ''}>
-                <input type="checkbox" ${item.destacado ? 'checked' : ''}>
-                <input type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
-                <input type="text" placeholder="URL de Calendly (opcional)" value="${item.calendly_url || ''}">
-                <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">-</button>
+                <div class="item-fila item-fila-principal">
+                    <input class="item-id" type="text" placeholder="id-unico" value="${escapeHtml(item.id)}" required>
+                    <select class="item-tipo" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="producto" ${item.tipo === 'producto' ? 'selected' : ''}>Producto</option>
+                        <option value="servicio" ${item.tipo === 'servicio' ? 'selected' : ''}>Servicio</option>
+                    </select>
+                    <input class="item-nombre" type="text" placeholder="Nombre del item" value="${escapeHtml(item.nombre)}" required>
+                    <input class="item-precio" type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
+                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">×</button>
+                </div>
+                <div class="item-fila">
+                    <textarea class="item-desc" placeholder="Descripción (máx. 200 caracteres)" maxlength="200" required>${escapeHtml(item.descripcion)}</textarea>
+                </div>
+                <div class="item-fila item-fila-secundaria">
+                    <select class="categoria-select item-categoria">
+                        <option value="">Seleccionar categoría (opcional)</option>
+                        ${categorias.map(cat => `<option value="${escapeHtml(cat)}" ${item.categoria === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`).join('')}
+                    </select>
+                    <label class="item-disponible"><input type="checkbox" ${item.disponible !== false ? 'checked' : ''}> Disponible</label>
+                    <label class="item-destacado"><input type="checkbox" ${item.destacado ? 'checked' : ''}> Destacado</label>
+                    <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
+                    <input class="item-calendly" type="text" placeholder="URL de Calendly (opcional)" value="${escapeHtml(item.calendly_url)}">
+                </div>
             `;
 
             itemsContainer.appendChild(nuevoItem);
@@ -519,11 +989,6 @@
             const catalogo = obtenerCatalogo();
             
             // Validar
-            if (!catalogo.categorias || catalogo.categorias.length === 0) {
-                mostrarError('Por favor, agrega al menos una categoría');
-                return;
-            }
-
             if (!catalogo.items || catalogo.items.length === 0) {
                 mostrarError('Por favor, agrega al menos un item');
                 return;
@@ -590,9 +1055,26 @@
         document.addEventListener('DOMContentLoaded', function() {
             verificarAuth();
 
+            document.getElementById('form-catalogo').addEventListener('submit', guardarCatalogo);
+
             // Actualizar preview cuando cambian los inputs
             document.getElementById('form-catalogo').addEventListener('input', function() {
                 actualizarPreviewItems();
+            });
+
+            document.getElementById('items-container').addEventListener('change', function(event) {
+                if (event.target.matches('.item-tipo')) {
+                    actualizarOpcionesCategoria();
+                }
+            });
+
+            document.querySelectorAll('.categoria-input').forEach(input => {
+                input.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        agregarCategoria(input.dataset.tipo);
+                    }
+                });
             });
         });
     </script>

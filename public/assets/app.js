@@ -3,7 +3,7 @@
 
 async function fetchJSON(url) {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
     }
@@ -30,9 +30,11 @@ async function loadFAQ() {
   return await fetchJSON('/api/content?key=faq');
 }
 
-function renderItem(item, config) {
+function renderItem(item, config, catalogo) {
   const isService = item.tipo === 'servicio';
   const isProduct = item.tipo === 'producto';
+  const esCita = requiereAgendamiento(item, catalogo);
+  const calendlyUrl = esCita ? (item.calendly_url || config.negocio.calendly_url) : null;
   
   let priceHtml = '';
   if (isProduct) {
@@ -45,13 +47,13 @@ function renderItem(item, config) {
   }
   
   let calendlyHtml = '';
-  if (config.negocio.calendly_url || item.calendly_url) {
-    const calendlyLink = item.calendly_url || config.negocio.calendly_url;
-    calendlyHtml = `<a href="${calendlyLink}" class="btn-calendly" target="_blank">Reservar Cita</a>`;
+  if (calendlyUrl) {
+    calendlyHtml = `<a href="${calendlyUrl}" class="btn-calendly" target="_blank" rel="noopener">Reservar Cita</a>`;
   }
   
   let actionButton = '';
-  if (config.negocio.modo_negocio !== 'solo-servicios') {
+  const mostrarCarrito = !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
+  if (mostrarCarrito) {
     actionButton = `<button class="btn-add-to-cart" data-id="${item.id}">Añadir al Carrito</button>`;
   }
   
@@ -74,6 +76,14 @@ function buildWhatsAppLink(config, mensaje) {
   const numero = config.negocio.whatsapp;
   const encodedMensaje = encodeURIComponent(mensaje);
   return `https://wa.me/${numero}?text=${encodedMensaje}`;
+}
+
+function requiereAgendamiento(item, catalogo) {
+  if (!item || item.tipo !== 'servicio') return false;
+  const categorias = Array.isArray(catalogo?.categorias_agendamiento)
+    ? catalogo.categorias_agendamiento
+    : [];
+  return categorias.includes(item.categoria);
 }
 
 function formatPrecio(precio, moneda) {
@@ -132,6 +142,7 @@ window.app = {
   loadFAQ,
   renderItem,
   buildWhatsAppLink,
+  requiereAgendamiento,
   formatPrecio,
   getCarrito,
   saveCarrito,

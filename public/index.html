@@ -75,7 +75,7 @@
 
         // Utilidades del frontend
         function actualizarContadorCarrito() {
-            const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            const total = window.app.getCarrito().reduce((acc, item) => acc + item.cantidad, 0);
             document.getElementById('carrito-contador').textContent = total;
         }
 
@@ -95,6 +95,8 @@
                     landing: landing
                 };
 
+                renderizarLanding(landing);
+
                 // Renderizar items según la página actual
                 if (window.location.pathname === '/' || window.location.pathname === '/catalogo') {
                     renderizarCatalogo();
@@ -109,6 +111,58 @@
                 const itemsGrid = document.getElementById('items-grid');
                 if (itemsGrid) {
                     itemsGrid.innerHTML = '<div class="error">Error cargando el catálogo. Por favor, intente nuevamente.</div>';
+                }
+            }
+        }
+
+        function esUrlFondoValida(url) {
+            if (!url) return false;
+            try {
+                const hostname = new URL(url, window.location.origin).hostname;
+                if (hostname === 'r2.dev') return false;
+                if (hostname.endsWith('.r2.dev') && !hostname.startsWith('pub-')) return false;
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        function renderizarLanding(landing) {
+            if (!landing) return;
+
+            const heroSection = document.querySelector('.hero');
+            const hero = landing.hero || {};
+
+            if (heroSection) {
+                const titulo = heroSection.querySelector('h1');
+                const subtitulo = heroSection.querySelector('p');
+                const cta = heroSection.querySelector('.btn');
+
+                if (titulo && hero.titulo) titulo.textContent = hero.titulo;
+                if (subtitulo && hero.subtitulo) subtitulo.textContent = hero.subtitulo;
+                if (cta) {
+                    if (hero.cta_texto) cta.textContent = hero.cta_texto;
+                    if (hero.cta_enlace) cta.setAttribute('href', hero.cta_enlace);
+                }
+
+                if (esUrlFondoValida(hero.imagen_fondo_url)) {
+                    heroSection.style.backgroundColor = '#8B4513';
+                    heroSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url("${hero.imagen_fondo_url}")`;
+                    heroSection.style.backgroundSize = 'cover';
+                    heroSection.style.backgroundPosition = 'center';
+                }
+            }
+
+            if (landing.seo) {
+                if (landing.seo.titulo) document.title = landing.seo.titulo;
+                if (landing.seo.descripcion) {
+                    let meta = document.querySelector('meta[name="description"]');
+                    if (!meta) {
+                        meta = document.createElement('meta');
+                        meta.setAttribute('name', 'description');
+                        document.head.appendChild(meta);
+                    }
+                    meta.setAttribute('content', landing.seo.descripcion);
                 }
             }
         }
@@ -149,15 +203,15 @@
             const itemsNoDestacados = items.filter(item => !item.destacado);
 
             itemsDestacados.forEach(item => {
-                itemsGrid.appendChild(crearItemCard(item, data.config));
+                itemsGrid.appendChild(crearItemCard(item, data.config, data.catalogo));
             });
 
             itemsNoDestacados.forEach(item => {
-                itemsGrid.appendChild(crearItemCard(item, data.config));
+                itemsGrid.appendChild(crearItemCard(item, data.config, data.catalogo));
             });
         }
 
-        function crearItemCard(item, config) {
+        function crearItemCard(item, config, catalogo) {
             const card = document.createElement('div');
             card.className = 'item-card';
             card.setAttribute('data-id', item.id);
@@ -165,6 +219,8 @@
 
             const isService = item.tipo === 'servicio';
             const isProduct = item.tipo === 'producto';
+            const esCita = window.app.requiereAgendamiento(item, catalogo);
+            const calendlyUrl = esCita ? (item.calendly_url || config.negocio.calendly_url) : null;
 
             let priceHtml = '';
             if (isProduct) {
@@ -177,13 +233,13 @@
             }
 
             let calendlyHtml = '';
-            if (config.negocio.calendly_url || item.calendly_url) {
-                const calendlyLink = item.calendly_url || config.negocio.calendly_url;
-                calendlyHtml = `<a href="${calendlyLink}" class="btn-calendly" target="_blank">Reservar Cita</a>`;
+            if (calendlyUrl) {
+                calendlyHtml = `<a href="${calendlyUrl}" class="btn-calendly" target="_blank" rel="noopener">Reservar Cita</a>`;
             }
 
             let actionButton = '';
-            if (config.negocio.modo_negocio !== 'solo-servicios') {
+            const mostrarCarrito = !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
+            if (mostrarCarrito) {
                 actionButton = `<button class="btn-add-to-cart" onclick="agregarAlCarrito('${item.id}', '${item.nombre}', ${item.precio}, '${config.negocio.moneda}')">Añadir al Carrito</button>`;
             }
 
@@ -259,6 +315,7 @@
 
         // Cargar datos cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
+            actualizarContadorCarrito();
             cargarDatos();
         });
     </script>

@@ -69,14 +69,14 @@
             border-color: #8B4513;
         }
 
-        .preview-container {
+        .preview-section {
             margin-bottom: 1rem;
             padding: 1rem;
             background: #f9f9f9;
             border-radius: 5px;
         }
 
-        .preview-container h3 {
+        .preview-section h3 {
             color: #8B4513;
             margin-bottom: 1rem;
         }
@@ -302,6 +302,7 @@
             <div class="selected-item-info" id="selected-item-info">
                 <h4 id="selected-item-title">Item seleccionado</h4>
                 <p id="selected-item-desc"></p>
+                <img id="selected-item-preview" alt="Vista previa de la imagen seleccionada" style="display: none; max-width: 100%; max-height: 220px; border-radius: 5px; margin-top: 0.5rem;">
             </div>
 
             <button class="btn" id="btn-upload" onclick="subirImagen()" disabled>Subir Imagen</button>
@@ -326,6 +327,7 @@
         let catalogo = null;
         let itemSeleccionado = null;
         let archivoImagen = null;
+        let archivoPreviewUrl = null;
 
         async function cargarCatalogo() {
             try {
@@ -367,25 +369,44 @@
 
                 archivoImagen = file;
                 actualizarVistaSeleccionado();
-                document.getElementById('btn-upload').disabled = false;
             }
         }
 
         function actualizarVistaSeleccionado() {
-            if (!itemSeleccionado || !archivoImagen) return;
-
             const info = document.getElementById('selected-item-info');
             const title = document.getElementById('selected-item-title');
             const desc = document.getElementById('selected-item-desc');
+            const preview = document.getElementById('selected-item-preview');
 
-            title.textContent = itemSeleccionado.nombre;
-            desc.textContent = itemSeleccionado.descripcion;
+            if (itemSeleccionado) {
+                title.textContent = itemSeleccionado.nombre;
+                desc.textContent = itemSeleccionado.descripcion;
+            } else {
+                title.textContent = 'Ningún item seleccionado';
+                desc.textContent = 'Selecciona un item del catálogo para asociar la imagen.';
+            }
+
+            if (archivoImagen) {
+                if (archivoPreviewUrl) URL.revokeObjectURL(archivoPreviewUrl);
+                archivoPreviewUrl = URL.createObjectURL(archivoImagen);
+                preview.src = archivoPreviewUrl;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+
             info.style.display = 'block';
+            document.getElementById('btn-upload').disabled = !(itemSeleccionado && archivoImagen);
         }
 
         function limpiarVistaSeleccionado() {
             itemSeleccionado = null;
             archivoImagen = null;
+            if (archivoPreviewUrl) {
+                URL.revokeObjectURL(archivoPreviewUrl);
+                archivoPreviewUrl = null;
+            }
+            document.getElementById('selected-item-preview').style.display = 'none';
             document.getElementById('selected-item-info').style.display = 'none';
             document.getElementById('btn-upload').disabled = true;
             document.getElementById('file-input').value = '';
@@ -424,6 +445,9 @@
 
                 mostrarExito(`Imagen subida exitosamente. URL: ${data.url}`);
 
+                renderizarPrevisualizacion();
+                document.getElementById('preview-section').style.display = 'block';
+
                 setTimeout(() => {
                     limpiarVistaSeleccionado();
                     loading.style.display = 'none';
@@ -441,32 +465,32 @@
             }
         }
 
+        function renderizarPrevisualizacion() {
+            if (!catalogo || !catalogo.items) return;
+
+            const previewContainer = document.getElementById('items-preview');
+            let html = '';
+
+            catalogo.items.forEach(item => {
+                html += `
+                    <div class="item-preview">
+                        <img src="/api/image?id=${encodeURIComponent(item.id)}&v=${Date.now()}" alt="${item.nombre}" class="item-preview-img" onerror="this.src='/assets/images/placeholder.png'" />
+                        <div class="item-preview-info">
+                            <h4>${item.nombre}</h4>
+                            <p>${item.categoria} - S/. ${item.precio}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            previewContainer.innerHTML = html;
+        }
+
         function previsualizarImagenes() {
             if (!catalogo || !catalogo.items) return;
 
-            const previewSection = document.getElementById('preview-section');
-            const previewContainer = document.getElementById('items-preview');
-
-            if (previewSection.style.display === 'none') {
-                let html = '';
-
-                catalogo.items.forEach(item => {
-                    html += `
-                        <div class="item-preview">
-                            <img src="/api/image?id=${encodeURIComponent(item.id)}" alt="${item.nombre}" class="item-preview-img" onerror="this.src='/assets/images/placeholder.png'" />
-                            <div class="item-preview-info">
-                                <h4>${item.nombre}</h4>
-                                <p>${item.categoria} - S/. ${item.precio}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                previewContainer.innerHTML = html;
-                previewSection.style.display = 'block';
-            } else {
-                previewSection.style.display = 'none';
-            }
+            renderizarPrevisualizacion();
+            document.getElementById('preview-section').style.display = 'block';
         }
 
         function cerrarSesion() {
@@ -516,11 +540,6 @@
             });
 
             document.getElementById('file-input').addEventListener('change', handleFileSelect);
-
-            // Detectar cuando el zona de upload es clicada
-            document.getElementById('upload-zone').addEventListener('click', function() {
-                document.getElementById('file-input').click();
-            });
         });
     </script>
 </body>

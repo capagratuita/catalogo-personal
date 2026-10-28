@@ -103,6 +103,7 @@
                 resumenItemsCount.textContent = '0';
                 resumenTotal.textContent = window.app.formatPrecio(0, moneda);
                 btnPedido.style.display = 'none';
+                actualizarContadorCarrito();
                 return;
             }
             
@@ -136,6 +137,7 @@
             resumenItemsCount.textContent = totalItems;
             resumenTotal.textContent = window.app.formatPrecio(total, moneda);
             btnPedido.style.display = 'block';
+            actualizarContadorCarrito();
         }
 
         function actualizarCantidad(index, cambio) {
@@ -220,7 +222,7 @@
         }
 
         function actualizarContadorCarrito() {
-            const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            const total = window.app.getCarrito().reduce((acc, item) => acc + item.cantidad, 0);
             document.getElementById('carrito-contador').textContent = total;
         }
 
@@ -230,6 +232,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             actualizarCarrito();
+            actualizarContadorCarrito();
         });
     </script>
 </body>

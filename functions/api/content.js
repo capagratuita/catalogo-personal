@@ -74,18 +74,61 @@ export function validateConfig(data) {
   return data;
 }
 
+function validarCategorias(categorias) {
+  if (Array.isArray(categorias)) {
+    if (!categorias.every(categoria => typeof categoria === 'string' && categoria.trim())) {
+      fail('Cada categoría debe ser un string no vacío');
+    }
+    const todas = new Set(categorias);
+    return { producto: todas, servicio: todas };
+  }
+
+  if (!isPlainObject(categorias)) {
+    fail("El campo 'categorias' debe ser un array o un objeto con 'producto' y 'servicio'");
+  }
+
+  const clavesInvalidas = Object.keys(categorias).filter(clave => !['producto', 'servicio'].includes(clave));
+  if (clavesInvalidas.length > 0) {
+    fail(`Tipos de categoría inválidos: ${clavesInvalidas.join(', ')}`);
+  }
+
+  const resultado = {};
+  for (const tipo of ['producto', 'servicio']) {
+    const lista = categorias[tipo];
+    if (lista !== undefined && !Array.isArray(lista)) {
+      fail(`El campo 'categorias.${tipo}' debe ser un array`);
+    }
+    const valores = lista || [];
+    if (!valores.every(categoria => typeof categoria === 'string' && categoria.trim())) {
+      fail(`Cada categoría de ${tipo} debe ser un string no vacío`);
+    }
+    resultado[tipo] = new Set(valores);
+  }
+
+  return resultado;
+}
+
 export function validateCatalogo(data) {
   if (!isPlainObject(data)) fail('El catálogo debe ser un objeto');
-  if (!Array.isArray(data.categorias)) fail("El campo 'categorias' debe ser un array");
   if (!Array.isArray(data.items)) fail("El campo 'items' debe ser un array");
   if (data.items.length > 200) fail('El catálogo debe tener máximo 200 items');
 
-  if (!data.categorias.every(categoria => typeof categoria === 'string' && categoria.trim())) {
-    fail('Cada categoría debe ser un string no vacío');
-  }
-
-  const categorias = new Set(data.categorias);
+  const categorias = validarCategorias(data.categorias);
   const ids = new Set();
+
+  if ('categorias_agendamiento' in data) {
+    if (!Array.isArray(data.categorias_agendamiento)) {
+      fail("El campo 'categorias_agendamiento' debe ser un array");
+    }
+    for (const categoria of data.categorias_agendamiento) {
+      if (typeof categoria !== 'string' || !categoria.trim()) {
+        fail("Cada categoría de agendamiento debe ser un string no vacío");
+      }
+      if (!categorias.servicio.has(categoria)) {
+        fail(`La categoría de agendamiento '${categoria}' debe existir entre las categorías de servicio`);
+      }
+    }
+  }
 
   for (const item of data.items) {
     if (!isPlainObject(item)) fail('Cada item debe ser un objeto');
@@ -110,8 +153,14 @@ export function validateCatalogo(data) {
     if (typeof item.precio !== 'number' || !Number.isFinite(item.precio) || item.precio < 0) {
       fail(`El precio del item '${item.id}' debe ser un número mayor o igual a 0`);
     }
-    if (typeof item.categoria !== 'string' || !categorias.has(item.categoria)) {
-      fail(`La categoría del item '${item.id}' debe existir en 'categorias'`);
+    if (typeof item.categoria !== 'string') {
+      fail(`La categoría del item '${item.id}' debe ser un string`);
+    }
+    if (item.categoria) {
+      const categoriasTipo = item.tipo === 'producto' ? categorias.producto : categorias.servicio;
+      if (!categoriasTipo.has(item.categoria)) {
+        fail(`La categoría del item '${item.id}' debe existir entre las categorías de ${item.tipo}`);
+      }
     }
     if (typeof item.disponible !== 'boolean') {
       fail(`El campo 'disponible' del item '${item.id}' debe ser booleano`);

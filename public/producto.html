@@ -32,8 +32,8 @@
                     <div class="producto-info">
                         <h2 id="producto-nombre">Cargando...</h2>
                         <div class="producto-meta">
-                            <span id="producto-categoria" class="producto-categoria"></span>
                             <span id="producto-tipo" class="producto-tipo"></span>
+                            <span id="producto-categoria" class="producto-categoria"></span>
                         </div>
                         <div class="producto-precio" id="producto-precio">S/. 0.00</div>
                         <div class="producto-descripcion" id="producto-descripcion">Cargando descripción...</div>
@@ -106,7 +106,7 @@
 
                 productoActual = producto;
                 configActual = config;
-                renderizarProducto(producto, config);
+                renderizarProducto(producto, config, catalogo);
                 actualizarContadorCarrito();
                 cargarImagenProducto(producto.id);
 
@@ -116,7 +116,7 @@
             }
         }
 
-        function renderizarProducto(producto, config) {
+        function renderizarProducto(producto, config, catalogo) {
             document.getElementById('producto-nombre').textContent = producto.nombre;
             document.getElementById('producto-precio').textContent = window.app.formatPrecio(producto.precio, config.negocio.moneda);
             document.getElementById('producto-descripcion').textContent = producto.descripcion;
@@ -124,7 +124,8 @@
             // Categoria y tipo
             const categoriaSpan = document.getElementById('producto-categoria');
             const tipoSpan = document.getElementById('producto-tipo');
-            categoriaSpan.textContent = producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1);
+            const categoria = (producto.categoria || '').trim();
+            categoriaSpan.textContent = categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : '';
             tipoSpan.textContent = producto.tipo === 'producto' ? 'Producto' : 'Servicio';
             
             // Mostrar información de servicio si es un servicio
@@ -139,20 +140,24 @@
             
             // Mostrar enlace de Calendly si está disponible
             const calendlyContainer = document.getElementById('producto-calendly');
-            const calendlyUrl = producto.calendly_url || config.negocio.calendly_url;
+            const esCita = window.app.requiereAgendamiento(producto, catalogo);
+            const calendlyUrl = esCita
+                ? (producto.calendly_url || config.negocio.calendly_url)
+                : null;
             if (calendlyUrl) {
-                calendlyContainer.innerHTML = `<a href="${calendlyUrl}" class="btn btn-primary" target="_blank">Reservar Cita</a>`;
+                calendlyContainer.innerHTML = `<a href="${calendlyUrl}" class="btn btn-primary" target="_blank" rel="noopener">Reservar Cita</a>`;
                 calendlyContainer.style.display = 'block';
             } else {
                 calendlyContainer.style.display = 'none';
             }
             
-            // Mostrar/ocultar botón de agregar al carrito basado en el modo del negocio
+            // Mostrar/ocultar botón de agregar al carrito
             const agregarBtn = document.querySelector('.producto-actions .btn-primary');
-            if (config.negocio.modo_negocio === 'solo-servicios') {
-                agregarBtn.classList.add('oculto');
-            } else {
+            const mostrarCarrito = !calendlyUrl && (producto.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
+            if (mostrarCarrito) {
                 agregarBtn.classList.remove('oculto');
+            } else {
+                agregarBtn.classList.add('oculto');
             }
         }
 
@@ -161,19 +166,20 @@
             imagen.onerror = () => {
                 imagen.src = '/assets/images/placeholder.png';
             };
-            imagen.src = `/api/image?id=${encodeURIComponent(productId)}`;
+            imagen.src = `/api/image?id=${encodeURIComponent(productId)}&v=${Date.now()}`;
         }
 
         function agregarAlCarritoDesdePagina() {
             if (productoActual) {
                 const moneda = configActual?.negocio?.moneda || 'PEN';
                 window.app.addToCarrito(productoActual.id, productoActual.nombre, productoActual.precio, moneda);
+                actualizarContadorCarrito();
                 mostrarNotificacion('Producto agregado al carrito');
             }
         }
 
         function actualizarContadorCarrito() {
-            const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            const total = window.app.getCarrito().reduce((acc, item) => acc + item.cantidad, 0);
             document.getElementById('carrito-contador').textContent = total;
         }
 

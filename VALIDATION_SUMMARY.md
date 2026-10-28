@@ -33,6 +33,14 @@
 | `POST /api/logout` | 200; cookie invalidada |
 | `POST /api/chat` sin binding `AI` | 503 con mensaje accionable |
 | `GET /` y `GET /api/content?key=config` por IP LAN | 200 |
+| Guardar identidad, catálogo, landing y FAQ desde el admin (navegador) | OK, persiste en KV |
+| Subir foto y regenerar preview desde `admin/fotos.html` | OK |
+| Ficha de producto: imagen, precio, descripción y chip tipo/categoría | OK |
+| Contador del carrito y checkout por WhatsApp | OK; abre `api.whatsapp.com` con el mensaje |
+| `PUT` de catálogo con `categorias_agendamiento` inexistente | 400 con `detalle` en español |
+| `PUT` de catálogo con `categorias` tipadas (`producto`/`servicio`) | 200; GET devuelve el objeto |
+| `PUT` con un producto en una categoría de servicio | 400 con `detalle` en español |
+| `PUT` con `categorias` en formato array legacy | 200; se mantiene la compatibilidad |
 | Sintaxis de JS de `functions/` y `public/assets/` | `node --check` OK |
 | Sintaxis de scripts inline de los HTML | `node --check` OK |
 
@@ -45,7 +53,7 @@
 
 ## No verificado todavía
 
-- Interacción real en navegador: guardar formularios del admin, subir foto desde `fotos.html`, carrito, WhatsApp y Calendly.
+- Interacción en navegador con las pestañas Productos/Servicios, la migración de categorías legacy y los checkboxes de `categorias_agendamiento`.
 - Diseño a 375px y escritorio.
 - Chat con Workers AI (requiere descomentar `[ai]` y `npx wrangler login`).
 - No hay UI de chat en las páginas públicas.

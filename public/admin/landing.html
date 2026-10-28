@@ -384,7 +384,7 @@
             };
 
             const secciones = [];
-            const seccionesRows = document.querySelectorAll('.seccion-row:not(.header)');
+            const seccionesRows = document.querySelectorAll('#secciones-preview .seccion-row:not(.header)');
 
             seccionesRows.forEach(row => {
                 const inputs = row.querySelectorAll('input, textarea, select');
@@ -433,8 +433,8 @@
                     <option value="contacto">Contacto</option>
                 </select>
                 <input type="text" placeholder="Título" required>
-                <textarea placeholder="Contenido" required></textarea>
-                <input type="text" placeholder="IDs (separados por comas)" required>
+                <textarea placeholder="Contenido (opcional según el tipo)"></textarea>
+                <input type="text" placeholder="IDs de items (opcional, separados por comas)">
                 <button type="button" class="btn-remove-seccion" onclick="eliminarSeccion(this)">-</button>
             `;
 
@@ -444,31 +444,6 @@
         function eliminarSeccion(button) {
             const row = button.closest('.seccion-row');
             row.remove();
-        }
-
-        function actualizarPreviewSecciones() {
-            const landing = obtenerLanding();
-            const previewContainer = document.getElementById('secciones-preview');
-
-            if (!landing.secciones || landing.secciones.length === 0) {
-                previewContainer.innerHTML = '<p>No hay secciones para mostrar</p>';
-                return;
-            }
-
-            let html = '<div class="seccion-row header">';
-            html += '<span>Tipo</span><span>Título</span><span>Contenido</span><span>Items IDs</span><span>Acciones</span>';
-            html += '</div>';
-
-            landing.secciones.forEach(seccion => {
-                html += `<div class="seccion-row">`;
-                html += `<span>${seccion.tipo}</span>`;
-                html += `<span>${seccion.titulo}</span>`;
-                html += `<span>${seccion.contenido.substring(0, 50)}...</span>`;
-                html += `<span>${seccion.items_ids.join(', ')}</span>`;
-                html += `</div>`;
-            });
-
-            previewContainer.innerHTML = html;
         }
 
         async function cargarLanding() {
@@ -482,8 +457,6 @@
                     // Si no hay landing, agregar una sección vacía
                     agregarSeccion();
                 }
-
-                actualizarPreviewSecciones();
             } catch (error) {
                 console.error('Error cargando landing:', error);
                 // Si no hay landing, agregar una sección vacía
@@ -518,8 +491,8 @@
                             <option value="contacto" ${seccion.tipo === 'contacto' ? 'selected' : ''}>Contacto</option>
                         </select>
                         <input type="text" placeholder="Título" value="${seccion.titulo || ''}" required>
-                        <textarea placeholder="Contenido" required>${seccion.contenido || ''}</textarea>
-                        <input type="text" placeholder="IDs (separados por comas)" value="${seccion.items_ids ? seccion.items_ids.join(', ') : ''}" required>
+                        <textarea placeholder="Contenido (opcional según el tipo)">${seccion.contenido || ''}</textarea>
+                        <input type="text" placeholder="IDs de items (opcional, separados por comas)" value="${seccion.items_ids ? seccion.items_ids.join(', ') : ''}">
                         <button type="button" class="btn-remove-seccion" onclick="eliminarSeccion(this)">-</button>
                     `;
                     previewContainer.appendChild(row);
@@ -577,7 +550,6 @@
                 landingActual = landing;
 
                 mostrarExito('Landing guardada exitosamente');
-                actualizarPreviewSecciones();
             } catch (error) {
                 console.error('Error guardando landing:', error);
                 mostrarError(error.message || 'Error guardando la landing. Por favor, intente nuevamente.');
@@ -623,10 +595,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             verificarAuth();
 
-            // Actualizar preview cuando cambian los inputs
-            document.getElementById('form-landing').addEventListener('input', function() {
-                actualizarPreviewSecciones();
-            });
+            document.getElementById('form-landing').addEventListener('submit', guardarLanding);
         });
     </script>
 </body>

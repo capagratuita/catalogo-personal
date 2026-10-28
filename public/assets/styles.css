@@ -254,9 +254,8 @@ nav .carrito-contador {
 }
 
 .item-card .btn-add-to-cart:hover {
-  verificar `.carrito-icon` en nav
-  debe mostrar contador de items
-  ]
+  background: #e68900;
+}
 
 /* Product detail page */
 .producto-detalle {
@@ -283,6 +282,34 @@ nav .carrito-contador {
   margin-bottom: 1rem;
 }
 
+.producto-meta {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f3e9e1;
+}
+
+.producto-meta span {
+  padding: 0.3rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8B4513;
+}
+
+.producto-meta #producto-tipo {
+  background: #8B4513;
+  color: white;
+  font-weight: 700;
+}
+
+.producto-meta span + span {
+  border-left: 1px solid rgba(139, 69, 19, 0.2);
+}
+
+.producto-meta span:empty {
+  display: none;
+}
+
 .producto-precio {
   font-size: 2rem;
   font-weight: bold;
@@ -293,6 +320,11 @@ nav .carrito-contador {
 .producto-descripcion {
   margin: 1.5rem 0;
   line-height: 1.8;
+  color: #555;
+  background: #faf6f2;
+  border-left: 4px solid #8B4513;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
 }
 
 .producto-servicio-info {
@@ -335,6 +367,33 @@ nav .carrito-contador {
 
 .producto-actions .btn-secondary:hover {
   background: #e0e0e0;
+}
+
+.producto-calendly {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.producto-calendly .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  background: white;
+  color: #8B4513;
+  border: 2px solid #8B4513;
+  border-radius: 50px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.producto-calendly .btn:hover {
+  background: #8B4513;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
 }
 
 /* Cart page */
@@ -446,8 +505,123 @@ nav .carrito-contador {
 .carrito-resumen-total {
   display: flex;
   justify-content: space-between;
-  footer {
-    background: #8B4513;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.carrito-resumen .btn {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  margin-top: 1rem;
+  background: #8B4513;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.carrito-resumen .btn:hover {
+  background: #6B3410;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
+}
+
+/* FAQ */
+.faq {
+  padding: 4rem 0;
+  background: #f9f9f9;
+}
+
+.faq h2 {
+  text-align: center;
+  color: #8B4513;
+  margin-bottom: 2rem;
+}
+
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+.faq-item {
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.faq-pregunta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.faq-pregunta h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #333;
+}
+
+.icono-faq {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #8B4513;
+  transition: transform 0.2s;
+}
+
+.faq-respuesta {
+  display: none;
+  padding: 0 1.25rem 1rem;
+  color: #555;
+}
+
+.faq-respuesta.activa {
+  display: block;
+}
+
+.faq-contacto {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.faq-contacto h3 {
+  color: #8B4513;
+  margin-bottom: 0.5rem;
+}
+
+.faq-contacto p {
+  margin-bottom: 1rem;
+}
+
+.faq-contacto .btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background: #8B4513;
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: bold;
+}
+
+.faq-contacto .btn:hover {
+  background: #6B3410;
+}
+
+footer {
+  background: #8B4513;
     color: white;
     padding: 2rem 0;
     text-align: center;

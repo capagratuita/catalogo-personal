@@ -9,12 +9,12 @@ El flujo local de contenido, admin e imágenes **ya funciona** sin Cloudflare lo
 - Auth implementada con cookie HMAC-SHA256 (`functions/_lib/auth.js`): `/api/login`, `/api/logout`, `/api/session`; el middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
 - `functions/api/upload.js` usa `env.IMAGES.put`, valida tipo/tamaño/item, borra extensiones viejas y no contiene credenciales ni SDK de AWS.
 - `functions/api/image.js` sirve R2 por `id` o `url=items/...`; `producto.html` y `fotos.html` ya lo usan.
-- `functions/api/content.js` exporta validadores, acepta nullables y refuerza slug único, categoría existente, descripción ≤200, enums y booleanos.
+- `functions/api/content.js` exporta validadores, acepta nullables y refuerza slug único, categoría existente, descripción ≤200, enums, booleanos y categorías de agendamiento existentes.
 - Las públicas cargan `/assets/app.js`; las admin cargan `../assets/admin.js` y usan `await window.admin.isAuthenticated()`. El CSS de admin apunta a `../assets/styles.css`.
 - Existe `public/assets/images/placeholder.png`; ficha y carrito usan `config.negocio.moneda` y `formatPrecio`.
-- Verificado con `npm run dev` + curl: GET de las 4 keys, login correcto/incorrecto, session, PUT autenticado, upload, image, logout, redirección de admin y acceso por IP LAN.
+- Verificado con `npm run dev` + curl: GET de las 4 keys, login correcto/incorrecto, session, PUT autenticado, upload, image, logout, redirección de admin y acceso por IP LAN. En navegador: guardado de identidad/catálogo/landing/FAQ, subida y preview de fotos, ficha, contador del carrito y checkout por WhatsApp.
 - Estado local persistido en `.wrangler/state`: las 4 keys KV están sembradas y existe `items/pan-integral.png` en R2 local.
-- Pendiente: no hay UI de chat en las páginas públicas; `README.md` sigue desactualizado; los `validate-phase*.sh` son greps no fiables; no hay `.git`, `test`, `lint` ni `typecheck`. La memoria de trabajo está en `AGENTS_SUMMARY.md` y el log de pruebas en `VALIDATION_SUMMARY.md`.
+- Pendiente: probar en navegador los checkboxes de `categorias_agendamiento`; revisar 375px; no hay UI de chat en las páginas públicas; `README.md` sigue desactualizado; los `validate-phase*.sh` son greps no fiables; no hay `.git`, `test`, `lint` ni `typecheck`. La memoria de trabajo está en `AGENTS_SUMMARY.md` y el log de pruebas en `VALIDATION_SUMMARY.md`.
 
 ## 2. Contexto y stack (cerrado)
 
@@ -113,11 +113,11 @@ AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
 La referencia ejecutable son `config/*.example.json`. Campos y límites que el validador y la UI esperan:
 
 - `config`: `negocio` con `nombre`, `descripcion_corta`, `whatsapp`, `email`, `moneda` (ISO 4217), `modo_negocio` (`solo-productos|solo-servicios|mixto`), `calendly_url` (string|null), `logo_url` (string|null), `redes.instagram/facebook` (string|null), `tono_chat`.
-- `catalogo`: `categorias` (array de strings) e `items` (máx. 200). Cada item: `id` slug único `^[a-z0-9-]+$`, `tipo` (`producto|servicio`), `nombre`, `descripcion` (spec ≤200), `precio` número ≥0, `categoria` existente en `categorias`, `disponible`/`destacado` booleanos, `duracion_minutos` número en servicios y `null` en productos, `calendly_url` string|null.
+- `catalogo`: `categorias` tipadas como `{ producto: [...], servicio: [...] }` e `items` (máx. 200). El array plano legacy sigue aceptándose y el admin lo migra al cargar. Cada item: `id` slug único `^[a-z0-9-]+$`, `tipo` (`producto|servicio`), `nombre`, `descripcion` (spec ≤200), `precio` número ≥0, `categoria` existente en la lista de su tipo o `""` (opcional), `disponible`/`destacado` booleanos, `duracion_minutos` número en servicios y `null` en productos, `calendly_url` string|null. `categorias_agendamiento` es un array opcional de categorías de servicio; solo los servicios de esas categorías usan Calendly. Si falta el campo, el admin infiere `cita`/`citas` al cargar y las páginas públicas no marcan ninguna. El panel del admin solo lista categorías de servicio y guarda únicamente esas.
 - `landing`: `hero{titulo,subtitulo,cta_texto,cta_enlace,imagen_fondo_url}`, `secciones[]` con `tipo` (`texto|destacados|galeria|contacto`), `titulo`, `contenido`, `items_ids`; `tema{color_primario,color_secundario,fuente,estilo}`; `seo{titulo,descripcion}`.
 - `faq`: `preguntas[{p,r}]` (máx. 15) y `tono`.
 
-El validador ya comprueba unicidad de `id`, existencia de `categoria`, longitud de `descripcion`, enums de `modo_negocio`/`fuente`/`estilo` y booleanos. Aún no valida URLs/email ni que `landing.secciones[].items_ids` existan en el catálogo; si tocas `content.js`, añade esas reglas y pruebas.
+El validador ya comprueba unicidad de `id`, existencia de `categoria` en la lista de su tipo (salvo `""`), longitud de `descripcion`, enums de `modo_negocio`/`fuente`/`estilo`, booleanos y que `categorias_agendamiento` solo contenga categorías de servicio. Aún no valida URLs/email ni que `landing.secciones[].items_ids` existan en el catálogo; si tocas `content.js`, añade esas reglas y pruebas.
 
 ## 7. API y autenticación
 
@@ -139,12 +139,13 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria`, longitud 
 ## 8. Convenciones de frontend
 
 - Cada página es HTML completo. Las públicas cargan `/assets/app.js`; las admin cargan `../assets/admin.js` antes de su script inline.
+- El admin separa las categorías en pestañas Productos y Servicios; cada categoría nace con su tipo y los selectores de categoría de cada item se filtran por el tipo del item.
 - `assets/app.js` expone `window.app`: `fetchJSON`, `loadCatalogo`, `loadConfig`, `loadLanding`, `loadFAQ`, `renderItem`, `buildWhatsAppLink`, `formatPrecio`, `getCarrito`, `saveCarrito`, `addToCarrito`, `getCarritoTotal`, `getCarritoItemsCount`.
 - `assets/admin.js` expone `window.admin`: `login`, `isAuthenticated` (async), `getContent`, `putContent`, `logout` (async). No expone `getToken`; la sesión viaja en cookie.
 - Carrito real en `localStorage` bajo `carrito`: `[{id, nombre, precio, moneda, cantidad}]` (no solo `{id,cantidad}`; la UI lee nombre/precio). El checkout arma el mensaje con nombre, cantidad, precio y total.
 - WhatsApp: `https://wa.me/{config.negocio.whatsapp}?text=${encodeURIComponent(mensaje)}`.
 - `producto.html` y `carrito.html` usan `config.negocio.moneda`/`formatPrecio`; si agregas precios nuevos, no hardcodees `PEN` ni `S/.`.
-- `modo_negocio` controla visibilidad: carrito si no es `solo-servicios`; Calendly si no es `solo-productos`.
+- `modo_negocio` controla visibilidad del carrito: con `solo-servicios`, los productos no se muestran en el carrito. Un servicio con `categoria` incluida en `categorias_agendamiento` y URL de Calendly propia o global muestra solo “Reservar Cita” (sin carrito). Un servicio no agendable, o agendable sin URL, muestra “Añadir al Carrito”. Los productos nunca muestran Calendly. `requiereAgendamiento(item, catalogo)` en `app.js` centraliza la regla.
 
 ## 9. Imágenes/R2
 
@@ -199,5 +200,5 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria`, longitud 
 - Estado de partida: `npm run dev` escucha en `0.0.0.0:8788`; LAN `http://192.168.11.104:8788` (la IP puede cambiar; usa `hostname -I`). Las 4 keys KV están sembradas y R2 local tiene `items/pan-integral.png`.
 - Para retomar: `cd /home/devops/proyectos/personal-ecommerce`, libera el puerto con `lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill`, ejecuta `npm run dev` y abre `http://localhost:8788` o la IP LAN.
 - Si `.wrangler/state` se borra, vuelve a sembrar KV con los comandos de la sección 4.
-- Pruebas pendientes: admin en navegador (login, guardar las 4 secciones, subir foto), ficha, carrito, WhatsApp, Calendly, 375px, decidir UI de chat y actualizar `README.md`.
+- Pruebas pendientes: checkboxes de `categorias_agendamiento` (servicio agendable oculta carrito), 375px/escritorio, decidir UI de chat y actualizar `README.md`.
 - `[ai]` sigue comentado: para probar chat, descomenta el bloque en `wrangler.toml` y ejecuta `npx wrangler login`; sin eso `/api/chat` devuelve 503.

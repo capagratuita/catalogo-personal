@@ -16,6 +16,9 @@
 - Frontend conectado: públicas cargan `/assets/app.js`; admin carga `../assets/admin.js`; CSS de admin corregido; placeholder en `public/assets/images/placeholder.png`.
 - Imagen unificada: subida a `items/{id}.{ext}` y lectura con `GET /api/image?id=...`; al subir se borran extensiones viejas.
 - Ficha y carrito usan `config.negocio.moneda` y `formatPrecio`.
+- Categorías tipadas: `catalogo.categorias` es `{ producto: [...], servicio: [...] }`; el admin usa pestañas Productos/Servicios y filtra el selector de cada item por su tipo. El array plano legacy se migra al cargar (infiere el tipo por los items; las categorías sin uso se asignan por nombre). `PUT` sigue aceptando ambos formatos y valida que un producto no use una categoría de servicio.
+- Agendamiento por categoría: `catalogo.categorias_agendamiento` (array opcional). Admin muestra checkboxes “Agendamiento con Calendly” para todas las categorías de servicio; las públicas usan `window.app.requiereAgendamiento(item, catalogo)`. Un servicio agendable con Calendly propio/global muestra solo “Reservar Cita”; el resto va al carrito. Si el campo falta, el admin infiere `cita`/`citas` y las públicas no marcan ninguna.
+- `PUT /api/content?key=catalogo` rechaza con 400 una categoría de agendamiento que no exista en `categorias` (probado con curl).
 - Verificado con `npm run dev` + curl: GET de las 4 keys, login correcto/incorrecto, session, PUT autenticado, upload, image, logout, redirección de admin y acceso por IP LAN.
 - No hay `.git`, `npm test`, `npm run lint` ni `npm run typecheck`.
 - Los `validate-phase*.sh` y `test-all-phases.sh` son greps estáticos no fiables; no los uses como prueba de runtime.
@@ -68,8 +71,9 @@ Resultados esperados: `200` en config/login/session/PUT/upload/image/logout; tra
 - [x] Servidor local y acceso por LAN.
 - [x] KV sembrado y R2 local con una imagen de prueba.
 - [x] Login, session, PUT, upload, image y logout probados con curl.
-- [ ] Probar el admin en navegador: login, guardar identidad/catálogo/landing/FAQ y subir una foto real.
-- [ ] Probar ficha, carrito, checkout por WhatsApp y enlaces de Calendly.
+- [x] Probar el admin en navegador: login, guardar identidad/catálogo/landing/FAQ y subir una foto real.
+- [x] Probar ficha, carrito, checkout por WhatsApp y enlaces de Calendly.
+- [ ] Probar en navegador las pestañas Productos/Servicios, la migración de categorías y los checkboxes de `categorias_agendamiento`.
 - [ ] Revisar 375px y escritorio.
 - [ ] Decidir si se añade UI de chat y si `[ai]` queda activo por defecto.
 - [ ] Actualizar `README.md` cuando el flujo con chat esté cerrado.

@@ -291,7 +291,7 @@
             const tono = document.getElementById('faq-tono').value;
 
             const preguntas = [];
-            const faqRows = document.querySelectorAll('.faq-row:not(.header)');
+            const faqRows = document.querySelectorAll('#faq-preview .faq-row:not(.header)');
 
             faqRows.forEach(row => {
                 const inputs = row.querySelectorAll('input, textarea');
@@ -327,30 +327,6 @@
             row.remove();
         }
 
-        function actualizarPreviewFAQ() {
-            const faq = obtenerFAQ();
-            const previewContainer = document.getElementById('faq-preview');
-
-            if (!faq.preguntas || faq.preguntas.length === 0) {
-                previewContainer.innerHTML = '<p>No hay preguntas frecuentes para mostrar</p>';
-                return;
-            }
-
-            let html = '<div class="faq-row header">';
-            html += '<span>Pregunta</span><span>Respuesta</span><span>Acciones</span>';
-            html += '</div>';
-
-            faq.preguntas.forEach(pregunta => {
-                html += `<div class="faq-row">`;
-                html += `<span>${pregunta.p}</span>`;
-                html += `<span>${pregunta.r}</span>`;
-                html += `<span>✓</span>`;
-                html += `</div>`;
-            });
-
-            previewContainer.innerHTML = html;
-        }
-
         async function cargarFAQ() {
             try {
                 const faq = await window.admin.getContent('faq');
@@ -362,8 +338,6 @@
                     // Si no hay FAQ, agregar una vacía
                     agregarFAQ();
                 }
-
-                actualizarPreviewFAQ();
             } catch (error) {
                 console.error('Error cargando FAQ:', error);
                 // Si no hay FAQ, agregar una vacía
@@ -431,7 +405,6 @@
                 faqActual = faq;
 
                 mostrarExito('FAQ guardada exitosamente');
-                actualizarPreviewFAQ();
             } catch (error) {
                 console.error('Error guardando FAQ:', error);
                 mostrarError(error.message || 'Error guardando la FAQ. Por favor, intente nuevamente.');
@@ -477,10 +450,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             verificarAuth();
 
-            // Actualizar preview cuando cambian los inputs
-            document.getElementById('form-faq').addEventListener('input', function() {
-                actualizarPreviewFAQ();
-            });
+            document.getElementById('form-faq').addEventListener('submit', guardarFAQ);
         });
     </script>
 </body>

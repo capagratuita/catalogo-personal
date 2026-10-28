@@ -1,5 +1,9 @@
 {
-  "categorias": ["pan", "pasteles", "servicios"],
+  "categorias": {
+    "producto": ["pan", "pasteles"],
+    "servicio": ["citas", "talleres"]
+  },
+  "categorias_agendamiento": ["citas"],
   "items": [
     {
       "id": "pan-integral",
@@ -43,7 +47,7 @@
       "nombre": "Taller de Masa Madre",
       "descripcion": "Clase práctica de 2 horas para aprender a hacer masa madre",
       "precio": 45.0,
-      "categoria": "servicios",
+      "categoria": "talleres",
       "disponible": true,
       "destacado": false,
       "duracion_minutos": 120,
@@ -55,7 +59,7 @@
       "nombre": "Asesoría de Panificación",
       "descripcion": "Consultoría personalizada para mejorar tus panes",
       "precio": 80.0,
-      "categoria": "servicios",
+      "categoria": "citas",
       "disponible": true,
       "destacado": true,
       "duracion_minutos": 60,
