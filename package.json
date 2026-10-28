@@ -1,0 +1,21 @@
+{
+  "name": "personal-catalog-template",
+  "version": "0.0.1",
+  "description": "Template desplegable para publicar un catálogo personal de productos y/o servicios con Cloudflare Pages, Workers KV y R2",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler pages dev public --ip 0.0.0.0 --port 8788",
+    "deploy": "wrangler pages deploy public",
+    "deploy:pages": "wrangler pages deploy public"
+  },
+  "keywords": ["cloudflare", "pages", "kv", "r2", "catalog", "personal", "template"],
+  "author": "opencode",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anomalyco/personal-ecommerce.git"
+  }
+}

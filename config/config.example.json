@@ -1,0 +1,17 @@
+{
+  "negocio": {
+    "nombre": "Panadería Artesanal El Molino",
+    "descripcion_corta": "Pan recién horneado y servicios de talleres de panificación",
+    "whatsapp": "+51987654321",
+    "email": "contacto@elmolino.com",
+    "moneda": "PEN",
+    "modo_negocio": "mixto",
+    "calendly_url": "https://calendly.com/elmolino/taller",
+    "logo_url": "https://r2.dev/items/logo.png",
+    "redes": {
+      "instagram": "https://instagram.com/elmolino",
+      "facebook": "https://facebook.com/elmolino"
+    },
+    "tono_chat": "Amigable y profesional, explica las cosas de forma sencilla, responde en español neutro"
+  }
+}

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Landing</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        .admin-panel {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .admin-header h2 {
+            color: #8B4513;
+            margin: 0;
+        }
+
+        .btn-logout {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .secciones-container {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .seccion-row {
+            display: grid;
+            grid-template-columns: 100px 150px 1fr 80px auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .seccion-row:last-child {
+            border-bottom: none;
+        }
+
+        .seccion-row.header {
+            background: #f5f5f5;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .seccion-row input,
+        .seccion-row textarea,
+        .seccion-row select {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-seccion {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-seccion:hover {
+            background: #45a049;
+        }
+
+        .btn-remove-seccion {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+
+        .btn-remove-seccion:hover {
+            background: #d32f2f;
+        }
+
+        .tema-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .tema-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .seo-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .seo-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .preview-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .preview-content {
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #6B3410;
+        }
+
+        .btn-secondary {
+            background: #757575;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #388e3c;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .oculto {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Panel de Administración</div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h2>Gestión de la Landing Page</h2>
+                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+
+            <div id="mensaje-error" class="oculto"></div>
+            <div id="mensaje-exito" class="oculto"></div>
+
+            <form id="form-landing">
+                <div class="hero-section">
+                    <h3>Hero Section</h3>
+                    <div class="form-group">
+                        <label for="landing-hero-titulo">Título</label>
+                        <input type="text" id="landing-hero-titulo" name="landing-hero-titulo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-hero-subtitulo">Subtítulo</label>
+                        <textarea id="landing-hero-subtitulo" name="landing-hero-subtitulo" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-hero-cta_texto">Texto del CTA</label>
+                        <input type="text" id="landing-hero-cta_texto" name="landing-hero-cta_texto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-hero-cta_enlace">Enlace del CTA</label>
+                        <input type="text" id="landing-hero-cta_enlace" name="landing-hero-cta_enlace" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-hero-imagen_fondo_url">URL de Imagen de Fondo (opcional)</label>
+                        <input type="url" id="landing-hero-imagen_fondo_url" name="landing-hero-imagen_fondo_url" placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                </div>
+
+                <div class="secciones-container">
+                    <h3>Secciones</h3>
+                    <div id="secciones-preview">
+                        <div class="seccion-row header">
+                            <span>Tipo</span>
+                            <span>Título</span>
+                            <span>Contenido</span>
+                            <span>Items IDs</span>
+                            <span>Acciones</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-seccion" onclick="agregarSeccion()">+ Agregar Sección</button>
+                </div>
+
+                <div class="tema-section">
+                    <h3>Tema</h3>
+                    <div class="form-group">
+                        <label for="landing-tema-color_primario">Color Primario</label>
+                        <input type="color" id="landing-tema-color_primario" name="landing-tema-color_primario" value="#8B4513">
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-tema-color_secundario">Color Secundario</label>
+                        <input type="color" id="landing-tema-color_secundario" name="landing-tema-color_secundario" value="#FFD700">
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-tema-fuente">Fuente</label>
+                        <select id="landing-tema-fuente" name="landing-tema-fuente">
+                            <option value="serif">Serif</option>
+                            <option value="sans">Sans</option>
+                            <option value="mono">Mono</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-tema-estilo">Estilo</label>
+                        <select id="landing-tema-estilo" name="landing-tema-estilo">
+                            <option value="rustico">Rústico</option>
+                            <option value="moderno">Moderno</option>
+                            <option value="minimalista">Minimalista</option>
+                            <option value="elegante">Elegante</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="seo-section">
+                    <h3>SEO</h3>
+                    <div class="form-group">
+                        <label for="landing-seo-titulo">Título</label>
+                        <input type="text" id="landing-seo-titulo" name="landing-seo-titulo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="landing-seo-descripcion">Descripción</label>
+                        <textarea id="landing-seo-descripcion" name="landing-seo-descripcion" required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Guardar Landing</button>
+                <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Previsualizar JSON</button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Guardando...</p>
+                </div>
+            </form>
+
+            <div class="preview-section" id="preview-section" style="display: none;">
+                <h3>Vista Previa del JSON</h3>
+                <div id="preview-content" class="preview-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/admin.js"></script>
+    <script>
+        let landingActual = null;
+
+        function obtenerLanding() {
+            const hero = {
+                titulo: document.getElementById('landing-hero-titulo').value,
+                subtitulo: document.getElementById('landing-hero-subtitulo').value,
+                cta_texto: document.getElementById('landing-hero-cta_texto').value,
+                cta_enlace: document.getElementById('landing-hero-cta_enlace').value,
+                imagen_fondo_url: document.getElementById('landing-hero-imagen_fondo_url').value || null
+            };
+
+            const secciones = [];
+            const seccionesRows = document.querySelectorAll('.seccion-row:not(.header)');
+
+            seccionesRows.forEach(row => {
+                const inputs = row.querySelectorAll('input, textarea, select');
+                const itemsIds = inputs[inputs.length - 1].value.split(',').map(id => id.trim()).filter(id => id);
+
+                const seccion = {
+                    tipo: inputs[0].value,
+                    titulo: inputs[1].value,
+                    contenido: inputs[2].value,
+                    items_ids: itemsIds
+                };
+
+                secciones.push(seccion);
+            });
+
+            const tema = {
+                color_primario: document.getElementById('landing-tema-color_primario').value,
+                color_secundario: document.getElementById('landing-tema-color_secundario').value,
+                fuente: document.getElementById('landing-tema-fuente').value,
+                estilo: document.getElementById('landing-tema-estilo').value
+            };
+
+            const seo = {
+                titulo: document.getElementById('landing-seo-titulo').value,
+                descripcion: document.getElementById('landing-seo-descripcion').value
+            };
+
+            return {
+                hero: hero,
+                secciones: secciones,
+                tema: tema,
+                seo: seo
+            };
+        }
+
+        function agregarSeccion() {
+            const previewContainer = document.getElementById('secciones-preview');
+            const nuevaSeccion = document.createElement('div');
+            nuevaSeccion.className = 'seccion-row';
+            nuevaSeccion.innerHTML = `
+                <select required>
+                    <option value="">Seleccionar...</option>
+                    <option value="texto">Texto</option>
+                    <option value="destacados">Destacados</option>
+                    <option value="galeria">Galería</option>
+                    <option value="contacto">Contacto</option>
+                </select>
+                <input type="text" placeholder="Título" required>
+                <textarea placeholder="Contenido" required></textarea>
+                <input type="text" placeholder="IDs (separados por comas)" required>
+                <button type="button" class="btn-remove-seccion" onclick="eliminarSeccion(this)">-</button>
+            `;
+
+            previewContainer.appendChild(nuevaSeccion);
+        }
+
+        function eliminarSeccion(button) {
+            const row = button.closest('.seccion-row');
+            row.remove();
+        }
+
+        function actualizarPreviewSecciones() {
+            const landing = obtenerLanding();
+            const previewContainer = document.getElementById('secciones-preview');
+
+            if (!landing.secciones || landing.secciones.length === 0) {
+                previewContainer.innerHTML = '<p>No hay secciones para mostrar</p>';
+                return;
+            }
+
+            let html = '<div class="seccion-row header">';
+            html += '<span>Tipo</span><span>Título</span><span>Contenido</span><span>Items IDs</span><span>Acciones</span>';
+            html += '</div>';
+
+            landing.secciones.forEach(seccion => {
+                html += `<div class="seccion-row">`;
+                html += `<span>${seccion.tipo}</span>`;
+                html += `<span>${seccion.titulo}</span>`;
+                html += `<span>${seccion.contenido.substring(0, 50)}...</span>`;
+                html += `<span>${seccion.items_ids.join(', ')}</span>`;
+                html += `</div>`;
+            });
+
+            previewContainer.innerHTML = html;
+        }
+
+        async function cargarLanding() {
+            try {
+                const landing = await window.admin.getContent('landing');
+                landingActual = landing;
+
+                if (landing) {
+                    rellenarFormulario(landing);
+                } else {
+                    // Si no hay landing, agregar una sección vacía
+                    agregarSeccion();
+                }
+
+                actualizarPreviewSecciones();
+            } catch (error) {
+                console.error('Error cargando landing:', error);
+                // Si no hay landing, agregar una sección vacía
+                agregarSeccion();
+            }
+        }
+
+        function rellenarFormulario(landing) {
+            if (!landing) return;
+
+            if (landing.hero) {
+                document.getElementById('landing-hero-titulo').value = landing.hero.titulo || '';
+                document.getElementById('landing-hero-subtitulo').value = landing.hero.subtitulo || '';
+                document.getElementById('landing-hero-cta_texto').value = landing.hero.cta_texto || '';
+                document.getElementById('landing-hero-cta_enlace').value = landing.hero.cta_enlace || '';
+                document.getElementById('landing-hero-imagen_fondo_url').value = landing.hero.imagen_fondo_url || '';
+            }
+
+            if (landing.secciones && landing.secciones.length > 0) {
+                const previewContainer = document.getElementById('secciones-preview');
+                previewContainer.innerHTML = '';
+
+                landing.secciones.forEach(seccion => {
+                    const row = document.createElement('div');
+                    row.className = 'seccion-row';
+                    row.innerHTML = `
+                        <select required>
+                            <option value="">Seleccionar...</option>
+                            <option value="texto" ${seccion.tipo === 'texto' ? 'selected' : ''}>Texto</option>
+                            <option value="destacados" ${seccion.tipo === 'destacados' ? 'selected' : ''}>Destacados</option>
+                            <option value="galeria" ${seccion.tipo === 'galeria' ? 'selected' : ''}>Galería</option>
+                            <option value="contacto" ${seccion.tipo === 'contacto' ? 'selected' : ''}>Contacto</option>
+                        </select>
+                        <input type="text" placeholder="Título" value="${seccion.titulo || ''}" required>
+                        <textarea placeholder="Contenido" required>${seccion.contenido || ''}</textarea>
+                        <input type="text" placeholder="IDs (separados por comas)" value="${seccion.items_ids ? seccion.items_ids.join(', ') : ''}" required>
+                        <button type="button" class="btn-remove-seccion" onclick="eliminarSeccion(this)">-</button>
+                    `;
+                    previewContainer.appendChild(row);
+                });
+            }
+
+            if (landing.tema) {
+                document.getElementById('landing-tema-color_primario').value = landing.tema.color_primario || '#8B4513';
+                document.getElementById('landing-tema-color_secundario').value = landing.tema.color_secundario || '#FFD700';
+                document.getElementById('landing-tema-fuente').value = landing.tema.fuente || 'serif';
+                document.getElementById('landing-tema-estilo').value = landing.tema.estilo || 'rustico';
+            }
+
+            if (landing.seo) {
+                document.getElementById('landing-seo-titulo').value = landing.seo.titulo || '';
+                document.getElementById('landing-seo-descripcion').value = landing.seo.descripcion || '';
+            }
+        }
+
+        function previsualizarLanding() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+
+            if (previewSection.style.display === 'none') {
+                const landing = obtenerLanding();
+                previewContent.textContent = JSON.stringify(landing, null, 2);
+                previewSection.style.display = 'block';
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        async function guardarLanding(event) {
+            event.preventDefault();
+
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            const landing = obtenerLanding();
+
+            const btnSubmit = document.querySelector('#form-landing button[type="submit"]');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('mensaje-error');
+            const successDiv = document.getElementById('mensaje-exito');
+
+            btnSubmit.disabled = true;
+            loading.style.display = 'block';
+            errorDiv.classList.add('oculto');
+            successDiv.classList.add('oculto');
+
+            try {
+                await window.admin.putContent('landing', landing);
+                landingActual = landing;
+
+                mostrarExito('Landing guardada exitosamente');
+                actualizarPreviewSecciones();
+            } catch (error) {
+                console.error('Error guardando landing:', error);
+                mostrarError(error.message || 'Error guardando la landing. Por favor, intente nuevamente.');
+            } finally {
+                btnSubmit.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function cerrarSesion() {
+            window.admin.logout();
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.textContent = mensaje;
+            errorDiv.classList.remove('oculto');
+            errorDiv.classList.add('error');
+
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.classList.add('oculto');
+        }
+
+        function mostrarExito(mensaje) {
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.textContent = mensaje;
+            successDiv.classList.remove('oculto');
+            successDiv.classList.add('success');
+
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.classList.add('oculto');
+        }
+
+        async function verificarAuth() {
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            await cargarLanding();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAuth();
+
+            // Actualizar preview cuando cambian los inputs
+            document.getElementById('form-landing').addEventListener('input', function() {
+                actualizarPreviewSecciones();
+            });
+        });
+    </script>
+</body>
+</html>

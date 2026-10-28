@@ -1,0 +1,24 @@
+name = "catalogo-template"
+compatibility_date = "2026-10-01"
+pages_build_output_dir = "public"
+
+# Workers KV: almacena los JSONs (config, catalogo, landing, faq)
+# En local, Wrangler usa un KV local automáticamente.
+# En producción, reemplaza "placeholder" con el ID real del namespace
+# (Dashboard → Workers & Pages → KV → tu namespace → ID).
+[[kv_namespaces]]
+binding = "KV"
+id = "placeholder"
+
+# R2: almacena las fotos de los items.
+# En local, Wrangler usa un R2 local automáticamente.
+# En producción, reemplaza "catalogo-fotos" con el nombre real del bucket.
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "catalogo-fotos"
+
+# Workers AI: usado por /api/chat.
+# Descomenta este bloque para habilitar el chat en local o producción.
+# En local requiere `npx wrangler login`; sin el binding, /api/chat devuelve 503.
+# [ai]
+# binding = "AI"

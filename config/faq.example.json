@@ -1,0 +1,25 @@
+{
+  "preguntas": [
+    {
+      "p": "¿Cómo hornean el pan?",
+      "r": "Usamos masa madre fermentada naturalmente durante 24 horas, luego horneamos lentamente para desarrollar el sabor y la textura."
+    },
+    {
+      "p": "¿Qué ingredientes usan?",
+      "r": "Nuestro pan solo usa harina, agua, sal y masa madre. No usamos conservantes ni azúcar."
+    },
+    {
+      "p": "¿Ofrecen entrega a domicilio?",
+      "r": "Sí, entregamos en Miraflores y San Isidro. El costo depende de la distancia y el pedido. Contacta por WhatsApp para cotizar."
+    },
+    {
+      "p": "¿Cómo funciona el taller de masa madre?",
+      "r": "El taller es de 2 horas, incluye una clase teórica sobre la fermentación y una práctica donde cada participante se lleva su propio frasco de masa madre."
+    },
+    {
+      "p": "¿Puedo cancelar mi cita?",
+      "r": "Sí, puedes cancelar hasta 24 horas antes de tu cita sin costo. Si cancelas con menos tiempo, cobramos el 50% del valor."
+    }
+  ],
+  "tono": "Amigable y profesional, explica las cosas de forma sencilla, responde en español neutro"
+}

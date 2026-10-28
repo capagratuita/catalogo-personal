@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto - Panadería Artesanal El Molino</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Panadería Artesanal El Molino</div>
+            <ul class="nav-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/faq">Preguntas Frecuentes</a></li>
+                <li><a href="/carrito">Carrito</a></li>
+            </ul>
+            <div class="carrito-icon" onclick="verCarrito()">
+                🛒<span class="carrito-contador" id="carrito-contador">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="producto-detalle">
+            <div class="container">
+                <div class="producto-detalle-contenido">
+                    <div class="producto-imagen-container">
+                        <img id="producto-imagen" src="/assets/images/placeholder.png" alt="Imagen del producto" class="producto-imagen">
+                    </div>
+                    <div class="producto-info">
+                        <h2 id="producto-nombre">Cargando...</h2>
+                        <div class="producto-meta">
+                            <span id="producto-categoria" class="producto-categoria"></span>
+                            <span id="producto-tipo" class="producto-tipo"></span>
+                        </div>
+                        <div class="producto-precio" id="producto-precio">S/. 0.00</div>
+                        <div class="producto-descripcion" id="producto-descripcion">Cargando descripción...</div>
+                        <div class="producto-servicio-info" id="producto-servicio-info" style="display: none;">
+                            <span class="icono-reloj">⏰</span>
+                            <span id="producto-duracion">0 minutos</span>
+                        </div>
+                        <div class="producto-actions">
+                            <button class="btn btn-primary" onclick="agregarAlCarritoDesdePagina()">Añadir al Carrito</button>
+                            <button class="btn btn-secondary" onclick="window.location.href='/catalogo'">Seguir Comprando</button>
+                        </div>
+                        <div id="producto-calendly" class="producto-calendly" style="display: none;">
+                            <!-- Calendly will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div>
+                <h3>Panadería Artesanal El Molino</h3>
+                <p>Fundada en 2015, pan recién horneado todos los días.</p>
+            </div>
+            <ul class="footer-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/faq">Preguntas Frecuentes</a></li>
+                <li><a href="/carrito">Carrito</a></li>
+            </ul>
+            <div class="redes-sociales">
+                <a href="https://instagram.com/elmolino" target="_blank">📷</a>
+                <a href="https://facebook.com/elmolino" target="_blank">📘</a>
+                <a href="https://wa.me/+51987654321" target="_blank">💬</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/assets/app.js"></script>
+    <script>
+        let productoActual = null;
+        let configActual = null;
+        let carrito = [];
+
+        async function cargarProducto() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            
+            if (!productId) {
+                window.location.href = '/catalogo';
+                return;
+            }
+            
+            try {
+                // Cargar datos necesarios
+                const [catalogo, config, landing] = await Promise.all([
+                    window.app.loadCatalogo(),
+                    window.app.loadConfig(),
+                    window.app.loadLanding()
+                ]);
+
+                // Encontrar el producto
+                const producto = catalogo.items.find(item => item.id === productId);
+                if (!producto) {
+                    mostrarError('Producto no encontrado');
+                    return;
+                }
+
+                productoActual = producto;
+                configActual = config;
+                renderizarProducto(producto, config);
+                actualizarContadorCarrito();
+                cargarImagenProducto(producto.id);
+
+            } catch (error) {
+                console.error('Error cargando producto:', error);
+                mostrarError('Error cargando producto. Por favor, intente nuevamente.');
+            }
+        }
+
+        function renderizarProducto(producto, config) {
+            document.getElementById('producto-nombre').textContent = producto.nombre;
+            document.getElementById('producto-precio').textContent = window.app.formatPrecio(producto.precio, config.negocio.moneda);
+            document.getElementById('producto-descripcion').textContent = producto.descripcion;
+            
+            // Categoria y tipo
+            const categoriaSpan = document.getElementById('producto-categoria');
+            const tipoSpan = document.getElementById('producto-tipo');
+            categoriaSpan.textContent = producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1);
+            tipoSpan.textContent = producto.tipo === 'producto' ? 'Producto' : 'Servicio';
+            
+            // Mostrar información de servicio si es un servicio
+            const servicioInfo = document.getElementById('producto-servicio-info');
+            const duracionSpan = document.getElementById('producto-duracion');
+            if (producto.tipo === 'servicio') {
+                servicioInfo.style.display = 'flex';
+                duracionSpan.textContent = `${producto.duracion_minutos} minutos`;
+            } else {
+                servicioInfo.style.display = 'none';
+            }
+            
+            // Mostrar enlace de Calendly si está disponible
+            const calendlyContainer = document.getElementById('producto-calendly');
+            const calendlyUrl = producto.calendly_url || config.negocio.calendly_url;
+            if (calendlyUrl) {
+                calendlyContainer.innerHTML = `<a href="${calendlyUrl}" class="btn btn-primary" target="_blank">Reservar Cita</a>`;
+                calendlyContainer.style.display = 'block';
+            } else {
+                calendlyContainer.style.display = 'none';
+            }
+            
+            // Mostrar/ocultar botón de agregar al carrito basado en el modo del negocio
+            const agregarBtn = document.querySelector('.producto-actions .btn-primary');
+            if (config.negocio.modo_negocio === 'solo-servicios') {
+                agregarBtn.classList.add('oculto');
+            } else {
+                agregarBtn.classList.remove('oculto');
+            }
+        }
+
+        function cargarImagenProducto(productId) {
+            const imagen = document.getElementById('producto-imagen');
+            imagen.onerror = () => {
+                imagen.src = '/assets/images/placeholder.png';
+            };
+            imagen.src = `/api/image?id=${encodeURIComponent(productId)}`;
+        }
+
+        function agregarAlCarritoDesdePagina() {
+            if (productoActual) {
+                const moneda = configActual?.negocio?.moneda || 'PEN';
+                window.app.addToCarrito(productoActual.id, productoActual.nombre, productoActual.precio, moneda);
+                mostrarNotificacion('Producto agregado al carrito');
+            }
+        }
+
+        function actualizarContadorCarrito() {
+            const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            document.getElementById('carrito-contador').textContent = total;
+        }
+
+        function mostrarError(mensaje) {
+            const contenedor = document.querySelector('.producto-detalle-contenido');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = mensaje;
+            contenedor.prepend(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function mostrarNotificacion(mensaje) {
+            const notificacion = document.createElement('div');
+            notificacion.className = 'notificacion';
+            notificacion.textContent = mensaje;
+            notificacion.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+            `;
+            document.body.appendChild(notificacion);
+
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+
+        // Cargar datos cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarProducto();
+        });
+    </script>
+</body>
+</html>

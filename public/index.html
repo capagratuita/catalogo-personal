@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panadería Artesanal El Molino</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Panadería Artesanal El Molino</div>
+            <ul class="nav-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/faq">Preguntas Frecuentes</a></li>
+                <li><a href="/carrito">Carrito</a></li>
+            </ul>
+            <div class="carrito-icon" onclick="verCarrito()">
+                🛒<span class="carrito-contador" id="carrito-contador">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Bienvenidos a Panadería Artesanal El Molino</h1>
+                <p>Pan recién horneado todos los días y talleres para compartir nuestra pasión</p>
+                <a href="/catalogo" class="btn">Ver Catálogo</a>
+            </div>
+        </section>
+
+        <section class="catalogo">
+            <div class="container">
+                <h2>Productos Destacados</h2>
+                <div class="categorias">
+                    <button class="categoria-btn activa" onclick="filtrarCategoria('todos')">Todos</button>
+                    <button class="categoria-btn" onclick="filtrarCategoria('pan')">Pan</button>
+                    <button class="categoria-btn" onclick="filtrarCategoria('pasteles')">Pasteles</button>
+                    <button class="categoria-btn" onclick="filtrarCategoria('servicios')">Servicios</button>
+                </div>
+                <div class="items-grid" id="items-grid">
+                    <!-- Items serán insertados aquí por JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div>
+                <h3>Panadería Artesanal El Molino</h3>
+                <p>Fundada en 2015, pan recién horneado todos los días.</p>
+            </div>
+            <ul class="footer-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/faq">Preguntas Frecuentes</a></li>
+                <li><a href="/carrito">Carrito</a></li>
+            </ul>
+            <div class="redes-sociales">
+                <a href="https://instagram.com/elmolino" target="_blank">📷</a>
+                <a href="https://facebook.com/elmolino" target="_blank">📘</a>
+                <a href="https://wa.me/+51987654321" target="_blank">💬</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/assets/app.js"></script>
+    <script>
+        let carrito = [];
+        let categoriasOriginales = [];
+        let categoriaActual = 'todos';
+
+        // Utilidades del frontend
+        function actualizarContadorCarrito() {
+            const total = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            document.getElementById('carrito-contador').textContent = total;
+        }
+
+        async function cargarDatos() {
+            try {
+                // Cargar catálogo, config y landing
+                const [catalogo, config, landing] = await Promise.all([
+                    window.app.loadCatalogo(),
+                    window.app.loadConfig(),
+                    window.app.loadLanding()
+                ]);
+
+                // Guardar datos para usarlos en las páginas
+                window.paginaActual = {
+                    catalogo: catalogo,
+                    config: config,
+                    landing: landing
+                };
+
+                // Renderizar items según la página actual
+                if (window.location.pathname === '/' || window.location.pathname === '/catalogo') {
+                    renderizarCatalogo();
+                }
+
+                // Ocultar loader si existe
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.display = 'none';
+
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                const itemsGrid = document.getElementById('items-grid');
+                if (itemsGrid) {
+                    itemsGrid.innerHTML = '<div class="error">Error cargando el catálogo. Por favor, intente nuevamente.</div>';
+                }
+            }
+        }
+
+        function renderizarCatalogo() {
+            const data = window.paginaActual;
+            if (!data || !data.catalogo || !data.config) return;
+
+            let items = data.catalogo.items;
+            
+            // Filtrar por categoría
+            if (categoriaActual !== 'todos') {
+                items = items.filter(item => item.categoria === categoriaActual);
+            }
+
+            // Guardar categorías originales para filtrado
+            if (!categoriasOriginales.length) {
+                categoriasOriginales = [...new Set(items.map(item => item.tipo))];
+            }
+
+            // Renderizar solo productos si el modo del negocio es solo-servicios
+            if (data.config.negocio.modo_negocio === 'solo-servicios') {
+                items = items.filter(item => item.tipo === 'servicio');
+            }
+
+            // Renderizar solo servicios si el modo del negocio es solo-productos
+            if (data.config.negocio.modo_negocio === 'solo-productos') {
+                items = items.filter(item => item.tipo === 'producto');
+            }
+
+            const itemsGrid = document.getElementById('items-grid');
+            if (!itemsGrid) return;
+
+            itemsGrid.innerHTML = '';
+
+            // Renderizar items destacados primero
+            const itemsDestacados = items.filter(item => item.destacado);
+            const itemsNoDestacados = items.filter(item => !item.destacado);
+
+            itemsDestacados.forEach(item => {
+                itemsGrid.appendChild(crearItemCard(item, data.config));
+            });
+
+            itemsNoDestacados.forEach(item => {
+                itemsGrid.appendChild(crearItemCard(item, data.config));
+            });
+        }
+
+        function crearItemCard(item, config) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.setAttribute('data-id', item.id);
+            card.setAttribute('data-tipo', item.tipo);
+
+            const isService = item.tipo === 'servicio';
+            const isProduct = item.tipo === 'producto';
+
+            let priceHtml = '';
+            if (isProduct) {
+                priceHtml = `<span class="precio">${window.app.formatPrecio(item.precio, config.negocio.moneda)}</span>`;
+            }
+
+            let durationHtml = '';
+            if (isService) {
+                durationHtml = `<div class="servicio-info"><span class="icono-reloj">⏰</span> ${item.duracion_minutos} minutos</div>`;
+            }
+
+            let calendlyHtml = '';
+            if (config.negocio.calendly_url || item.calendly_url) {
+                const calendlyLink = item.calendly_url || config.negocio.calendly_url;
+                calendlyHtml = `<a href="${calendlyLink}" class="btn-calendly" target="_blank">Reservar Cita</a>`;
+            }
+
+            let actionButton = '';
+            if (config.negocio.modo_negocio !== 'solo-servicios') {
+                actionButton = `<button class="btn-add-to-cart" onclick="agregarAlCarrito('${item.id}', '${item.nombre}', ${item.precio}, '${config.negocio.moneda}')">Añadir al Carrito</button>`;
+            }
+
+            card.innerHTML = `
+                <h3>${item.nombre}</h3>
+                <p class="descripcion">${item.descripcion}</p>
+                ${priceHtml}
+                ${durationHtml}
+                <div class="item-actions">
+                    <a href="/producto?id=${item.id}" class="btn-ver">Ver Detalles</a>
+                    ${calendlyHtml}
+                    ${actionButton}
+                </div>
+            `;
+
+            return card;
+        }
+
+        function agregarAlCarrito(id, nombre, precio, moneda) {
+            window.app.addToCarrito(id, nombre, precio, moneda);
+            actualizarContadorCarrito();
+            mostrarNotificacion('Producto agregado al carrito');
+        }
+
+        function verCarrito() {
+            window.location.href = '/carrito';
+        }
+
+        function filtrarCategoria(categoria) {
+            categoriaActual = categoria;
+
+            // Actualizar botones activos
+            document.querySelectorAll('.categoria-btn').forEach(btn => {
+                btn.classList.remove('activa');
+            });
+            event.target.classList.add('activa');
+
+            renderizarCatalogo();
+        }
+
+        function mostrarNotificacion(mensaje) {
+            const notificacion = document.createElement('div');
+            notificacion.className = 'notificacion';
+            notificacion.textContent = mensaje;
+            notificacion.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideUp 0.3s ease;
+            `;
+            document.body.appendChild(notificacion);
+
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+
+        // Agregar animación para notificación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateX(-50%) translateY(100%); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Cargar datos cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarDatos();
+        });
+    </script>
+</body>
+</html>

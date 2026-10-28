@@ -1,0 +1,65 @@
+{
+  "categorias": ["pan", "pasteles", "servicios"],
+  "items": [
+    {
+      "id": "pan-integral",
+      "tipo": "producto",
+      "nombre": "Pan Integral",
+      "descripcion": "Pan integral hecho con masa madre, 450g",
+      "precio": 8.5,
+      "categoria": "pan",
+      "disponible": true,
+      "destacado": true,
+      "duracion_minutos": null,
+      "calendly_url": null
+    },
+    {
+      "id": "pan-sourdough",
+      "tipo": "producto",
+      "nombre": "Pan Sourdough",
+      "descripcion": "Pan fermentado naturalmente, corteza crujiente, 500g",
+      "precio": 12.0,
+      "categoria": "pan",
+      "disponible": true,
+      "destacado": false,
+      "duracion_minutos": null,
+      "calendly_url": null
+    },
+    {
+      "id": "torta-chocolate",
+      "tipo": "producto",
+      "nombre": "Torta de Chocolate",
+      "descripcion": "Húmeda, con cobertura de chocolate amargo, 8 porciones",
+      "precio": 35.0,
+      "categoria": "pasteles",
+      "disponible": true,
+      "destacado": true,
+      "duracion_minutos": null,
+      "calendly_url": null
+    },
+    {
+      "id": "taller-masa-madre",
+      "tipo": "servicio",
+      "nombre": "Taller de Masa Madre",
+      "descripcion": "Clase práctica de 2 horas para aprender a hacer masa madre",
+      "precio": 45.0,
+      "categoria": "servicios",
+      "disponible": true,
+      "destacado": false,
+      "duracion_minutos": 120,
+      "calendly_url": null
+    },
+    {
+      "id": "asesoria-pan",
+      "tipo": "servicio",
+      "nombre": "Asesoría de Panificación",
+      "descripcion": "Consultoría personalizada para mejorar tus panes",
+      "precio": 80.0,
+      "categoria": "servicios",
+      "disponible": true,
+      "destacado": true,
+      "duracion_minutos": 60,
+      "calendly_url": null
+    }
+  ]
+}

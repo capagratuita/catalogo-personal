@@ -1,0 +1,45 @@
+{
+  "hero": {
+    "titulo": "Bienvenidos a Panadería Artesanal El Molino",
+    "subtitulo": "Pan recién horneado todos los días y talleres para compartir nuestra pasión",
+    "cta_texto": "Ver Catálogo",
+    "cta_enlace": "/catalogo",
+    "imagen_fondo_url": "https://r2.dev/items/fondo-panaderia.jpg"
+  },
+  "secciones": [
+    {
+      "tipo": "texto",
+      "titulo": "Nuestra Historia",
+      "contenido": "Fundada en 2015, Panadería Artesanal El Molino ha estado horneando pan con amor desde entonces. Usamos masa madre fermentada naturalmente y técnicas tradicionales para crear panes que saben como el hogar.",
+      "items_ids": []
+    },
+    {
+      "tipo": "destacados",
+      "titulo": "Productos Destacados",
+      "contenido": "",
+      "items_ids": ["pan-integral", "torta-chocolate"]
+    },
+    {
+      "tipo": "galeria",
+      "titulo": "Nuestros Productos",
+      "contenido": "",
+      "items_ids": ["pan-integral", "pan-sourdough", "torta-chocolate"]
+    },
+    {
+      "tipo": "contacto",
+      "titulo": "Visítanos",
+      "contenido": "Estamos ubicados en el corazón de Miraflores. ¡Visítanos y prueba nuestro pan!",
+      "items_ids": []
+    }
+  ],
+  "tema": {
+    "color_primario": "#8B4513",
+    "color_secundario": "#FFD700",
+    "fuente": "serif",
+    "estilo": "rustico"
+  },
+  "seo": {
+    "titulo": "Panadería Artesanal El Molino - Pan Recién Horneado y Talleres",
+    "descripcion": "Pan integral, sourdough y tortas de chocolate recién horneadas. También ofrecemos talleres de masa madre y asesoría de panificación."
+  }
+}

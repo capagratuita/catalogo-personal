@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Catálogo</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        .admin-panel {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .admin-header h2 {
+            color: #8B4513;
+            margin: 0;
+        }
+
+        .btn-logout {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .items-container {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 100px 150px 1fr 120px 80px auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-row.header {
+            background: #f5f5f5;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .item-row input,
+        .item-row select {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-item {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-item:hover {
+            background: #45a049;
+        }
+
+        .btn-remove-item {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+
+        .btn-remove-item:hover {
+            background: #d32f2f;
+        }
+
+        .categoria-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .categoria-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .preview-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .preview-content {
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #6B3410;
+        }
+
+        .btn-secondary {
+            background: #757575;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #388e3c;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .oculto {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Panel de Administración</div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h2>Gestión del Catálogo</h2>
+                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+
+            <div id="mensaje-error" class="oculto"></div>
+            <div id="mensaje-exito" class="oculto"></div>
+
+            <form id="form-catalogo">
+                <div class="form-group">
+                    <label for="catalogo-categorias">Categorías (separadas por comas)</label>
+                    <input type="text" id="catalogo-categorias" name="catalogo-categorias" placeholder="ej: pan, pasteles, servicios">
+                </div>
+
+                <div id="items-container">
+                    <!-- Items serán agregados aquí -->
+                </div>
+
+                <button type="button" class="btn-add-item" onclick="agregarItem()">+ Agregar Item</button>
+
+                <div class="form-group">
+                    <label>Validación del Catálogo</label>
+                    <div class="items-container" id="items-preview">
+                        <div class="item-row header">
+                            <span>ID</span>
+                            <span>Tipo</span>
+                            <span>Nombre</span>
+                            <span>Categoría</span>
+                            <span>Precio</span>
+                            <span>Acciones</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Guardar Catálogo</button>
+                <button type="button" class="btn btn-secondary" onclick="previsualizarCatalogo()">Previsualizar JSON</button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Guardando...</p>
+                </div>
+            </form>
+
+            <div class="preview-section" id="preview-section" style="display: none;">
+                <h3>Vista Previa del JSON</h3>
+                <div id="preview-content" class="preview-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/admin.js"></script>
+    <script>
+        let catalogoActual = null;
+        let itemIdCounter = 1;
+
+        function obtenerCatalogo() {
+            const categoriasInput = document.getElementById('catalogo-categorias').value;
+            const categorias = categoriasInput.split(',').map(c => c.trim()).filter(c => c);
+
+            const items = [];
+            const itemRows = document.querySelectorAll('.item-row:not(.header)');
+
+            itemRows.forEach(row => {
+                const inputs = row.querySelectorAll('input, select');
+                const item = {};
+
+                item.id = inputs[0].value;
+                item.tipo = inputs[1].value;
+                item.nombre = inputs[2].value;
+                item.descripcion = inputs[3].value;
+                item.precio = parseFloat(inputs[4].value) || 0;
+                item.categoria = inputs[5].value;
+                item.disponible = inputs[6].checked;
+                item.destacado = inputs[7].checked;
+                item.duracion_minutos = item.tipo === 'servicio' ? parseInt(inputs[8].value) || 0 : null;
+                item.calendly_url = inputs[9].value || null;
+
+                items.push(item);
+            });
+
+            return {
+                categorias: categorias,
+                items: items
+            };
+        }
+
+        function agregarItem() {
+            const itemsContainer = document.getElementById('items-container');
+            const nuevoItem = document.createElement('div');
+            nuevoItem.className = 'item-row';
+            nuevoItem.innerHTML = `
+                <input type="text" placeholder="id-unico" required>
+                <select required>
+                    <option value="">Seleccionar...</option>
+                    <option value="producto">Producto</option>
+                    <option value="servicio">Servicio</option>
+                </select>
+                <input type="text" placeholder="Nombre del item" required>
+                <input type="text" placeholder="Descripción" required>
+                <input type="number" placeholder="Precio" step="0.01" required>
+                <select required>
+                    <option value="">Seleccionar categoría</option>
+                </select>
+                <input type="checkbox" checked>
+                <input type="checkbox">
+                <input type="number" placeholder="Minutos" value="0">
+                <input type="text" placeholder="URL de Calendly (opcional)">
+                <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">-</button>
+            `;
+
+            itemsContainer.appendChild(nuevoItem);
+
+            // Actualizar las opciones de categoría con las existentes
+            actualizarOpcionesCategoria();
+
+            // Generar ID automático si está vacío
+            const idInput = nuevoItem.querySelectorAll('input, select')[0];
+            if (!idInput.value) {
+                idInput.value = `item-${itemIdCounter++}`;
+            }
+        }
+
+        function eliminarItem(button) {
+            const row = button.closest('.item-row');
+            row.remove();
+        }
+
+        function actualizarOpcionesCategoria() {
+            const categoriasInput = document.getElementById('catalogo-categorias').value;
+            const categorias = categoriasInput.split(',').map(c => c.trim()).filter(c => c);
+
+            const selects = document.querySelectorAll('.item-row select:last-child');
+
+            selects.forEach(select => {
+                // Limpiar opciones existentes (excepto la primera)
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+
+                // Agregar opciones de categoría
+                categorias.forEach(categoria => {
+                    const option = document.createElement('option');
+                    option.value = categoria;
+                    option.textContent = categoria;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function actualizarPreviewItems() {
+            const catalogo = obtenerCatalogo();
+            const previewContainer = document.getElementById('items-preview');
+
+            if (!catalogo.items || catalogo.items.length === 0) {
+                previewContainer.innerHTML = '<p>No hay items para mostrar</p>';
+                return;
+            }
+
+            let html = '<div class="item-row header">';
+            html += '<span>ID</span><span>Tipo</span><span>Nombre</span><span>Categoría</span><span>Precio</span><span>Acciones</span>';
+            html += '</div>';
+
+            catalogo.items.forEach(item => {
+                html += `<div class="item-row">`;
+                html += `<span>${item.id}</span>`;
+                html += `<span>${item.tipo}</span>`;
+                html += `<span>${item.nombre}</span>`;
+                html += `<span>${item.categoria}</span>`;
+                html += `<span>S/. ${item.precio}</span>`;
+                html += `<span>✓ ${item.disponible} | ${item.destacado ? '⭐' : ''}</span>`;
+                if (item.tipo === 'servicio') {
+                    html += `<span>${item.duracion_minutos} min</span>`;
+                }
+                html += `</div>`;
+            });
+
+            previewContainer.innerHTML = html;
+        }
+
+        async function cargarCatalogo() {
+            try {
+                const catalogo = await window.admin.getContent('catalogo');
+                catalogoActual = catalogo;
+
+                if (catalogo && catalogo.categorias && catalogo.categorias.length > 0) {
+                    document.getElementById('catalogo-categorias').value = catalogo.categorias.join(', ');
+                }
+
+                if (catalogo && catalogo.items && catalogo.items.length > 0) {
+                    // Limpiar container de items
+                    const itemsContainer = document.getElementById('items-container');
+                    itemsContainer.innerHTML = '';
+
+                    // Agregar items existentes
+                    catalogo.items.forEach(item => {
+                        agregarItemConDatos(item);
+                    });
+                }
+
+                actualizarPreviewItems();
+            } catch (error) {
+                console.error('Error cargando catálogo:', error);
+                // Si no hay catálogo, agregar un item vacío
+                agregarItem();
+            }
+        }
+
+        function agregarItemConDatos(item) {
+            const itemsContainer = document.getElementById('items-container');
+            const nuevoItem = document.createElement('div');
+            nuevoItem.className = 'item-row';
+
+            const categorias = catalogoActual ? catalogoActual.categorias : [];
+
+            nuevoItem.innerHTML = `
+                <input type="text" placeholder="id-unico" value="${item.id || ''}" required>
+                <select required>
+                    <option value="">Seleccionar...</option>
+                    <option value="producto" ${item.tipo === 'producto' ? 'selected' : ''}>Producto</option>
+                    <option value="servicio" ${item.tipo === 'servicio' ? 'selected' : ''}>Servicio</option>
+                </select>
+                <input type="text" placeholder="Nombre del item" value="${item.nombre || ''}" required>
+                <input type="text" placeholder="Descripción" value="${item.descripcion || ''}" required>
+                <input type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
+                <select required>
+                    <option value="">Seleccionar categoría</option>
+                    ${categorias.map(cat => `<option value="${cat}" ${item.categoria === cat ? 'selected' : ''}>${cat}</option>`).join('')}
+                </select>
+                <input type="checkbox" ${item.disponible !== false ? 'checked' : ''}>
+                <input type="checkbox" ${item.destacado ? 'checked' : ''}>
+                <input type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
+                <input type="text" placeholder="URL de Calendly (opcional)" value="${item.calendly_url || ''}">
+                <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">-</button>
+            `;
+
+            itemsContainer.appendChild(nuevoItem);
+        }
+
+        function previsualizarCatalogo() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+
+            if (previewSection.style.display === 'none') {
+                const catalogo = obtenerCatalogo();
+                previewContent.textContent = JSON.stringify(catalogo, null, 2);
+                previewSection.style.display = 'block';
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        async function guardarCatalogo(event) {
+            event.preventDefault();
+
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            const catalogo = obtenerCatalogo();
+            
+            // Validar
+            if (!catalogo.categorias || catalogo.categorias.length === 0) {
+                mostrarError('Por favor, agrega al menos una categoría');
+                return;
+            }
+
+            if (!catalogo.items || catalogo.items.length === 0) {
+                mostrarError('Por favor, agrega al menos un item');
+                return;
+            }
+
+            const btnSubmit = document.querySelector('#form-catalogo button[type="submit"]');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('mensaje-error');
+            const successDiv = document.getElementById('mensaje-exito');
+
+            btnSubmit.disabled = true;
+            loading.style.display = 'block';
+            errorDiv.classList.add('oculto');
+            successDiv.classList.add('oculto');
+
+            try {
+                await window.admin.putContent('catalogo', catalogo);
+                catalogoActual = catalogo;
+
+                mostrarExito('Catálogo guardado exitosamente');
+                actualizarPreviewItems();
+            } catch (error) {
+                console.error('Error guardando catálogo:', error);
+                mostrarError(error.message || 'Error guardando el catálogo. Por favor, intente nuevamente.');
+            } finally {
+                btnSubmit.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function cerrarSesion() {
+            window.admin.logout();
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.textContent = mensaje;
+            errorDiv.classList.remove('oculto');
+            errorDiv.classList.add('error');
+
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.classList.add('oculto');
+        }
+
+        function mostrarExito(mensaje) {
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.textContent = mensaje;
+            successDiv.classList.remove('oculto');
+            successDiv.classList.add('success');
+
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.classList.add('oculto');
+        }
+
+        async function verificarAuth() {
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            await cargarCatalogo();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAuth();
+
+            // Actualizar preview cuando cambian los inputs
+            document.getElementById('form-catalogo').addEventListener('input', function() {
+                actualizarPreviewItems();
+            });
+        });
+    </script>
+</body>
+</html>

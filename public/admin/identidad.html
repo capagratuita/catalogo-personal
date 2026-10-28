@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Identidad</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        .admin-panel {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .admin-header h2 {
+            color: #8B4513;
+            margin: 0;
+        }
+
+        .btn-logout {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #6B3410;
+        }
+
+        .btn-secondary {
+            background: #757575;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #388e3c;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .preview-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .preview-content {
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Panel de Administración</div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h2>Configuración de Negocio</h2>
+                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+
+            <div id="mensaje-error" class="oculto"></div>
+            <div id="mensaje-exito" class="oculto"></div>
+
+            <form id="form-config" onsubmit="guardarConfig(event)">
+                <div class="form-group">
+                    <label for="negocio-nombre">Nombre del Negocio</label>
+                    <input type="text" id="negocio-nombre" name="negocio-nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-descripcion_corta">Descripción Corta</label>
+                    <textarea id="negocio-descripcion_corta" name="negocio-descripcion_corta" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-whatsapp">WhatsApp (con código de país, ej. +51999888777)</label>
+                    <input type="text" id="negocio-whatsapp" name="negocio-whatsapp" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-email">Email</label>
+                    <input type="email" id="negocio-email" name="negocio-email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-moneda">Moneda</label>
+                    <select id="negocio-moneda" name="negocio-moneda" required>
+                        <option value="PEN">PEN - Sol Peruano</option>
+                        <option value="USD">USD - Dólar Estadounidense</option>
+                        <option value="MXN">MXN - Peso Mexicano</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-modo_negocio">Modo del Negocio</label>
+                    <select id="negocio-modo_negocio" name="negocio-modo_negocio" required>
+                        <option value="solo-productos">Solo Productos</option>
+                        <option value="solo-servicios">Solo Servicios</option>
+                        <option value="mixto">Mixto (Productos y Servicios)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-calendly_url">URL de Calendly (opcional)</label>
+                    <input type="url" id="negocio-calendly_url" name="negocio-calendly_url" placeholder="https://calendly.com/tu-cita">
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-logo_url">URL del Logo (opcional)</label>
+                    <input type="url" id="negocio-logo_url" name="negocio-logo_url" placeholder="https://ejemplo.com/logo.png">
+                </div>
+
+                <h3>Redes Sociales</h3>
+
+                <div class="form-group">
+                    <label for="negocio-redes-instagram">Instagram (opcional)</label>
+                    <input type="url" id="negocio-redes-instagram" name="negocio-redes-instagram" placeholder="https://instagram.com/tu-negocio">
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-redes-facebook">Facebook (opcional)</label>
+                    <input type="url" id="negocio-redes-facebook" name="negocio-redes-facebook" placeholder="https://facebook.com/tu-negocio">
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-tono_chat">Tono del Chat (guía para el chat de FAQ)</label>
+                    <textarea id="negocio-tono_chat" name="negocio-tono_chat" required></textarea>
+                </div>
+
+                <button type="submit" class="btn">Guardar Configuración</button>
+                <button type="button" class="btn btn-secondary" onclick="previsualizarConfig()">Previsualizar JSON</button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Guardando...</p>
+                </div>
+            </form>
+
+            <div class="preview-section" id="preview-section" style="display: none;">
+                <h3>Vista Previa del JSON</h3>
+                <div id="preview-content" class="preview-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/admin.js"></script>
+    <script>
+        let configActual = null;
+
+        async function cargarConfig() {
+            try {
+                const config = await window.admin.getContent('config');
+                configActual = config;
+                rellenarFormulario(config);
+            } catch (error) {
+                console.error('Error cargando config:', error);
+                mostrarError('Error cargando la configuración. Por favor, intente nuevamente.');
+            }
+        }
+
+        function rellenarFormulario(config) {
+            if (!config || !config.negocio) return;
+
+            const negocio = config.negocio;
+            
+            document.getElementById('negocio-nombre').value = negocio.nombre || '';
+            document.getElementById('negocio-descripcion_corta').value = negocio.descripcion_corta || '';
+            document.getElementById('negocio-whatsapp').value = negocio.whatsapp || '';
+            document.getElementById('negocio-email').value = negocio.email || '';
+            document.getElementById('negocio-moneda').value = negocio.moneda || 'PEN';
+            document.getElementById('negocio-modo_negocio').value = negocio.modo_negocio || 'mixto';
+            document.getElementById('negocio-calendly_url').value = negocio.calendly_url || '';
+            document.getElementById('negocio-logo_url').value = negocio.logo_url || '';
+            document.getElementById('negocio-redes-instagram').value = negocio.redes?.instagram || '';
+            document.getElementById('negocio-redes-facebook').value = negocio.redes?.facebook || '';
+            document.getElementById('negocio-tono_chat').value = negocio.tono_chat || '';
+        }
+
+        function obtenerFormulario() {
+            const negocio = {
+                nombre: document.getElementById('negocio-nombre').value,
+                descripcion_corta: document.getElementById('negocio-descripcion_corta').value,
+                whatsapp: document.getElementById('negocio-whatsapp').value,
+                email: document.getElementById('negocio-email').value,
+                moneda: document.getElementById('negocio-moneda').value,
+                modo_negocio: document.getElementById('negocio-modo_negocio').value,
+                calendly_url: document.getElementById('negocio-calendly_url').value || null,
+                logo_url: document.getElementById('negocio-logo_url').value || null,
+                redes: {
+                    instagram: document.getElementById('negocio-redes-instagram').value || null,
+                    facebook: document.getElementById('negocio-redes-facebook').value || null
+                },
+                tono_chat: document.getElementById('negocio-tono_chat').value
+            };
+
+            return {
+                negocio: negocio
+            };
+        }
+
+        async function guardarConfig(event) {
+            event.preventDefault();
+            
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+            
+            const formData = obtenerFormulario();
+            
+            const btnSubmit = document.querySelector('#form-config button[type="submit"]');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('mensaje-error');
+            const successDiv = document.getElementById('mensaje-exito');
+            
+            btnSubmit.disabled = true;
+            loading.style.display = 'block';
+            errorDiv.classList.add('oculto');
+            successDiv.classList.add('oculto');
+            
+            try {
+                await window.admin.putContent('config', formData);
+                configActual = formData;
+                
+                mostrarExito('Configuración guardada exitosamente');
+                actualizarPreview();
+            } catch (error) {
+                console.error('Error guardando config:', error);
+                mostrarError(error.message || 'Error guardando la configuración. Por favor, intente nuevamente.');
+            } finally {
+                btnSubmit.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function previsualizarConfig() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+            
+            if (previewSection.style.display === 'none') {
+                actualizarPreview();
+                previewSection.style.display = 'block';
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        function actualizarPreview() {
+            const previewContent = document.getElementById('preview-content');
+            previewContent.textContent = JSON.stringify(configActual || {}, null, 2);
+        }
+
+        function cerrarSesion() {
+            window.admin.logout();
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.textContent = mensaje;
+            errorDiv.classList.remove('oculto');
+            errorDiv.classList.add('error');
+            
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.classList.add('oculto');
+        }
+
+        function mostrarExito(mensaje) {
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.textContent = mensaje;
+            successDiv.classList.remove('oculto');
+            successDiv.classList.add('success');
+            
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.classList.add('oculto');
+        }
+
+        async function verificarAuth() {
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+            
+            await cargarConfig();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAuth();
+        });
+    </script>
+</body>
+</html>

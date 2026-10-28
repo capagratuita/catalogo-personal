@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - FAQ</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+    <style>
+        .admin-panel {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .admin-header h2 {
+            color: #8B4513;
+            margin: 0;
+        }
+
+        .btn-logout {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-logout:hover {
+            background: #b71c1c;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .faq-container {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .faq-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 80px auto;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+
+        .faq-row:last-child {
+            border-bottom: none;
+        }
+
+        .faq-row.header {
+            background: #f5f5f5;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .faq-row input,
+        .faq-row textarea {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-faq {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-faq:hover {
+            background: #45a049;
+        }
+
+        .btn-remove-faq {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+
+        .btn-remove-faq:hover {
+            background: #d32f2f;
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .preview-section h3 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+        }
+
+        .preview-content {
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .btn {
+            background: #8B4513;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #6B3410;
+        }
+
+        .btn-secondary {
+            background: #757575;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #d32f2f;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #388e3c;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .oculto {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Panel de Administración</div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="admin-panel">
+            <div class="admin-header">
+                <h2>Gestión del FAQ</h2>
+                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+
+            <div id="mensaje-error" class="oculto"></div>
+            <div id="mensaje-exito" class="oculto"></div>
+
+            <form id="form-faq">
+                <div class="form-group">
+                    <label for="faq-tono">Tono del Chat</label>
+                    <textarea id="faq-tono" name="faq-tono" required></textarea>
+                </div>
+
+                <div class="faq-container">
+                    <h3>Preguntas y Respuestas</h3>
+                    <div id="faq-preview">
+                        <div class="faq-row header">
+                            <span>Pregunta</span>
+                            <span>Respuesta</span>
+                            <span>Acciones</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-faq" onclick="agregarFAQ()">+ Agregar FAQ</button>
+                </div>
+
+                <button type="submit" class="btn">Guardar FAQ</button>
+                <button type="button" class="btn btn-secondary" onclick="previsualizarFAQ()">Previsualizar JSON</button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Guardando...</p>
+                </div>
+            </form>
+
+            <div class="preview-section" id="preview-section" style="display: none;">
+                <h3>Vista Previa del JSON</h3>
+                <div id="preview-content" class="preview-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../assets/admin.js"></script>
+    <script>
+        let faqActual = null;
+
+        function obtenerFAQ() {
+            const tono = document.getElementById('faq-tono').value;
+
+            const preguntas = [];
+            const faqRows = document.querySelectorAll('.faq-row:not(.header)');
+
+            faqRows.forEach(row => {
+                const inputs = row.querySelectorAll('input, textarea');
+                const pregunta = {};
+
+                pregunta.p = inputs[0].value;
+                pregunta.r = inputs[1].value;
+
+                preguntas.push(pregunta);
+            });
+
+            return {
+                preguntas: preguntas,
+                tono: tono
+            };
+        }
+
+        function agregarFAQ() {
+            const previewContainer = document.getElementById('faq-preview');
+            const nuevaFAQ = document.createElement('div');
+            nuevaFAQ.className = 'faq-row';
+            nuevaFAQ.innerHTML = `
+                <input type="text" placeholder="Pregunta" required>
+                <textarea placeholder="Respuesta" required></textarea>
+                <button type="button" class="btn-remove-faq" onclick="eliminarFAQ(this)">-</button>
+            `;
+
+            previewContainer.appendChild(nuevaFAQ);
+        }
+
+        function eliminarFAQ(button) {
+            const row = button.closest('.faq-row');
+            row.remove();
+        }
+
+        function actualizarPreviewFAQ() {
+            const faq = obtenerFAQ();
+            const previewContainer = document.getElementById('faq-preview');
+
+            if (!faq.preguntas || faq.preguntas.length === 0) {
+                previewContainer.innerHTML = '<p>No hay preguntas frecuentes para mostrar</p>';
+                return;
+            }
+
+            let html = '<div class="faq-row header">';
+            html += '<span>Pregunta</span><span>Respuesta</span><span>Acciones</span>';
+            html += '</div>';
+
+            faq.preguntas.forEach(pregunta => {
+                html += `<div class="faq-row">`;
+                html += `<span>${pregunta.p}</span>`;
+                html += `<span>${pregunta.r}</span>`;
+                html += `<span>✓</span>`;
+                html += `</div>`;
+            });
+
+            previewContainer.innerHTML = html;
+        }
+
+        async function cargarFAQ() {
+            try {
+                const faq = await window.admin.getContent('faq');
+                faqActual = faq;
+
+                if (faq) {
+                    rellenarFormulario(faq);
+                } else {
+                    // Si no hay FAQ, agregar una vacía
+                    agregarFAQ();
+                }
+
+                actualizarPreviewFAQ();
+            } catch (error) {
+                console.error('Error cargando FAQ:', error);
+                // Si no hay FAQ, agregar una vacía
+                agregarFAQ();
+            }
+        }
+
+        function rellenarFormulario(faq) {
+            if (!faq) return;
+
+            document.getElementById('faq-tono').value = faq.tono || '';
+
+            if (faq.preguntas && faq.preguntas.length > 0) {
+                const previewContainer = document.getElementById('faq-preview');
+                previewContainer.innerHTML = '';
+
+                faq.preguntas.forEach(pregunta => {
+                    const row = document.createElement('div');
+                    row.className = 'faq-row';
+                    row.innerHTML = `
+                        <input type="text" placeholder="Pregunta" value="${pregunta.p || ''}" required>
+                        <textarea placeholder="Respuesta" required>${pregunta.r || ''}</textarea>
+                        <button type="button" class="btn-remove-faq" onclick="eliminarFAQ(this)">-</button>
+                    `;
+                    previewContainer.appendChild(row);
+                });
+            }
+        }
+
+        function previsualizarFAQ() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+
+            if (previewSection.style.display === 'none') {
+                const faq = obtenerFAQ();
+                previewContent.textContent = JSON.stringify(faq, null, 2);
+                previewSection.style.display = 'block';
+            } else {
+                previewSection.style.display = 'none';
+            }
+        }
+
+        async function guardarFAQ(event) {
+            event.preventDefault();
+
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            const faq = obtenerFAQ();
+
+            const btnSubmit = document.querySelector('#form-faq button[type="submit"]');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('mensaje-error');
+            const successDiv = document.getElementById('mensaje-exito');
+
+            btnSubmit.disabled = true;
+            loading.style.display = 'block';
+            errorDiv.classList.add('oculto');
+            successDiv.classList.add('oculto');
+
+            try {
+                await window.admin.putContent('faq', faq);
+                faqActual = faq;
+
+                mostrarExito('FAQ guardada exitosamente');
+                actualizarPreviewFAQ();
+            } catch (error) {
+                console.error('Error guardando FAQ:', error);
+                mostrarError(error.message || 'Error guardando la FAQ. Por favor, intente nuevamente.');
+            } finally {
+                btnSubmit.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function cerrarSesion() {
+            window.admin.logout();
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.textContent = mensaje;
+            errorDiv.classList.remove('oculto');
+            errorDiv.classList.add('error');
+
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.classList.add('oculto');
+        }
+
+        function mostrarExito(mensaje) {
+            const successDiv = document.getElementById('mensaje-exito');
+            successDiv.textContent = mensaje;
+            successDiv.classList.remove('oculto');
+            successDiv.classList.add('success');
+
+            const errorDiv = document.getElementById('mensaje-error');
+            errorDiv.classList.add('oculto');
+        }
+
+        async function verificarAuth() {
+            if (!(await window.admin.isAuthenticated())) {
+                window.location.href = '/admin/index.html';
+                return;
+            }
+
+            await cargarFAQ();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAuth();
+
+            // Actualizar preview cuando cambian los inputs
+            document.getElementById('form-faq').addEventListener('input', function() {
+                actualizarPreviewFAQ();
+            });
+        });
+    </script>
+</body>
+</html>
