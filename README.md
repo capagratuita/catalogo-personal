@@ -1,130 +1,64 @@
-# Catálogo Personal desplegable en Cloudflare
+# Catálogo personal en Cloudflare
 
-## Descripción
+Template para publicar **un catálogo de tus servicios** (y, como extra, algunos productos) con tu propia dirección web, sin servidor ni costos fijos. Pensado para profesionales independientes, emprendedores y proyectos personales o de hobby.
 
-Este repositorio es un **template desplegable** para que personas sin conocimientos técnicos (profesionales independientes, emprendedores, hobbies) publiquen un catálogo personal de productos y/o servicios con:
+**No es una tienda online completa** ni compite con Shopify o WooCommerce: no hay pasarela de pago, stock, impuestos ni envíos. El cliente te consulta o reserva, y el cobro lo acuerdas tú.
 
-- Landing page customizable.
-- Catálogo de productos y servicios.
-- Carrito simple que hace checkout por WhatsApp.
-- Citas por Calendly para servicios.
-- Chat de preguntas frecuentes con LLM.
-- Panel de administración web protegido por contraseña.
+Cada persona hace su propio fork y despliega su propia instancia. No es un SaaS multi-inquilino.
 
-El usuario final **nunca toca una terminal, nunca crea tokens de API, nunca edita código**. Solo hace clics en el dashboard de Cloudflare, copia y pega JSONs, y sube fotos.
+## Qué incluye
 
-**Este repo NO es una plataforma SaaS multi-inquilino.** Cada usuario hace fork y despliega su propia instancia.
+- **Servicios:** precio fijo, «Desde X» o «Precio a consultar»; duración, modalidad (online/presencial), zona, qué incluye y opciones de precio (sesión suelta, packs).
+- **Una sola acción por servicio:** «Reservar Cita» (Calendly, Cal.com, Google Calendar…) o «Consultar por WhatsApp». Los servicios no usan carrito.
+- **Productos (extra):** carrito sencillo con pedido por WhatsApp. Se oculta si tu negocio es solo de servicios.
+- **Landing editable:** portada, textos, destacados, galería, *Sobre mí* con foto, testimonios, contacto y color de acento propio.
+- **FAQ**, **SEO** (título, descripción, vista previa al compartir, datos estructurados, sitemap) y analítica opcional sin cookies (Cloudflare Web Analytics).
+- **Panel de administración** protegido con contraseña, con límite de intentos, respaldo y subida de fotos optimizadas.
+- Frontend en HTML, CSS y JavaScript puros; todo en la capa gratuita de Cloudflare (Pages, Functions y Workers KV).
 
-## Requisitos
+## Publicar tu sitio
 
-- Cuenta de Cloudflare (gratuita funciona)
-- Un Workers KV namespace
-- Un R2 bucket
-- Un Workers AI binding (incluido en Workers gratis)
-- Una variable secreta `ADMIN_PASSWORD` (para proteger el admin)
+Sigue **[docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md)**: sin terminal, unos 30–45 minutos.
 
-## Cómo correr en local
+## Probarlo en tu computador
 
-1. Instala Node.js y npm si no tienes:
-   ```bash
-   # Ubuntu/Debian
-   sudo apt update && sudo apt install nodejs npm
-   
-   # macOS (con Homebrew)
-   brew install node
-   
-   # O desde nodejs.org
-   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-   ```
+Requiere [Node.js](https://nodejs.org) reciente (probado con la versión 22).
 
-2. Clona este repositorio y navega al directorio:
-   ```bash
-   git clone https://github.com/anomalyco/personal-ecommerce.git
-   cd personal-ecommerce
-   ```
+```bash
+npm install
+echo 'ADMIN_PASSWORD=pon-aqui-una-clave-larga' > .dev.vars
+npm run dev
+```
 
-3. Instala las dependencias:
-   ```bash
-   npm install
-   ```
+Abre `http://localhost:8788` (el panel está en `/admin`). Sin guardar nada, el sitio muestra datos de ejemplo; en local, KV se simula automáticamente y no necesitas iniciar sesión en Cloudflare.
 
-4. Ejecuta el servidor de desarrollo:
-   ```bash
-   npm run dev
-   ```
+Para abrirlo desde el celular en la misma red, usa la IP de tu computador: `http://<IP>:8788`.
 
-   Esto levantará un servidor local en `http://localhost:8788` con auto-restart en cambios.
+## Pruebas
 
-5. Abre tu navegador y visita `http://localhost:8788`
+```bash
+npm test
+```
 
-## Cómo desplegar en Cloudflare
+Ejecuta las pruebas de los validadores, del límite de intentos de login y de la lógica de acciones del frontend. No reemplazan la prueba en el navegador: usa [docs/e2e-checklist.md](docs/e2e-checklist.md).
 
-1. Inicia sesión en Cloudflare Dashboard e ingresa a Workers (o Pages).
+## Cómo está hecho
 
-2. Crea un nuevo Workers KV namespace y un R2 bucket (ambos gratuitos).
+| Capa | Servicio |
+|---|---|
+| Páginas | Cloudflare Pages (`public/`) |
+| API | Pages Functions (`functions/`) |
+| Contenido | Workers KV (`config`, `catalogo`, `landing`, `faq`) |
+| Fotos | Workers KV, namespace aparte (`IMAGES`) |
+| Acceso al panel | Cookie firmada con `ADMIN_PASSWORD` |
 
-3. Copia las IDs de estos servicios y actualiza `wrangler.toml`:
-    ```toml
-    [[kv_namespaces]]
-binding = "KV"
-id = "tu-id-de-kv"
+El contenido vive en KV, no en el repositorio. Los ejemplos de `config/*.example.json` se muestran hasta que guardas tu propio contenido desde el panel.
 
-    [[r2_buckets]]
-binding = "IMAGES"
-bucket_name = "tu-bucket-de-r2"
+Reglas del proyecto y contratos de datos: [AGENTS.md](AGENTS.md).
 
-    [ai]
-binding = "AI"
-    ```
+## Chat con IA (opcional)
 
-4. Agrega la variable secreta `ADMIN_PASSWORD` en el dashboard de Cloudflare Pages:
-   - Navega a: Pages → tu proyecto → Settings → Environment variables
-   - Agrega una nueva variable: `ADMIN_PASSWORD`
-   - Tipo: Secret
-   - Valor: elige una contraseña segura (mínimo 12 caracteres)
-
-5. El Workers AI binding viene gratis con Workers, no requiere configuración adicional.
-
-6. Ejecuta el deploy:
-    ```bash
-    npx wrangler pages deploy public
-    ```
-
-    Esto desplegará las Pages en Cloudflare.
-
-7. Una vez desplegado, visita tu sitio en el dominio proporcionado por Cloudflare Pages.
-
-## Próximos pasos
-
-Después del bootstrap inicial, necesitarás:
-
-1. **Completar las funciones API** (`functions/api/*.js`) para content, upload, chat y login
-2. **Crear las páginas públicas** (`public/*.html`) y utilidades (`public/assets/*.js`) 
-3. **Configurar el middleware** (`functions/_middleware.js`) para autenticación
-4. **Llenar el contenido inicial** en KV (o usar los ejemplos en `config/`)
-5. **Configurar el dominio personalizado** en Cloudflare Pages (opcional)
-
-El workflow para usuarios finales es:
-1. Forkear este repo
-2. Desplegar en Cloudflare
-3. Ingresar a `/admin/` con la contraseña
-4. Copiar/pegar los JSON de ejemplo desde `config/` a `/api/content`
-5. Subir fotos de productos desde `/admin/fotos.html`
-6. ¡Listo! El sitio público ya está disponible.
-
-## Stack tecnológico
-
-- **Frontend**: Cloudflare Pages (estáticos) - HTML + CSS + JS vanilla
-- **API**: Pages Functions (`/api/*`)
-- **Contenido**: Workers KV (4 keys: `config`, `catalogo`, `landing`, `faq`)
-- **Imágenes**: R2 (`items/{id}.{ext}`)
-- **Chat**: Workers AI (`@cf/meta/llama-3.2-1b-instruct`)
-- **Auth**: Variable secreta `ADMIN_PASSWORD` con cookies firmadas HMAC
-- **Citas**: Calendly embed
-- **WhatsApp**: Enlaces `wa.me` generados en cliente
-- **Carrito**: `localStorage` sin servidor
-- **Generación de contenido**: Claude Projects (capa gratuita)
+Existe un endpoint `/api/chat` con Workers AI, desactivado por defecto y sin botón en el sitio. Detalles y advertencias al final de la guía de despliegue.
 
 ## Licencia
 

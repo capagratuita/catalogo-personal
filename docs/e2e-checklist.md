@@ -1,0 +1,40 @@
+# Checklist de pruebas de extremo a extremo
+
+Marca cada punto a mano en un sitio recién desplegado (o en `npm run dev`). Pruébalo a **375 px** (celular) y en escritorio. Anota lo que te cueste en [friction-log.md](friction-log.md).
+
+## Acceso
+- [ ] `/admin` pide contraseña; una incorrecta muestra un error claro.
+- [ ] Tras 5 contraseñas incorrectas seguidas aparece «Demasiados intentos…».
+- [ ] Con la correcta se entra; cerrar sesión devuelve al login; `/admin/identidad` sin sesión redirige al login.
+
+## Primer arranque
+- [ ] Sin guardar nada, la portada muestra datos de ejemplo y el panel avisa de que son de ejemplo.
+- [ ] Al pulsar Guardar en una sección, el sitio pasa a usar tus datos.
+
+## Contenido
+- [ ] Identidad: guardar con un WhatsApp, una moneda y un correo; un enlace sin `https://` se rechaza con un mensaje claro.
+- [ ] Catálogo: crear una categoría de servicio, un servicio con precio fijo, otro «Precio a consultar», otro con opciones de precio y detalles (modalidad, zona, qué incluye).
+- [ ] Catálogo: marcar una categoría como *con reserva* y poner un enlace de reserva.
+- [ ] Fotos: subir una foto de más de 1 MB; se reduce y aparece en la tarjeta y en la ficha.
+- [ ] Landing: añadir *Sobre mí* (con foto desde Fotos), *Testimonios* y *Contacto*; cambiar el color de acento; un acento muy oscuro se rechaza.
+- [ ] FAQ: añadir una pregunta y verla en `/faq`.
+- [ ] Respaldo: exportar, borrar una pregunta, importar el respaldo y comprobar que vuelve.
+
+## Sitio público
+- [ ] Servicio con precio fijo sin reserva → botón «Consultar por WhatsApp» con mensaje que incluye nombre, precio y duración.
+- [ ] Servicio «Precio a consultar» → «Consultar por WhatsApp» (cotización).
+- [ ] Servicio de categoría con reserva → «Reservar Cita» abre tu agenda.
+- [ ] Servicio con opciones → «Desde X» en la tarjeta; la ficha lista las opciones.
+- [ ] Ninguna tarjeta de servicio tiene «Añadir al Carrito».
+- [ ] Modo *mixto*: producto → carrito → «Finalizar Pedido» abre WhatsApp con el resumen.
+- [ ] Modo *solo servicios*: no se ve el icono ni el enlace del carrito; `/carrito` muestra un aviso.
+- [ ] La ficha tiene «Compartir: WhatsApp · Copiar enlace»; la vista previa en WhatsApp muestra la foto.
+- [ ] Teclado: se puede recorrer el menú, las tarjetas y el panel con Tab, con el foco visible.
+
+## Datos e indexación
+- [ ] `/sitemap.xml` lista la portada, el FAQ y cada item; `/robots.txt` responde.
+- [ ] `/carrito` y un id inexistente llevan `noindex`.
+- [ ] Con token de analítica, el script aparece en la portada y no en `/carrito`.
+
+## Límites
+- [ ] Un cambio guardado se ve en el sitio en menos de ~1 minuto.

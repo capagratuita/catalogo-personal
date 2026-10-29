@@ -59,3 +59,32 @@
 - No hay UI de chat en las páginas públicas.
 - Los scripts `validate-phase*.sh` y `test-all-phases.sh` no se usaron como prueba de runtime: son greps estáticos y tienen falsos positivos/negativos.
 - No hay `.git`, `npm test`, `npm run lint` ni `npm run typecheck`.
+
+## 2026-10-29 — Fase 1: servicios sin carrito
+- Lógica `accionItem` probada con Node (producto mixto/solo-servicios, cotizar, reservar, consultar).
+- jsdom contra `npm run dev` (KV local): en `mixto` los productos llevan «Añadir al Carrito» y los servicios «Consultar por WhatsApp»/«Reservar Cita»; en `solo-servicios` se oculta icono y enlaces del carrito, `/carrito` muestra aviso y la ficha de servicio no muestra el botón de carrito. Config restaurada a `mixto` tras la prueba.
+- Pendiente: revisión visual a 375px en navegador real.
+
+## 2026-10-29 — Fase 2: modelo de servicio
+- Validadores movidos a `functions/_lib/validadores.js`; 15 casos probados con Node (ejemplos válidos; modalidad, variantes, incluye, URLs, email, `items_ids`).
+- API real: PUT catálogo con variantes inválidas -> 400 en español; válido -> 200. PUT landing con item inexistente -> 400.
+- jsdom: portada y ficha muestran «Desde», modalidad/zona/incluye/opciones; JSON-LD `AggregateOffer`; el admin recarga y reserializa los datos sin pérdidas y avisa de líneas de opciones mal escritas. Catálogo y landing locales restaurados.
+- Nota: `wrangler pages dev` se cayó una vez por `SQLITE_BUSY` al recargar durante ediciones; reiniciar `npm run dev` lo resuelve.
+
+## 2026-10-29 — Fase 3: identidad y confianza
+- Hallazgo: `landing.secciones` no se pintaba en ninguna página pública. Ahora `index.html` renderiza texto, destacados, galería, contacto, sobre-mi y testimonios (todo con `textContent`, sin HTML inyectado).
+- Node: 11 casos (acento claro/oscuro/no hex, landing antigua con colores, testimonios válidos/inválidos, contenido >2000, id reservado).
+- Servidor real: PUT landing con acento `#ffd400` + secciones nuevas -> 200; upload de `sobre-mi` -> 200 y `GET /api/image?id=sobre-mi` -> 200; `<style>:root{--accent:#ffd400}</style>` en `/` y `/faq`; jsdom confirma las 6 secciones, foto, enlace, 2 testimonios, cards de destacados, galería y botones de contacto.
+- Admin (jsdom): ida y vuelta exacta de secciones y testimonios, aviso de contraste (12.7:1 vs 1.1:1), «Sobre mí» listado en Fotos. Landing y foto locales restauradas.
+- Pendiente: revisión visual a 375px/escritorio en navegador real (no hay Chrome en esta máquina).
+
+## 2026-10-29 — Fase 4: reserva genérica y analítica
+- `reserva_url` (config e items) sustituye a `calendly_url`; datos antiguos se siguen leyendo y el admin los migra al guardar. Node: 11 casos (token con inyección rechazado, reserva sin protocolo, datos antiguos válidos).
+- Servidor real: token inválido -> 400; token válido -> beacon en `/`, `/faq`, `/producto?id=…`, ausente en `/carrito` y en 404; ficha de servicio usa `https://cal.com/...` y, con la config antigua restaurada, `calendly_url` sigue funcionando; admin Identidad migra el campo y solo guarda `analitica` si hay token.
+- jsdom no pudo cargar `static.cloudflareinsights.com` (sin red en el sandbox): la presencia del `<script>` está verificada, la carga real del beacon no.
+
+## 2026-10-29 — Fase 5: seguridad y calidad
+- `npm test`: 17 pruebas (Node `--test`) pasan; una mutación (contraste mínimo 4.5→1) hace fallar la prueba de acento, y revertida vuelve a 17/17.
+- Login real: 5 fallos -> 401; el 6.º y un intento con contraseña correcta -> 429 con `Retry-After`; tras borrar `intentos:127.0.0.1` del KV local el login correcto devuelve 200. En local la IP es `127.0.0.1`.
+- No probado en runtime: el `aviso` de contraseña corta (la local tiene 20 caracteres; solo revisado por lectura).
+- Eliminados `validate-phase*.sh` y `test-all-phases.sh`. `package.json` gana `"type": "module"` y `"test"`.
