@@ -28,6 +28,7 @@
 - La cinta de secciones no muestra scroll vertical (`overflow-y: hidden`) y la pestaña lleva solo el nombre, sin el tipo. «Secciones» abre la última sección vista; sin secciones muestra un aviso; al eliminar una sección se vuelve a «Secciones». Las flechas/Inicio/Fin navegan dentro de cada fila.
 - El tipo `texto` se llama ahora **«Mensaje»** en el admin (desplegable, selector de alta, encabezado, título propuesto y etiqueta del campo). El valor guardado sigue siendo `texto`.
 - Commits: `e53827a`, `cf6cdab`, `6e2bd96`, `3ea1c0a`.
+- **Arte de las secciones de la portada pública** (`44e4992`): línea de acento bajo cada título; título alineado con la columna de texto en `texto`/`sobre-mi`; `contacto` centrado (antes texto a la izquierda y botones centrados) con botones iguales en móvil; `sobre-mi` con marco de acento e iniciales si no hay foto; `testimonios` con comilla, avatar de iniciales y deslizables en móvil. Revisado en Chromium a 375px y 1200px solo con el estilo `moderno`; faltan `minimalista`, `rustico` y `elegante`.
 - Sin probar en navegador real (ni en 375px).
 - **Datos de prueba:** el KV local `landing` tiene una portada ficticia con los 6 tipos (Mensaje con `posicion: antes`, Destacados, Galería, Sobre mí, Testimonios con 3 opiniones inventadas, Contacto) sobre el catálogo de panadería. Solo está en `.wrangler/state`; `landing.example.json` sigue sin testimonios a propósito. Pasa `validateLanding`.
 
