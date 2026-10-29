@@ -167,10 +167,10 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    mostrarExito('Inicio de sesión exitoso');
+                    mostrarExito(data.aviso ? `Inicio de sesión exitoso. Aviso: ${data.aviso}` : 'Inicio de sesión exitoso');
                     setTimeout(() => {
                         window.location.href = '/admin/identidad.html';
-                    }, 1000);
+                    }, data.aviso ? 6000 : 1000);
                 } else {
                     mostrarError(data.error || 'Contraseña incorrecta');
                 }
