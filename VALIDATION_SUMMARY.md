@@ -121,3 +121,10 @@
 - Fallo previo descubierto al verlo: en la ficha la rejilla de dos columnas estaba en el contenedor equivocado (información bajo la foto y mitad derecha vacía). Corregido; además la acción principal de un servicio ahora va antes que «Volver al Catálogo».
 - Revisado en Chromium: portada (1280 y 375), ficha de servicio (1280), carrito con items (1280), FAQ (375), admin General y los otros 3 estilos sobre la nueva base. 40 combinaciones página × estilo × ancho sin desbordes ni errores de JS; `solo-servicios` oculta icono y enlace de pie, `mixto` los muestra; 18 pruebas pasan; contrastes de texto AA (muted 6.0:1, ok 6.6:1).
 - Sin revisar: celular real, ficha de producto a 375px, y landing con las secciones «Sobre mí» y «Testimonios» llenas (el KV local no las tiene).
+
+## 2026-10-29 — Tarjetas: redondeadas, tenues y con el hover de boluda.com
+- Se midió el hover de la referencia con Chromium: `translateY(-4px)` + `box-shadow: 0 10px 30px rgba(0,0,0,.12)`, transición 0,1 s, y toda la tarjeta es un enlace. Replicado (0,15 s): computado en el sitio = `matrix(1,0,0,1,0,-4)` y la misma sombra; sin `prefers-reduced-motion` se desactiva.
+- Tarjetas con radio 20px, fondo tenue `#F6F7F9` (blanco sobre fondos grises) y botón blanco de borde fino; se quitó el overlay «Ver detalles».
+- Toda la tarjeta lleva a la ficha (enlace del título extendido): probado en Chromium que el clic sobre la foto, bajo el título, junto al precio, en el pie y entre el botón y el borde abre la ficha; el botón «Añadir al Carrito» suma al carrito sin navegar y «Consultar por WhatsApp» abre WhatsApp en otra pestaña; el foco de teclado dibuja un contorno de 3px en la tarjeta.
+- Fallo propio corregido: el contenedor de la acción tapaba el enlace en su relleno (`pointer-events: none` en el contenedor y `auto` en los botones). Mis primeras pruebas fallaron por hacer clic fuera de la ventana, no por el CSS.
+- 18 pruebas pasan; 40 combinaciones página × estilo × ancho sin desbordes ni errores de JS. Landing local restaurada.
