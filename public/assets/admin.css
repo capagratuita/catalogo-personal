@@ -290,6 +290,21 @@ details.avanzado .contenido {
   color: #2e6b32;
 }
 
+/* Avisos flotantes: visibles aunque la página esté desplazada */
+#mensaje-error,
+#mensaje-exito {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: min(92vw, 520px);
+  margin: 0;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  border: 1px solid currentColor;
+  font-weight: 500;
+}
+
 .loading {
   display: none;
   text-align: center;

@@ -219,6 +219,24 @@ function montarNavegacionAdmin() {
 
 document.addEventListener('DOMContentLoaded', montarNavegacionAdmin);
 
+// Los avisos de guardado son flotantes (CSS); el de éxito se cierra solo.
+function prepararAvisosFlotantes() {
+  const exito = document.getElementById('mensaje-exito');
+  const error = document.getElementById('mensaje-error');
+  if (exito) exito.setAttribute('role', 'status');
+  if (error) error.setAttribute('role', 'alert');
+  if (!exito) return;
+  let temporizador;
+  new MutationObserver(() => {
+    clearTimeout(temporizador);
+    if (!exito.classList.contains('oculto')) {
+      temporizador = setTimeout(() => exito.classList.add('oculto'), 6000);
+    }
+  }).observe(exito, { attributes: true, attributeFilter: ['class'], childList: true, characterData: true, subtree: true });
+}
+
+document.addEventListener('DOMContentLoaded', prepararAvisosFlotantes);
+
 window.admin = {
   fetchJSON,
   login,
