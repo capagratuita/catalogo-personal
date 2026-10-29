@@ -127,7 +127,7 @@
         function renderizarProducto(producto, config, catalogo) {
             prepararCompartir(producto, config);
             document.getElementById('producto-nombre').textContent = producto.nombre;
-            document.getElementById('producto-precio').textContent = window.app.textoPrecio(producto, config.negocio.moneda);
+            document.getElementById('producto-precio').textContent = window.app.textoPrecio(producto, config.perfil.moneda);
             document.getElementById('producto-descripcion').textContent = producto.descripcion;
             
             // Categoria y tipo
@@ -209,7 +209,7 @@
                     const li = crearElemento('li');
                     li.appendChild(crearElemento('span', 'variante-nombre', v.nombre));
                     const duracion = v.duracion_minutos > 0 ? ` · ${v.duracion_minutos} min` : '';
-                    li.appendChild(crearElemento('span', 'variante-precio', window.app.formatPrecio(v.precio, config.negocio.moneda) + duracion));
+                    li.appendChild(crearElemento('span', 'variante-precio', window.app.formatPrecio(v.precio, config.perfil.moneda) + duracion));
                     lista.appendChild(li);
                 });
                 contenedor.appendChild(lista);
@@ -221,7 +221,7 @@
         // Compartir sin protagonismo: enlace a WhatsApp con el mensaje escrito y copiar el enlace
         function prepararCompartir(producto, config) {
             const url = `${location.origin}/producto?id=${encodeURIComponent(producto.id)}`;
-            const mensaje = `${producto.nombre} en ${config.negocio.nombre}: ${url}`;
+            const mensaje = `${producto.nombre} en ${config.perfil.nombre}: ${url}`;
 
             document.getElementById('compartir-whatsapp').href = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
 
@@ -258,7 +258,7 @@
 
         function agregarAlCarritoDesdePagina() {
             if (productoActual) {
-                const moneda = configActual?.negocio?.moneda || 'PEN';
+                const moneda = configActual?.perfil?.moneda || 'PEN';
                 window.app.addToCarrito(productoActual.id, productoActual.nombre, productoActual.precio, moneda);
                 actualizarContadorCarrito();
                 mostrarNotificacion('Producto agregado al carrito');

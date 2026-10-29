@@ -22,7 +22,7 @@ export const onRequestPost = async ({ request, env }) => {
     const faq = await getContent(env, 'faq', request);
     const config = await getContent(env, 'config', request);
     
-    if (!config || !config.negocio) {
+    if (!config || !config.perfil) {
       return new Response(JSON.stringify({ error: 'Config no encontrada' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
@@ -30,13 +30,13 @@ export const onRequestPost = async ({ request, env }) => {
     }
     
     const systemPrompt = `
-      Eres el asistente virtual de ${config.negocio.nombre}.
-      Tono: ${config.negocio.tono_chat}
+      Eres el asistente virtual de ${config.perfil.nombre}.
+      Tono: ${config.perfil.tono_chat}
       Catálogo disponible: ${JSON.stringify(catalogo)}
       Preguntas frecuentes: ${JSON.stringify(faq)}
       Instrucciones: responde en español, breve, sin inventar información.
       Si la pregunta no está cubierta por el catálogo ni las FAQ, sugiere
-      escribir por WhatsApp (${config.negocio.whatsapp_usuario ? 'usuario ' + config.negocio.whatsapp_usuario : config.negocio.whatsapp}).
+      escribir por WhatsApp (${config.perfil.whatsapp_usuario ? 'usuario ' + config.perfil.whatsapp_usuario : config.perfil.whatsapp}).
     `;
     
     if (!env.AI) {

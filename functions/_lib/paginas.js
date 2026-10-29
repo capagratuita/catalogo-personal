@@ -87,7 +87,7 @@ export function paginaPublica({ claves, meta }) {
 
     const origen = new URL(request.url).origin;
     const datos = (await meta?.(sitio, { ...context, origen })) ?? {};
-    const nombreSitio = sitio.config?.negocio?.nombre;
+    const nombreSitio = sitio.config?.perfil?.nombre;
 
     // Color de acento de la landing: se pinta desde el servidor para que no parpadee al cargar
     const acento = sitio.landing?.tema?.color_acento;

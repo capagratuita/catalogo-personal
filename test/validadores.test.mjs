@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateConfig, validateCatalogo, validateLanding, validateFAQ, contraste } from '../functions/_lib/validadores.js';
+import { validateConfig, validateCatalogo, validateLanding, validateFAQ, contraste, normalizarConfig } from '../functions/_lib/validadores.js';
 import { ejemplo, copia } from './ayuda.mjs';
 
 const config = ejemplo('config');
@@ -26,7 +26,7 @@ test('los ejemplos de config/ son válidos', () => {
 });
 
 test('config: email, URLs y analítica', () => {
-  const con = cambios => { const c = copia(config); Object.assign(c.negocio, cambios); return c; };
+  const con = cambios => { const c = copia(config); Object.assign(c.perfil, cambios); return c; };
   rechaza(() => validateConfig(con({ email: 'no-es-correo' })), /correo válido/);
   rechaza(() => validateConfig(con({ reserva_url: 'cal.com/x' })), /https:\/\//);
   rechaza(() => validateConfig(con({ logo_url: 'javascript:alert(1)' })), /URL/);
@@ -34,9 +34,9 @@ test('config: email, URLs y analítica', () => {
   validateConfig(con({ logo_url: '/assets/images/logo.png' }));
   validateConfig(con({ reserva_url: 'https://cal.com/yo/30min' }));
 
-  const sinReserva = copia(config); delete sinReserva.negocio.reserva_url;
+  const sinReserva = copia(config); delete sinReserva.perfil.reserva_url;
   validateConfig(sinReserva);
-  validateConfig({ ...sinReserva, negocio: { ...sinReserva.negocio, calendly_url: 'https://calendly.com/x' } });
+  validateConfig({ ...sinReserva, perfil: { ...sinReserva.perfil, calendly_url: 'https://calendly.com/x' } });
 
   validateConfig({ ...config, analitica: { cf_token: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4' } });
   validateConfig({ ...config, analitica: { cf_token: '' } });
@@ -101,14 +101,21 @@ test('faq: límites', () => {
 });
 
 test('config: WhatsApp por número, por usuario o ambos', () => {
-  const con = cambios => { const c = copia(config); Object.assign(c.negocio, cambios); return c; };
+  const con = cambios => { const c = copia(config); Object.assign(c.perfil, cambios); return c; };
   validateConfig(con({ whatsapp: '', whatsapp_usuario: 'revelix360' }));
   validateConfig(con({ whatsapp: null, whatsapp_usuario: '@revelix.360' }));
   validateConfig(con({ whatsapp_usuario: 'revelix360' }));
   rechaza(() => validateConfig(con({ whatsapp: '', whatsapp_usuario: null })), /número.*usuario/);
   rechaza(() => validateConfig(con({ whatsapp_usuario: 'con espacios' })), /whatsapp_usuario/);
   rechaza(() => validateConfig(con({ whatsapp_usuario: '12345' })), /whatsapp_usuario/);
-  const sinCampo = copia(config); delete sinCampo.negocio.whatsapp;
-  sinCampo.negocio.whatsapp_usuario = 'revelix360';
+  const sinCampo = copia(config); delete sinCampo.perfil.whatsapp;
+  sinCampo.perfil.whatsapp_usuario = 'revelix360';
   validateConfig(sinCampo);
+});
+
+test('normalizarConfig traduce los nombres anteriores (negocio/modo_negocio)', () => {
+  const nuevo = normalizarConfig({ negocio: { nombre: 'X', modo_negocio: 'mixto' }, analitica: null });
+  assert.deepEqual(nuevo, { perfil: { nombre: 'X', tipo_catalogo: 'mixto' }, analitica: null });
+  const actual = { perfil: { nombre: 'X', tipo_catalogo: 'solo-servicios' } };
+  assert.equal(normalizarConfig(actual), actual);
 });

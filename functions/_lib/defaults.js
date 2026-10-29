@@ -4,6 +4,7 @@ import landing from '../../config/landing.example.json';
 import faq from '../../config/faq.example.json';
 
 import { leerKVCacheado } from './cache.js';
+import { normalizarConfig } from './validadores.js';
 
 export const DEFAULTS = { config, catalogo, landing, faq };
 
@@ -14,5 +15,6 @@ export async function getContent(env, key, request) {
   const guardado = request
     ? await leerKVCacheado(env, request, key)
     : await env.KV.get(key, { type: 'json' });
-  return guardado ?? DEFAULTS[key] ?? null;
+  const contenido = guardado ?? DEFAULTS[key] ?? null;
+  return key === 'config' ? normalizarConfig(contenido) : contenido;
 }

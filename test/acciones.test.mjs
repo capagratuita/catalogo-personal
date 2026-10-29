@@ -3,12 +3,12 @@ import assert from 'node:assert/strict';
 import { cargarApp } from './ayuda.mjs';
 
 const app = cargarApp();
-const config = modo => ({ negocio: { modo_negocio: modo, moneda: 'USD', whatsapp: '+51 999', reserva_url: 'https://cal.com/x' } });
+const config = modo => ({ perfil: { tipo_catalogo: modo, moneda: 'USD', whatsapp: '+51 999', reserva_url: 'https://cal.com/x' } });
 const catalogo = { categorias_agendamiento: ['soporte'] };
 const servicio = cambios => ({ tipo: 'servicio', id: 's', nombre: 'S', precio: 10, duracion_minutos: 60, categoria: 'talleres', ...cambios });
 const producto = { tipo: 'producto', id: 'p', nombre: 'P', precio: 5 };
 
-test('productos: carrito, salvo en un negocio solo-servicios', () => {
+test('productos: carrito, salvo en un catálogo solo de servicios', () => {
   assert.equal(app.accionItem(producto, config('mixto'), catalogo).tipo, 'carrito');
   assert.equal(app.accionItem(producto, config('solo-servicios'), catalogo), null);
 });
@@ -29,9 +29,9 @@ test('servicios: cotizar > reservar > consultar', () => {
 test('reserva: el enlace propio manda y calendly_url antiguo sigue funcionando', () => {
   const propio = app.accionItem(servicio({ categoria: 'soporte', reserva_url: 'https://cal.com/propio' }), config('mixto'), catalogo);
   assert.equal(propio.url, 'https://cal.com/propio');
-  const antiguo = config('mixto'); delete antiguo.negocio.reserva_url; antiguo.negocio.calendly_url = 'https://calendly.com/x';
+  const antiguo = config('mixto'); delete antiguo.perfil.reserva_url; antiguo.perfil.calendly_url = 'https://calendly.com/x';
   assert.equal(app.accionItem(servicio({ categoria: 'soporte' }), antiguo, catalogo).url, 'https://calendly.com/x');
-  const sinEnlace = config('mixto'); delete sinEnlace.negocio.reserva_url;
+  const sinEnlace = config('mixto'); delete sinEnlace.perfil.reserva_url;
   assert.equal(app.accionItem(servicio({ categoria: 'soporte' }), sinEnlace, catalogo).tipo, 'consultar');
 });
 
@@ -50,7 +50,7 @@ test('el carrito se oculta solo en solo-servicios', () => {
 });
 
 test('WhatsApp: el usuario tiene prioridad sobre el número', () => {
-  const con = negocio => ({ negocio });
+  const con = perfil => ({ perfil });
   assert.equal(app.buildWhatsAppLink(con({ whatsapp: '+51 999' }), 'Hola, ¿qué tal?'), 'https://wa.me/51999?text=Hola%2C%20%C2%BFqu%C3%A9%20tal%3F');
   assert.equal(
     app.buildWhatsAppLink(con({ whatsapp: '+51 999', whatsapp_usuario: '@revelix360' }), 'Hola'),

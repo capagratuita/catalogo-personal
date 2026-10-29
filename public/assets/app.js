@@ -76,22 +76,22 @@ function aplicarTema(tema) {
   }
 }
 
-// Rellena nombre, pie de página, redes y título con los datos de config.negocio.
+// Rellena nombre, pie de página, redes y título con los datos de config.perfil.
 function aplicarMarca(config) {
-  const negocio = config && config.negocio;
-  if (!negocio) return;
+  const perfil = config && config.perfil;
+  if (!perfil) return;
 
   aplicarCarrito(config);
-  document.querySelectorAll('nav .logo').forEach(el => { el.textContent = negocio.nombre; });
+  document.querySelectorAll('nav .logo').forEach(el => { el.textContent = perfil.nombre; });
 
   const footerNombre = document.querySelector('footer h3');
-  if (footerNombre) footerNombre.textContent = negocio.nombre;
+  if (footerNombre) footerNombre.textContent = perfil.nombre;
   const footerDescripcion = document.querySelector('footer .container > div > p');
-  if (footerDescripcion) footerDescripcion.textContent = negocio.descripcion_corta;
+  if (footerDescripcion) footerDescripcion.textContent = perfil.descripcion_corta;
 
   const enlaces = {
-    instagram: negocio.redes && negocio.redes.instagram,
-    facebook: negocio.redes && negocio.redes.facebook,
+    instagram: perfil.redes && perfil.redes.instagram,
+    facebook: perfil.redes && perfil.redes.facebook,
     whatsapp: tieneWhatsApp(config) ? buildWhatsAppLink(config, '') : null,
   };
   document.querySelectorAll('[data-red]').forEach(el => {
@@ -102,8 +102,8 @@ function aplicarMarca(config) {
 
   if (!document.documentElement.dataset.marca) {
     document.documentElement.dataset.marca = '1';
-    if (!document.title.includes(negocio.nombre)) {
-      document.title = document.title ? `${document.title} - ${negocio.nombre}` : negocio.nombre;
+    if (!document.title.includes(perfil.nombre)) {
+      document.title = document.title ? `${document.title} - ${perfil.nombre}` : perfil.nombre;
     }
   }
 }
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderItem(item, config, catalogo) {
   const accion = accionItem(item, config, catalogo);
   const esServicio = item.tipo === 'servicio';
-  const precioHtml = `<span class="precio">${textoPrecio(item, config.negocio.moneda)}</span>`;
+  const precioHtml = `<span class="precio">${textoPrecio(item, config.perfil.moneda)}</span>`;
   const duracionHtml = esServicio
     ? `<div class="servicio-info">Duración: ${item.duracion_minutos} minutos</div>`
     : '';
@@ -138,11 +138,11 @@ function renderItem(item, config, catalogo) {
 
 // Nombre de usuario de WhatsApp sin «@» ni espacios; '' si no hay.
 function usuarioWhatsApp(config) {
-  return String(config.negocio.whatsapp_usuario || '').trim().replace(/^@/, '');
+  return String(config.perfil.whatsapp_usuario || '').trim().replace(/^@/, '');
 }
 
 function tieneWhatsApp(config) {
-  return Boolean(usuarioWhatsApp(config) || String(config.negocio.whatsapp || '').replace(/\D/g, ''));
+  return Boolean(usuarioWhatsApp(config) || String(config.perfil.whatsapp || '').replace(/\D/g, ''));
 }
 
 // Con nombre de usuario se usa api.whatsapp.com (wa.me solo admite números); si no, el número.
@@ -152,7 +152,7 @@ function buildWhatsAppLink(config, mensaje) {
   if (usuario) {
     return `https://api.whatsapp.com/send/?text=${encodedMensaje}&username=${encodeURIComponent(usuario)}&type=username&app_absent=0`;
   }
-  const numero = String(config.negocio.whatsapp || '').replace(/\D/g, '');
+  const numero = String(config.perfil.whatsapp || '').replace(/\D/g, '');
   return `https://wa.me/${numero}?text=${encodedMensaje}`;
 }
 
@@ -204,28 +204,28 @@ function buildCotizacionLink(config, item) {
 function buildConsultaLink(config, item) {
   if (requiereCotizacion(item)) return buildCotizacionLink(config, item);
   let mensaje = `Hola, me interesa el servicio "${item.nombre}"`;
-  if (item.precio > 0) mensaje += ` (${formatPrecio(item.precio, config.negocio.moneda)}`;
+  if (item.precio > 0) mensaje += ` (${formatPrecio(item.precio, config.perfil.moneda)}`;
   if (item.duracion_minutos > 0) mensaje += `${item.precio > 0 ? ', ' : ' ('}${item.duracion_minutos} min`;
   if (item.precio > 0 || item.duracion_minutos > 0) mensaje += ')';
   mensaje += '. ¿Me confirmas la disponibilidad?';
   return buildWhatsAppLink(config, mensaje);
 }
 
-// El carrito solo existe para productos: un negocio solo-servicios no lo muestra.
+// El carrito solo existe para productos: un catálogo solo de servicios no lo muestra.
 function usaCarrito(config) {
-  return config?.negocio?.modo_negocio !== 'solo-servicios';
+  return config?.perfil?.tipo_catalogo !== 'solo-servicios';
 }
 
 // Única acción de una oferta. Los servicios nunca van al carrito:
 //  - precio a consultar -> cotizar por WhatsApp
 //  - categoría con agenda y enlace de reserva -> reservar
 //  - resto -> consultar disponibilidad por WhatsApp
-// Los productos van al carrito (o ninguna acción si el negocio es solo-servicios).
+// Los productos van al carrito (o ninguna acción si el catálogo es solo-servicios).
 function accionItem(item, config, catalogo) {
   if (item.tipo !== 'servicio') return usaCarrito(config) ? { tipo: 'carrito' } : null;
   if (requiereCotizacion(item)) return { tipo: 'cotizar', url: buildCotizacionLink(config, item) };
   if (requiereAgendamiento(item, catalogo)) {
-    const url = urlReserva(item) || urlReserva(config.negocio);
+    const url = urlReserva(item) || urlReserva(config.perfil);
     if (url) return { tipo: 'reservar', url };
   }
   return { tipo: 'consultar', url: buildConsultaLink(config, item) };
@@ -250,7 +250,7 @@ function htmlAccion(accion, id) {
   return `<a href="${escaparAtributo(accion.url)}" class="btn-calendly" target="_blank" rel="noopener">${ETIQUETAS_ACCION[accion.tipo]}</a>`;
 }
 
-// Oculta el carrito (icono y enlaces) cuando el negocio no vende productos.
+// Oculta el carrito (icono y enlaces) cuando el catálogo no tiene productos.
 function aplicarCarrito(config) {
   const mostrar = usaCarrito(config);
   document.querySelectorAll('.carrito-icon, a[href="/carrito"]').forEach(el => {

@@ -179,7 +179,7 @@
         }
 
         function tiposVisibles(config) {
-            const modo = config.negocio.modo_negocio;
+            const modo = config.perfil.tipo_catalogo;
             if (modo === 'solo-productos') return ['producto'];
             if (modo === 'solo-servicios') return ['servicio'];
             return TIPOS;
@@ -332,7 +332,7 @@
             },
 
             contacto(seccion, contenedor, { config }) {
-                const negocio = config.negocio;
+                const perfil = config.perfil;
                 const acciones = crear('div', 'contacto-acciones');
                 if (window.app.tieneWhatsApp(config)) {
                     const wa = crear('a', 'btn-contacto', 'Escribir por WhatsApp');
@@ -341,9 +341,9 @@
                     wa.rel = 'noopener';
                     acciones.appendChild(wa);
                 }
-                if (negocio.email) {
-                    const mail = crear('a', 'btn-contacto btn-contacto-sec', negocio.email);
-                    mail.href = `mailto:${negocio.email}`;
+                if (perfil.email) {
+                    const mail = crear('a', 'btn-contacto btn-contacto-sec', perfil.email);
+                    mail.href = `mailto:${perfil.email}`;
                     acciones.appendChild(mail);
                 }
                 const textos = parrafos(seccion.contenido);
@@ -408,7 +408,7 @@
         }
 
         // El botón del hero no debe apuntar a una sección que no se muestra
-        // (p. ej. "Ver servicios" en un negocio solo-productos).
+        // (p. ej. "Ver servicios" en un catálogo solo-productos).
         function ajustarCta() {
             const cta = document.querySelector('.hero .btn');
             if (!cta) return;
@@ -433,7 +433,7 @@
             const isService = item.tipo === 'servicio';
             const accion = window.app.accionItem(item, config, catalogo);
 
-            const priceHtml = `<span class="precio">${window.app.textoPrecio(item, config.negocio.moneda)}</span>`;
+            const priceHtml = `<span class="precio">${window.app.textoPrecio(item, config.perfil.moneda)}</span>`;
 
             let durationHtml = '';
             if (isService) {
@@ -473,7 +473,7 @@
             const btnCarrito = card.querySelector('.btn-add-to-cart');
             if (btnCarrito) {
                 btnCarrito.addEventListener('click', () =>
-                    agregarAlCarrito(item.id, item.nombre, item.precio, config.negocio.moneda));
+                    agregarAlCarrito(item.id, item.nombre, item.precio, config.perfil.moneda));
             }
 
             return card;

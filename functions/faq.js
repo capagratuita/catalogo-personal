@@ -3,14 +3,14 @@ import { paginaPublica, urlImagenValida } from './_lib/paginas.js';
 export const onRequestGet = paginaPublica({
   claves: ['config', 'faq', 'landing'],
   meta: ({ config, faq }) => {
-    const negocio = config.negocio;
+    const perfil = config.perfil;
     const preguntas = faq.preguntas || [];
 
     return {
-      titulo: `Preguntas frecuentes - ${negocio.nombre}`,
-      descripcion: `Respuestas a las preguntas más comunes sobre ${negocio.nombre}.`,
+      titulo: `Preguntas frecuentes - ${perfil.nombre}`,
+      descripcion: `Respuestas a las preguntas más comunes sobre ${perfil.nombre}.`,
       ruta: '/faq',
-      imagen: urlImagenValida(negocio.logo_url),
+      imagen: urlImagenValida(perfil.logo_url),
       jsonLd: preguntas.length && {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',

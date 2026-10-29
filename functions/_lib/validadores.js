@@ -83,14 +83,24 @@ function validarUrl(valor, campo, { relativa = false } = {}) {
 export const USUARIO_WHATSAPP = /^(?=.*[A-Za-z])[A-Za-z0-9._]{3,35}$/;
 export const TOKEN_ANALITICA = /^[A-Za-z0-9]{16,64}$/;
 
+// Datos guardados antes del cambio de nombres: `negocio` pasó a `perfil` y
+// `modo_negocio` a `tipo_catalogo`. Se traducen al leer y al guardar, sin mutar el original.
+export function normalizarConfig(data) {
+  if (!isPlainObject(data) || !isPlainObject(data.negocio)) return data;
+  const { negocio, ...resto } = data;
+  const { modo_negocio, ...perfil } = { ...negocio, ...(isPlainObject(data.perfil) ? data.perfil : {}) };
+  if (modo_negocio !== undefined && perfil.tipo_catalogo === undefined) perfil.tipo_catalogo = modo_negocio;
+  return { ...resto, perfil };
+}
+
 export function validateConfig(data) {
   validateObject(data, {
-    negocio: {
+    perfil: {
       nombre: 'string',
       descripcion_corta: 'string',
       email: ['string', 'null'],
       moneda: 'string',
-      modo_negocio: 'string',
+      tipo_catalogo: 'string',
       logo_url: ['string', 'null'],
       redes: {
         instagram: ['string', 'null'],
@@ -102,31 +112,31 @@ export function validateConfig(data) {
 
   // WhatsApp: número o nombre de usuario (al menos uno); si hay usuario, tiene prioridad en los enlaces.
   for (const campo of ['whatsapp', 'whatsapp_usuario']) {
-    const valor = data.negocio[campo];
-    if (valor !== undefined) validateType(valor, ['string', 'null'], `negocio.${campo}`);
+    const valor = data.perfil[campo];
+    if (valor !== undefined) validateType(valor, ['string', 'null'], `perfil.${campo}`);
   }
-  const usuario = String(data.negocio.whatsapp_usuario || '').trim().replace(/^@/, '');
+  const usuario = String(data.perfil.whatsapp_usuario || '').trim().replace(/^@/, '');
   if (usuario && !USUARIO_WHATSAPP.test(usuario)) {
-    fail("El campo 'negocio.whatsapp_usuario' debe tener entre 3 y 35 caracteres: letras, números, puntos o guiones bajos, y al menos una letra (sin espacios)");
+    fail("El campo 'perfil.whatsapp_usuario' debe tener entre 3 y 35 caracteres: letras, números, puntos o guiones bajos, y al menos una letra (sin espacios)");
   }
-  if (!usuario && !String(data.negocio.whatsapp || '').trim()) {
-    fail("Indica un número en 'negocio.whatsapp' (con código de país) o un nombre de usuario en 'negocio.whatsapp_usuario'");
+  if (!usuario && !String(data.perfil.whatsapp || '').trim()) {
+    fail("Indica un número en 'perfil.whatsapp' (con código de país) o un nombre de usuario en 'perfil.whatsapp_usuario'");
   }
 
-  if (!['solo-productos', 'solo-servicios', 'mixto'].includes(data.negocio.modo_negocio)) {
-    fail("El campo 'negocio.modo_negocio' debe ser 'solo-productos', 'solo-servicios' o 'mixto'");
+  if (!['solo-productos', 'solo-servicios', 'mixto'].includes(data.perfil.tipo_catalogo)) {
+    fail("El campo 'perfil.tipo_catalogo' debe ser 'solo-productos', 'solo-servicios' o 'mixto'");
   }
-  if (!/^[A-Z]{3}$/.test(data.negocio.moneda)) {
-    fail("El campo 'negocio.moneda' debe ser un código ISO 4217 de 3 letras");
+  if (!/^[A-Z]{3}$/.test(data.perfil.moneda)) {
+    fail("El campo 'perfil.moneda' debe ser un código ISO 4217 de 3 letras");
   }
-  if (data.negocio.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.negocio.email)) {
-    fail("El campo 'negocio.email' debe ser un correo válido, por ejemplo nombre@dominio.com");
+  if (data.perfil.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.perfil.email)) {
+    fail("El campo 'perfil.email' debe ser un correo válido, por ejemplo nombre@dominio.com");
   }
   // Enlace de reserva global (Calendly, Cal.com, Google Calendar…). `calendly_url` es el nombre anterior.
   for (const campo of ['reserva_url', 'calendly_url']) {
-    const valor = data.negocio[campo];
-    if (valor !== undefined) validateType(valor, ['string', 'null'], `negocio.${campo}`);
-    validarUrl(valor, `negocio.${campo}`);
+    const valor = data.perfil[campo];
+    if (valor !== undefined) validateType(valor, ['string', 'null'], `perfil.${campo}`);
+    validarUrl(valor, `perfil.${campo}`);
   }
 
   // Cloudflare Web Analytics (opcional): solo el token de la propiedad
@@ -137,9 +147,9 @@ export function validateConfig(data) {
       fail("El campo 'analitica.cf_token' debe ser el token de Cloudflare Web Analytics (letras y números, sin espacios)");
     }
   }
-  validarUrl(data.negocio.logo_url, 'negocio.logo_url', { relativa: true });
-  validarUrl(data.negocio.redes.instagram, 'negocio.redes.instagram');
-  validarUrl(data.negocio.redes.facebook, 'negocio.redes.facebook');
+  validarUrl(data.perfil.logo_url, 'perfil.logo_url', { relativa: true });
+  validarUrl(data.perfil.redes.instagram, 'perfil.redes.instagram');
+  validarUrl(data.perfil.redes.facebook, 'perfil.redes.facebook');
 
   return data;
 }

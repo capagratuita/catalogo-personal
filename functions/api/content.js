@@ -1,7 +1,7 @@
 import { json, verifySession } from '../_lib/auth.js';
 import { leerKVCacheado, invalidarContenido } from '../_lib/cache.js';
 import { getContent } from '../_lib/defaults.js';
-import { validateConfig, validateCatalogo, validateLanding, validateFAQ } from '../_lib/validadores.js';
+import { normalizarConfig, validateConfig, validateCatalogo, validateLanding, validateFAQ } from '../_lib/validadores.js';
 
 export { validateConfig, validateCatalogo, validateLanding, validateFAQ };
 
@@ -23,7 +23,8 @@ export const onRequestGet = async ({ request, env }) => {
   }
 
   try {
-    const data = await leerKVCacheado(env, request, key);
+    const leido = await leerKVCacheado(env, request, key);
+    const data = key === 'config' ? normalizarConfig(leido) : leido;
     if (!data) {
       return json({ error: 'Contenido no encontrado' }, 404);
     }
@@ -52,6 +53,8 @@ export const onRequestPut = async ({ request, env }) => {
   } catch {
     return json({ error: 'JSON inválido', detalle: 'El body debe ser JSON válido' }, 400);
   }
+
+  if (key === 'config') body = normalizarConfig(body);
 
   try {
     if (key === 'landing') {

@@ -2,7 +2,7 @@
 
 Template para publicar **un catálogo de tus servicios** (y, como extra, algunos productos) con tu propia dirección web, sin servidor ni costos fijos. Pensado para profesionales independientes, emprendedores y proyectos personales o de hobby.
 
-**No es una tienda online completa** ni compite con Shopify o WooCommerce: no hay pasarela de pago, stock, impuestos ni envíos. El cliente te consulta o reserva, y el cobro lo acuerdas tú.
+**No es una tienda online** ni compite con Shopify o WooCommerce: no hay pasarela de pago, stock, impuestos ni envíos. Quien te visita te consulta o reserva, y el cobro lo acuerdas tú.
 
 Cada persona hace su propio fork y despliega su propia instancia. No es un SaaS multi-inquilino.
 
@@ -10,8 +10,9 @@ Cada persona hace su propio fork y despliega su propia instancia. No es un SaaS 
 
 - **Servicios:** precio fijo, «Desde X» o «Precio a consultar»; duración, modalidad (online/presencial), zona, qué incluye y opciones de precio (sesión suelta, packs).
 - **Una sola acción por servicio:** «Reservar Cita» (Calendly, Cal.com, Google Calendar…) o «Consultar por WhatsApp». Los servicios no usan carrito.
-- **Productos (extra):** carrito sencillo con pedido por WhatsApp. Se oculta si tu negocio es solo de servicios.
-- **Landing editable:** portada, textos, destacados, galería, *Sobre mí* con foto, testimonios, contacto y color de acento propio.
+- **Productos (extra):** carrito sencillo que arma una consulta por WhatsApp. Se oculta si el tipo de catálogo es «Solo servicios» (el valor por defecto).
+- **Tipo de catálogo:** solo servicios, solo productos o mixto, desde General.
+- **Portada editable:** portada, textos, destacados, galería, *Sobre mí* con foto, testimonios, contacto y color de acento propio.
 - **FAQ**, **SEO** (título, descripción, vista previa al compartir, datos estructurados, sitemap) y analítica opcional sin cookies (Cloudflare Web Analytics).
 - **Panel de administración** protegido con contraseña, con límite de intentos, respaldo y subida de fotos optimizadas.
 - Frontend en HTML, CSS y JavaScript puros; todo en la capa gratuita de Cloudflare (Pages, Functions y Workers KV).

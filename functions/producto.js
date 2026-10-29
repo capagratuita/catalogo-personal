@@ -3,18 +3,18 @@ import { paginaPublica, existeFoto, urlImagenValida } from './_lib/paginas.js';
 export const onRequestGet = paginaPublica({
   claves: ['config', 'catalogo', 'landing'],
   meta: async ({ config, catalogo }, { request, env, origen }) => {
-    const negocio = config.negocio;
+    const perfil = config.perfil;
     const id = new URL(request.url).searchParams.get('id');
     const item = catalogo.items.find(i => i.id === id);
 
     if (!item) {
-      return { titulo: `Producto no encontrado - ${negocio.nombre}`, noindex: true, status: 404 };
+      return { titulo: `Producto no encontrado - ${perfil.nombre}`, noindex: true, status: 404 };
     }
 
     const ruta = `/producto?id=${encodeURIComponent(item.id)}`;
     const imagen = (await existeFoto(env, item.id))
       ? `${origen}/api/image?id=${encodeURIComponent(item.id)}`
-      : urlImagenValida(negocio.logo_url);
+      : urlImagenValida(perfil.logo_url);
     const esServicio = item.tipo === 'servicio';
     const aConsultar = esServicio && item.precio_a_consultar === true;
 
@@ -26,19 +26,19 @@ export const onRequestGet = paginaPublica({
       // Varias opciones de precio (sesión suelta, pack…): rango y una oferta por opción
       oferta = {
         '@type': 'AggregateOffer',
-        priceCurrency: negocio.moneda,
+        priceCurrency: perfil.moneda,
         lowPrice: Math.min(...precios),
         highPrice: Math.max(...precios),
         offerCount: variantes.length,
-        offers: variantes.map(v => ({ '@type': 'Offer', name: v.nombre, priceCurrency: negocio.moneda, price: v.precio })),
+        offers: variantes.map(v => ({ '@type': 'Offer', name: v.nombre, priceCurrency: perfil.moneda, price: v.precio })),
       };
     } else if (aConsultar) {
       // «Desde X»: precio base orientativo; con 0 no hay precio que publicar
-      if (item.precio > 0) oferta = { '@type': 'AggregateOffer', priceCurrency: negocio.moneda, lowPrice: item.precio };
+      if (item.precio > 0) oferta = { '@type': 'AggregateOffer', priceCurrency: perfil.moneda, lowPrice: item.precio };
     } else {
       oferta = {
         '@type': 'Offer',
-        priceCurrency: negocio.moneda,
+        priceCurrency: perfil.moneda,
         price: item.precio,
         availability: item.disponible ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         url: origen + ruta,
@@ -46,12 +46,12 @@ export const onRequestGet = paginaPublica({
     }
 
     return {
-      titulo: `${item.nombre} - ${negocio.nombre}`,
+      titulo: `${item.nombre} - ${perfil.nombre}`,
       descripcion: item.descripcion,
       ruta,
       imagen,
       tipo: esServicio ? 'website' : 'product',
-      extra: !esServicio ? [['product:price:amount', String(item.precio)], ['product:price:currency', negocio.moneda]] : [],
+      extra: !esServicio ? [['product:price:amount', String(item.precio)], ['product:price:currency', perfil.moneda]] : [],
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': esServicio ? 'Service' : 'Product',
@@ -59,7 +59,7 @@ export const onRequestGet = paginaPublica({
         description: item.descripcion,
         ...(imagen && { image: imagen }),
         ...(esServicio
-          ? { provider: { '@type': 'Organization', name: negocio.nombre, url: origen + '/' } }
+          ? { provider: { '@type': 'Organization', name: perfil.nombre, url: origen + '/' } }
           : { sku: item.id }),
         ...(oferta && { offers: oferta }),
       },

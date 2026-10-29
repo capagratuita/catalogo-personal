@@ -186,34 +186,34 @@
 
             <form id="form-config" onsubmit="guardarConfig(event)">
                 <div class="form-group">
-                    <label for="negocio-nombre">Nombre del Negocio</label>
-                    <input type="text" id="negocio-nombre" name="negocio-nombre" required>
+                    <label for="perfil-nombre">Nombre del catálogo</label>
+                    <input type="text" id="perfil-nombre" name="perfil-nombre" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-descripcion_corta">Descripción Corta</label>
-                    <textarea id="negocio-descripcion_corta" name="negocio-descripcion_corta" required></textarea>
+                    <label for="perfil-descripcion_corta">Descripción Corta</label>
+                    <textarea id="perfil-descripcion_corta" name="perfil-descripcion_corta" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-whatsapp">WhatsApp: número (con código de país, ej. +51999888777)</label>
-                    <input type="text" id="negocio-whatsapp" name="negocio-whatsapp" aria-describedby="ayuda-whatsapp">
+                    <label for="perfil-whatsapp">WhatsApp: número (con código de país, ej. +51999888777)</label>
+                    <input type="text" id="perfil-whatsapp" name="perfil-whatsapp" aria-describedby="ayuda-whatsapp">
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-whatsapp_usuario">WhatsApp: nombre de usuario (opcional)</label>
-                    <input type="text" id="negocio-whatsapp_usuario" name="negocio-whatsapp_usuario" autocapitalize="none" spellcheck="false" aria-describedby="ayuda-whatsapp">
+                    <label for="perfil-whatsapp_usuario">WhatsApp: nombre de usuario (opcional)</label>
+                    <input type="text" id="perfil-whatsapp_usuario" name="perfil-whatsapp_usuario" autocapitalize="none" spellcheck="false" aria-describedby="ayuda-whatsapp">
                     <small id="ayuda-whatsapp">Rellena al menos uno. Si indicas ambos, los enlaces usan el nombre de usuario.</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-email">Email (opcional)</label>
-                    <input type="email" id="negocio-email" name="negocio-email">
+                    <label for="perfil-email">Email (opcional)</label>
+                    <input type="email" id="perfil-email" name="perfil-email">
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-moneda">Moneda</label>
-                    <select id="negocio-moneda" name="negocio-moneda" required>
+                    <label for="perfil-moneda">Moneda</label>
+                    <select id="perfil-moneda" name="perfil-moneda" required>
                         <option value="PEN">PEN - Sol Peruano</option>
                         <option value="USD">USD - Dólar Estadounidense</option>
                         <option value="MXN">MXN - Peso Mexicano</option>
@@ -221,17 +221,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-modo_negocio">Modo del Negocio</label>
-                    <select id="negocio-modo_negocio" name="negocio-modo_negocio" required>
-                        <option value="solo-productos">Solo Productos</option>
-                        <option value="solo-servicios">Solo Servicios</option>
-                        <option value="mixto">Mixto (Productos y Servicios)</option>
+                    <label for="perfil-tipo_catalogo">Tipo de catálogo</label>
+                    <select id="perfil-tipo_catalogo" name="perfil-tipo_catalogo" required>
+                        <option value="solo-servicios">Solo servicios</option>
+                        <option value="solo-productos">Solo productos</option>
+                        <option value="mixto">Mixto (servicios y productos)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-reserva_url">Enlace de reserva (opcional)</label>
-                    <input type="url" id="negocio-reserva_url" name="negocio-reserva_url" placeholder="https://calendly.com/tu-cita" aria-describedby="reserva-ayuda">
+                    <label for="perfil-reserva_url">Enlace de reserva (opcional)</label>
+                    <input type="url" id="perfil-reserva_url" name="perfil-reserva_url" placeholder="https://calendly.com/tu-cita" aria-describedby="reserva-ayuda">
                     <small id="reserva-ayuda">Calendly, Cal.com, Google Calendar u otra agenda. Se usa en los servicios cuya categoría marcaste como «con reserva» en Catálogo.</small>
                 </div>
 
@@ -242,25 +242,25 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-logo_url">URL del Logo (opcional)</label>
-                    <input type="url" id="negocio-logo_url" name="negocio-logo_url" placeholder="https://ejemplo.com/logo.png">
+                    <label for="perfil-logo_url">URL del Logo (opcional)</label>
+                    <input type="url" id="perfil-logo_url" name="perfil-logo_url" placeholder="https://ejemplo.com/logo.png">
                 </div>
 
                 <h3>Redes Sociales</h3>
 
                 <div class="form-group">
-                    <label for="negocio-redes-instagram">Instagram (opcional)</label>
-                    <input type="url" id="negocio-redes-instagram" name="negocio-redes-instagram" placeholder="https://instagram.com/tu-negocio">
+                    <label for="perfil-redes-instagram">Instagram (opcional)</label>
+                    <input type="url" id="perfil-redes-instagram" name="perfil-redes-instagram" placeholder="https://instagram.com/tu-usuario">
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-redes-facebook">Facebook (opcional)</label>
-                    <input type="url" id="negocio-redes-facebook" name="negocio-redes-facebook" placeholder="https://facebook.com/tu-negocio">
+                    <label for="perfil-redes-facebook">Facebook (opcional)</label>
+                    <input type="url" id="perfil-redes-facebook" name="perfil-redes-facebook" placeholder="https://facebook.com/tu-usuario">
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-tono_chat">Tono del Chat (guía para el chat de FAQ)</label>
-                    <textarea id="negocio-tono_chat" name="negocio-tono_chat" required></textarea>
+                    <label for="perfil-tono_chat">Tono del Chat (guía para el chat de FAQ)</label>
+                    <textarea id="perfil-tono_chat" name="perfil-tono_chat" required></textarea>
                 </div>
 
                 <button type="submit" class="btn">Guardar Configuración</button>
@@ -295,44 +295,44 @@
         }
 
         function rellenarFormulario(config) {
-            if (!config || !config.negocio) return;
+            if (!config || !config.perfil) return;
 
-            const negocio = config.negocio;
+            const perfil = config.perfil;
             
-            document.getElementById('negocio-nombre').value = negocio.nombre || '';
-            document.getElementById('negocio-descripcion_corta').value = negocio.descripcion_corta || '';
-            document.getElementById('negocio-whatsapp').value = negocio.whatsapp || '';
-            document.getElementById('negocio-whatsapp_usuario').value = negocio.whatsapp_usuario || '';
-            document.getElementById('negocio-email').value = negocio.email || '';
-            document.getElementById('negocio-moneda').value = negocio.moneda || 'PEN';
-            document.getElementById('negocio-modo_negocio').value = negocio.modo_negocio || 'mixto';
-            document.getElementById('negocio-reserva_url').value = negocio.reserva_url || negocio.calendly_url || '';
+            document.getElementById('perfil-nombre').value = perfil.nombre || '';
+            document.getElementById('perfil-descripcion_corta').value = perfil.descripcion_corta || '';
+            document.getElementById('perfil-whatsapp').value = perfil.whatsapp || '';
+            document.getElementById('perfil-whatsapp_usuario').value = perfil.whatsapp_usuario || '';
+            document.getElementById('perfil-email').value = perfil.email || '';
+            document.getElementById('perfil-moneda').value = perfil.moneda || 'PEN';
+            document.getElementById('perfil-tipo_catalogo').value = perfil.tipo_catalogo || 'solo-servicios';
+            document.getElementById('perfil-reserva_url').value = perfil.reserva_url || perfil.calendly_url || '';
             document.getElementById('analitica-cf_token').value = config.analitica?.cf_token || '';
-            document.getElementById('negocio-logo_url').value = negocio.logo_url || '';
-            document.getElementById('negocio-redes-instagram').value = negocio.redes?.instagram || '';
-            document.getElementById('negocio-redes-facebook').value = negocio.redes?.facebook || '';
-            document.getElementById('negocio-tono_chat').value = negocio.tono_chat || '';
+            document.getElementById('perfil-logo_url').value = perfil.logo_url || '';
+            document.getElementById('perfil-redes-instagram').value = perfil.redes?.instagram || '';
+            document.getElementById('perfil-redes-facebook').value = perfil.redes?.facebook || '';
+            document.getElementById('perfil-tono_chat').value = perfil.tono_chat || '';
         }
 
         function obtenerFormulario() {
-            const negocio = {
-                nombre: document.getElementById('negocio-nombre').value,
-                descripcion_corta: document.getElementById('negocio-descripcion_corta').value,
-                whatsapp: document.getElementById('negocio-whatsapp').value.trim(),
-                whatsapp_usuario: document.getElementById('negocio-whatsapp_usuario').value.trim().replace(/^@/, '') || null,
-                email: document.getElementById('negocio-email').value.trim() || null,
-                moneda: document.getElementById('negocio-moneda').value,
-                modo_negocio: document.getElementById('negocio-modo_negocio').value,
-                reserva_url: document.getElementById('negocio-reserva_url').value.trim() || null,
-                logo_url: document.getElementById('negocio-logo_url').value || null,
+            const perfil = {
+                nombre: document.getElementById('perfil-nombre').value,
+                descripcion_corta: document.getElementById('perfil-descripcion_corta').value,
+                whatsapp: document.getElementById('perfil-whatsapp').value.trim(),
+                whatsapp_usuario: document.getElementById('perfil-whatsapp_usuario').value.trim().replace(/^@/, '') || null,
+                email: document.getElementById('perfil-email').value.trim() || null,
+                moneda: document.getElementById('perfil-moneda').value,
+                tipo_catalogo: document.getElementById('perfil-tipo_catalogo').value,
+                reserva_url: document.getElementById('perfil-reserva_url').value.trim() || null,
+                logo_url: document.getElementById('perfil-logo_url').value || null,
                 redes: {
-                    instagram: document.getElementById('negocio-redes-instagram').value || null,
-                    facebook: document.getElementById('negocio-redes-facebook').value || null
+                    instagram: document.getElementById('perfil-redes-instagram').value || null,
+                    facebook: document.getElementById('perfil-redes-facebook').value || null
                 },
-                tono_chat: document.getElementById('negocio-tono_chat').value
+                tono_chat: document.getElementById('perfil-tono_chat').value
             };
 
-            const resultado = { negocio: negocio };
+            const resultado = { perfil: perfil };
             const token = document.getElementById('analitica-cf_token').value.trim();
             if (token) resultado.analitica = { cf_token: token };
             return resultado;

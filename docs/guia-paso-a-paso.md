@@ -64,7 +64,7 @@ Nunca pegues la contraseña en GitHub ni en ningún archivo del proyecto.
 
 Entra en `https://tu-proyecto.pages.dev/admin` e inicia sesión. En el menú del panel (General, Landing, Catálogo, Fotos, FAQ, Respaldo):
 
-1. **General:** nombre, descripción corta, WhatsApp (con código de país), moneda, modo de negocio (*solo servicios*, *solo productos* o *mixto*), enlace de reserva si usas una agenda, y tus redes. Pulsa **Guardar**.
+1. **General:** nombre, descripción corta, WhatsApp (con código de país), moneda, tipo de catálogo (*solo servicios*, *solo productos* o *mixto*), enlace de reserva si usas una agenda, y tus redes. Pulsa **Guardar**.
 2. **Landing:** el editor tiene una pestaña para la **Portada**, otra para **Apariencia y SEO** (color de acento, fuente y estilo: *Moderno*, *Minimalista*, *Rústico* o *Elegante*) y una por cada sección. Con **+ Añadir sección** eliges el tipo: *Texto*, *Destacados*, *Galería*, *Sobre mí* (con tu foto, que subes en **Fotos**), *Testimonios* (solo opiniones reales, con permiso de quien las dio) o *Contacto*. En *Destacados* y *Galería* marcas los items con casillas (si aún no creaste tu catálogo, vuelve a esta pestaña después del paso 3). Cada sección puede mostrarse justo bajo la portada o debajo del catálogo. Cada sección se puede subir, bajar o eliminar, y nada se publica hasta pulsar **Guardar Landing**.
 3. **Catálogo:** crea tus categorías y tus servicios. Para cada uno puedes indicar precio, duración, modalidad, zona, qué incluye y opciones de precio (por ejemplo «Sesión suelta» y «Pack de 4»), que añades con el botón **+ Añadir opción**. Si el precio se acuerda con el cliente, marca **Precio a consultar**.
 4. **Fotos:** sube una foto por servicio. El panel las reduce solo para que carguen rápido y se vean bien al compartir por WhatsApp.
@@ -76,7 +76,7 @@ Hasta que pulses **Guardar** en cada sección, el sitio muestra los datos de eje
 ## Paso 7. Cómo se reserva y cómo se compra
 
 - **Servicios:** cada servicio tiene un solo botón. «Reservar Cita» lleva a tu agenda (Calendly, Cal.com, Google Calendar…) si la categoría está marcada *con reserva*; en el resto, «Consultar por WhatsApp» abre un mensaje ya escrito.
-- **Productos:** tienen carrito; al terminar, se arma un mensaje de WhatsApp con el pedido. No hay pagos en línea: el cobro lo acuerdas tú con el cliente.
+- **Productos:** tienen carrito; al terminar, se arma un mensaje de WhatsApp con tu selección. No hay pagos en línea: el cobro lo acuerdas tú con quien te escribe.
 
 ## Paso 8 (opcional). Dominio propio y visitas
 
@@ -104,7 +104,7 @@ Tu fork no se actualiza solo. Cuando quieras las mejoras nuevas:
 
 ## Límites de la capa gratuita (referencia)
 
-Cada visita consume pocas operaciones (la página y una por foto), y el sitio usa caché para ahorrar lecturas. Para un negocio personal sobra. Si algún día lo superas, Cloudflare te lo indica en el dashboard.
+Cada visita consume pocas operaciones (la página y una por foto), y el sitio usa caché para ahorrar lecturas. Para un catálogo personal sobra. Si algún día lo superas, Cloudflare te lo indica en el dashboard.
 
 ## Extra opcional: chat con IA
 

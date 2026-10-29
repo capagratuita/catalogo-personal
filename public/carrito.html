@@ -32,7 +32,7 @@
                         <!-- Items del carrito serán insertados aquí -->
                     </div>
                     <div class="carrito-resumen">
-                        <h3>Resumen del Pedido</h3>
+                        <h3>Resumen de tu selección</h3>
                         <div class="carrito-resumen-items">
                             <span>Items:</span>
                             <span id="resumen-items-count">0</span>
@@ -42,7 +42,7 @@
                             <span id="resumen-total">S/. 0.00</span>
                         </div>
                         <button class="btn btn-primary" onclick="generarEnlaceWhatsApp()" id="btn-pedido" style="display: none;">
-                            Finalizar Pedido
+                            Enviar por WhatsApp
                         </button>
                     </div>
                 </div>
@@ -192,9 +192,9 @@
                     return;
                 }
                 
-                let mensaje = `Hola, me interesa hacer un pedido:\n\n`;
+                let mensaje = `Hola, me interesan estos productos:\n\n`;
                 let total = 0;
-                const moneda = config.negocio.moneda;
+                const moneda = config.perfil.moneda;
                 
                 carrito.forEach((item, index) => {
                     const itemTotal = item.precio * item.cantidad;
@@ -212,7 +212,7 @@
                 const enlaceWhatsApp = window.app.buildWhatsAppLink(config, mensaje);
                 window.open(enlaceWhatsApp, '_blank');
                 
-                mostrarNotificacion('Redirigiendo a WhatsApp para finalizar el pedido');
+                mostrarNotificacion('Redirigiendo a WhatsApp para enviar tu consulta');
                 
                 carrito.length = 0;
                 guardarCarrito();
