@@ -1,4 +1,5 @@
 // functions/api/chat.js
+import { getContent } from '../_lib/defaults.js';
 export const onRequestPost = async ({ request, env }) => {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -17,9 +18,9 @@ export const onRequestPost = async ({ request, env }) => {
       });
     }
     
-    const catalogo = await env.KV.get('catalogo', { type: 'json' });
-    const faq = await env.KV.get('faq', { type: 'json' });
-    const config = await env.KV.get('config', { type: 'json' });
+    const catalogo = await getContent(env, 'catalogo');
+    const faq = await getContent(env, 'faq');
+    const config = await getContent(env, 'config');
     
     if (!config || !config.negocio) {
       return new Response(JSON.stringify({ error: 'Config no encontrada' }), {

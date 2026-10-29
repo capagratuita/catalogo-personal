@@ -153,7 +153,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 ## 9. Imágenes (KV `IMAGES`)
 
-- La convención es `items/{id}.{ext}` y el item debe existir en `catalogo`.
+- La convención es `items/{id}.{ext}` y el item debe existir en `catalogo`: el guardado en KV o, mientras no se haya guardado ninguno, el de ejemplo (`functions/_lib/defaults.js`, `getContent`). Al guardar un catálogo propio, solo valen sus IDs.
 - Usa el binding: `await env.IMAGES.put(key, body, { metadata: { contentType: file.type } })` y lee con `getWithMetadata(key, { type: 'arrayBuffer' })`. Límites del KV gratuito: 1 GB, 1.000 escrituras/día, 100.000 lecturas/día, 25 MiB por valor (el tope de subida es 5 MB). Una foto nueva puede tardar hasta ~60 s en verse en otros puntos de la red (consistencia eventual).
 - `GET /api/image?id={id}` busca `items/{id}.jpg|jpeg|png|webp`; `GET /api/image?url=items/{id}.{ext}` sirve una key exacta. La ruta es pública y cachea 1 hora.
 - Al subir una imagen se borran las otras extensiones del mismo `id` para evitar servir una foto vieja.

@@ -1,4 +1,5 @@
 import { json, verifySession } from '../_lib/auth.js';
+import { getContent } from '../_lib/defaults.js';
 
 const ALLOWED_TYPES = {
   'image/jpeg': 'jpg',
@@ -38,13 +39,13 @@ export const onRequestPost = async ({ request, env }) => {
     return json({ error: 'Archivo muy grande (máximo 5MB)' }, 400);
   }
 
-  const catalogo = await env.KV.get('catalogo', { type: 'json' });
+  const catalogo = await getContent(env, 'catalogo');
   if (!catalogo || !Array.isArray(catalogo.items)) {
     return json({ error: 'Catálogo no encontrado' }, 404);
   }
 
   if (!catalogo.items.some(item => item.id === id)) {
-    return json({ error: 'ID de item inválido' }, 400);
+    return json({ error: `El ID '${id}' no existe en el catálogo. Guarda el catálogo con ese producto o servicio y vuelve a subir la foto.` }, 400);
   }
 
   const key = `items/${id}.${ext}`;

@@ -88,6 +88,10 @@ async function putContent(key, data) {
     throw new Error(error.error || 'Error guardando contenido');
   }
 
+  // Ya hay datos guardados: el aviso de ejemplo deja de ser cierto
+  const aviso = document.getElementById('aviso-ejemplo');
+  if (aviso) aviso.remove();
+
   return await response.json();
 }
 

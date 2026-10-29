@@ -1,10 +1,5 @@
 import { json } from '../_lib/auth.js';
-import config from '../../config/config.example.json';
-import catalogo from '../../config/catalogo.example.json';
-import landing from '../../config/landing.example.json';
-import faq from '../../config/faq.example.json';
-
-const DEFAULTS = { config, catalogo, landing, faq };
+import { DEFAULTS } from '../_lib/defaults.js';
 
 // Datos de ejemplo para el primer arranque: el admin los muestra cuando la key
 // todavía no existe en KV. Solo lectura; nada se guarda hasta que el admin haga PUT /api/content.
