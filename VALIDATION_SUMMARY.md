@@ -132,3 +132,8 @@
 ## 2026-10-29 — Esquinas de las tarjetas por estilo
 - Minimalista (12px, tarjetas blancas sin fondo tenue, sin sombra), Rústico (14px) y Moderno (20px) con esquinas redondeadas; Elegante queda recto (0px) a propósito. Radios calculados en Chromium: tarjeta 20/12/14/0 px, botón 12/10/10/0 px, filtro 999/8/10/0 px. Capturas revisadas de los 4 estilos.
 - 18 pruebas pasan; 40 combinaciones página × estilo × ancho sin desbordes ni errores de JS. Landing local restaurada (rústico, serif).
+
+## 2026-10-29 — Reorientación a catálogo personal, `perfil`/`tipo_catalogo`, TikTok y YouTube
+- `npm test`: 21 pruebas pasan (nuevas: `normalizarConfig` traduce `negocio`/`modo_negocio`; `redes.tiktok` inválida se rechaza; `tiktok`/`youtube` válidos o ausentes se aceptan).
+- `npm run dev` contra el KV local, que aún guarda el formato antiguo (`negocio`): `GET /api/content?key=config` devuelve `perfil` ya normalizado y `GET /` responde con el título correcto del sitio.
+- No verificado: `PUT /api/content` con el formato nuevo y con un respaldo antiguo contra el servidor (solo cubierto por pruebas unitarias); el admin General (campos nuevos de TikTok/YouTube, selector «Tipo de catálogo», guardado conservando `tono_chat`), el pie con los enlaces nuevos y el resto de textos cambiados no se vieron en un navegador.
