@@ -1115,9 +1115,11 @@ footer .redes-sociales {
 
 .sobre-mi {
   display: flex;
-  gap: 2rem;
+  flex-direction: column;
+  gap: 1.5rem;
   align-items: center;
-  max-width: 900px;
+  text-align: center;
+  max-width: 720px;
   margin: 0 auto;
 }
 
@@ -1170,11 +1172,6 @@ footer .redes-sociales {
 }
 
 @media (max-width: 768px) {
-  .sobre-mi {
-    flex-direction: column;
-    text-align: center;
-  }
-
   .sobre-mi-foto {
     width: 160px;
     height: 160px;
@@ -1193,24 +1190,11 @@ footer .redes-sociales {
   border-radius: var(--radius-btn);
 }
 
-/* Mensaje: título alineado con la columna de texto (ambos a la izquierda) */
-.landing-texto h2 {
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: left;
-}
-
-.landing-texto h2::after,
-.landing-sobre-mi h2::after {
-  margin-left: 0;
-}
-
-.landing-sobre-mi h2 {
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: left;
+/* Mensaje, Sobre mí y Contacto: título y texto siempre centrados, a cualquier ancho */
+.landing-texto p,
+.landing-sobre-mi p {
+  text-align: center;
+  text-wrap: pretty;
 }
 
 /* Destacados y Galería: la frase introductoria va centrada bajo el título centrado */
@@ -1293,15 +1277,6 @@ footer .redes-sociales {
 }
 
 @media (max-width: 768px) {
-  .landing-sobre-mi h2 {
-    text-align: center;
-  }
-
-  .landing-sobre-mi h2::after,
-  html[data-estilo="rustico"] .landing-sobre-mi h2::after {
-    margin-left: auto;
-  }
-
   .sobre-mi-iniciales {
     width: 160px;
     height: 160px;
@@ -1390,8 +1365,6 @@ html[data-estilo="rustico"] .landing-seccion h2::after {
   height: auto;
   background: none;
 }
-html[data-estilo="rustico"] .landing-texto h2::after,
-html[data-estilo="rustico"] .landing-sobre-mi h2::after { margin-left: 0; }
 html[data-estilo="rustico"] .hero .btn,
 html[data-estilo="rustico"] .btn-contacto,
 html[data-estilo="rustico"] .item-card .btn-add-to-cart,
