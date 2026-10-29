@@ -268,13 +268,11 @@
 
             const isService = item.tipo === 'servicio';
             const isProduct = item.tipo === 'producto';
-            const esCita = window.app.requiereAgendamiento(item, catalogo);
+            const esCotizacion = window.app.requiereCotizacion(item);
+            const esCita = !esCotizacion && window.app.requiereAgendamiento(item, catalogo);
             const calendlyUrl = esCita ? (item.calendly_url || config.negocio.calendly_url) : null;
 
-            let priceHtml = '';
-            if (isProduct) {
-                priceHtml = `<span class="precio">${window.app.formatPrecio(item.precio, config.negocio.moneda)}</span>`;
-            }
+            const priceHtml = `<span class="precio">${window.app.textoPrecio(item, config.negocio.moneda)}</span>`;
 
             let durationHtml = '';
             if (isService) {
@@ -287,8 +285,10 @@
             }
 
             let actionButton = '';
-            const mostrarCarrito = !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
-            if (mostrarCarrito) {
+            const mostrarCarrito = !esCotizacion && !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
+            if (esCotizacion) {
+                actionButton = `<a href="${window.app.buildCotizacionLink(config, item)}" class="btn-calendly" target="_blank" rel="noopener">Consultar por WhatsApp</a>`;
+            } else if (mostrarCarrito) {
                 actionButton = '<button type="button" class="btn-add-to-cart">Añadir al Carrito</button>';
             }
 

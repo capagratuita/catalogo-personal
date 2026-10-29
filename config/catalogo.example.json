@@ -77,16 +77,30 @@
       "calendly_url": null
     },
     {
-      "id": "despliegue-solucion",
+      "id": "despliegue-landing",
       "tipo": "servicio",
-      "nombre": "Despliegue de una solución de las guías",
-      "descripcion": "Desplegamos contigo la solución de una de nuestras guías, paso a paso, en tus propias cuentas.",
-      "precio": 60,
+      "nombre": "Despliegue: landing page gratis",
+      "descripcion": "Desplegamos contigo la guía de la landing en tus propias cuentas. El precio final se confirma por WhatsApp.",
+      "precio": 30,
       "categoria": "despliegue",
       "disponible": true,
       "destacado": true,
-      "duracion_minutos": 120,
-      "calendly_url": null
+      "duracion_minutos": 30,
+      "calendly_url": null,
+      "precio_a_consultar": true
+    },
+    {
+      "id": "despliegue-videos-cortos",
+      "tipo": "servicio",
+      "nombre": "Despliegue: videos cortos automáticos",
+      "descripcion": "Desplegamos contigo la guía de videos cortos en tus propias cuentas. El precio final se confirma por WhatsApp.",
+      "precio": 60,
+      "categoria": "despliegue",
+      "disponible": true,
+      "destacado": false,
+      "duracion_minutos": 60,
+      "calendly_url": null,
+      "precio_a_consultar": true
     },
     {
       "id": "soporte-premium",
@@ -104,13 +118,14 @@
       "id": "consultoria",
       "tipo": "servicio",
       "nombre": "Consultoría",
-      "descripcion": "Revisamos tu caso y definimos qué solución con capas gratuitas te conviene y cómo implementarla.",
-      "precio": 50,
+      "descripcion": "Revisamos tu caso y definimos qué solución con capas gratuitas te conviene. Cotizamos según tu caso.",
+      "precio": 0,
       "categoria": "consultoria",
       "disponible": true,
       "destacado": false,
       "duracion_minutos": 60,
-      "calendly_url": null
+      "calendly_url": null,
+      "precio_a_consultar": true
     },
     {
       "id": "taller-solucion-desde-cero",

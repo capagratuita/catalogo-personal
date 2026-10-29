@@ -132,7 +132,7 @@ function renderItem(item, config, catalogo) {
 }
 
 function buildWhatsAppLink(config, mensaje) {
-  const numero = config.negocio.whatsapp;
+  const numero = String(config.negocio.whatsapp || '').replace(/\D/g, '');
   const encodedMensaje = encodeURIComponent(mensaje);
   return `https://wa.me/${numero}?text=${encodedMensaje}`;
 }
@@ -143,6 +143,24 @@ function requiereAgendamiento(item, catalogo) {
     ? catalogo.categorias_agendamiento
     : [];
   return categorias.includes(item.categoria);
+}
+
+// Servicios cuyo precio se confirma antes de contratar: no van al carrito, se consultan por WhatsApp.
+function requiereCotizacion(item) {
+  return Boolean(item) && item.tipo === 'servicio' && item.precio_a_consultar === true;
+}
+
+// "Desde X" si hay precio orientativo, "Precio a consultar" si es 0; precio normal en el resto.
+function textoPrecio(item, moneda) {
+  if (!requiereCotizacion(item)) return formatPrecio(item.precio, moneda);
+  return item.precio > 0 ? `Desde ${formatPrecio(item.precio, moneda)}` : 'Precio a consultar';
+}
+
+function buildCotizacionLink(config, item) {
+  let mensaje = `Hola, quisiera cotizar el servicio "${item.nombre}"`;
+  if (item.duracion_minutos > 0) mensaje += ` (duración estimada: ${item.duracion_minutos} min)`;
+  mensaje += '. ¿Me confirmas el precio y la disponibilidad?';
+  return buildWhatsAppLink(config, mensaje);
 }
 
 function formatPrecio(precio, moneda) {
@@ -204,6 +222,9 @@ window.app = {
   renderItem,
   buildWhatsAppLink,
   requiereAgendamiento,
+  requiereCotizacion,
+  textoPrecio,
+  buildCotizacionLink,
   formatPrecio,
   getCarrito,
   saveCarrito,

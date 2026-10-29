@@ -319,7 +319,7 @@
         }
 
         .item-fila-secundaria {
-            grid-template-columns: minmax(150px, 1fr) auto auto 110px minmax(180px, 1.4fr);
+            grid-template-columns: minmax(150px, 1fr) auto auto auto 110px minmax(180px, 1.4fr);
             align-items: center;
         }
 
@@ -633,6 +633,10 @@
                     calendly_url: row.querySelector('.item-calendly').value || null
                 };
 
+                if (item.tipo === 'servicio' && row.querySelector('.item-cotizar input').checked) {
+                    item.precio_a_consultar = true;
+                }
+
                 item.duracion_minutos = item.tipo === 'servicio'
                     ? parseInt(row.querySelector('.item-duracion').value) || 0
                     : null;
@@ -674,12 +678,14 @@
                     </select>
                     <label class="item-disponible"><input type="checkbox" checked> Disponible</label>
                     <label class="item-destacado"><input type="checkbox"> Destacado</label>
+                    <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox"> Precio a consultar</label>
                     <input class="item-duracion" type="number" placeholder="Minutos" value="0">
                     <input class="item-calendly" type="text" placeholder="URL de Calendly (opcional)">
                 </div>
             `;
 
             itemsContainer.appendChild(nuevoItem);
+            actualizarCotizar(nuevoItem);
 
             // Actualizar las opciones de categoría con las existentes
             actualizarOpcionesCategoria();
@@ -695,6 +701,16 @@
             const row = button.closest('.item-row');
             row.remove();
             renderizarOpcionesAgendamiento();
+        }
+
+        // "Precio a consultar" solo aplica a servicios
+        function actualizarCotizar(row) {
+            const label = row.querySelector('.item-cotizar');
+            const check = label.querySelector('input');
+            const esServicio = row.querySelector('.item-tipo').value === 'servicio';
+            label.style.visibility = esServicio ? 'visible' : 'hidden';
+            check.disabled = !esServicio;
+            if (!esServicio) check.checked = false;
         }
 
         function actualizarOpcionesCategoria() {
@@ -957,12 +973,14 @@
                     </select>
                     <label class="item-disponible"><input type="checkbox" ${item.disponible !== false ? 'checked' : ''}> Disponible</label>
                     <label class="item-destacado"><input type="checkbox" ${item.destacado ? 'checked' : ''}> Destacado</label>
+                    <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox" ${item.precio_a_consultar ? 'checked' : ''}> Precio a consultar</label>
                     <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
                     <input class="item-calendly" type="text" placeholder="URL de Calendly (opcional)" value="${escapeHtml(item.calendly_url)}">
                 </div>
             `;
 
             itemsContainer.appendChild(nuevoItem);
+            actualizarCotizar(nuevoItem);
         }
 
         function previsualizarCatalogo() {
@@ -1065,6 +1083,7 @@
             document.getElementById('items-container').addEventListener('change', function(event) {
                 if (event.target.matches('.item-tipo')) {
                     actualizarOpcionesCategoria();
+                    actualizarCotizar(event.target.closest('.item-row'));
                 }
             });
 

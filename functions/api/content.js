@@ -180,6 +180,16 @@ export function validateCatalogo(data) {
     if (item.calendly_url !== null && typeof item.calendly_url !== 'string') {
       fail(`El calendly_url del item '${item.id}' debe ser una cadena o null`);
     }
+
+    // Opcional. Con true, el precio es orientativo ("Desde X"; con 0, "Precio a consultar")
+    if ('precio_a_consultar' in item) {
+      if (typeof item.precio_a_consultar !== 'boolean') {
+        fail(`El campo 'precio_a_consultar' del item '${item.id}' debe ser booleano`);
+      }
+      if (item.precio_a_consultar && item.tipo !== 'servicio') {
+        fail(`El item '${item.id}' es un producto: solo los servicios pueden tener precio a consultar`);
+      }
+    }
   }
 
   return data;

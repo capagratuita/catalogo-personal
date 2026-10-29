@@ -118,7 +118,7 @@
 
         function renderizarProducto(producto, config, catalogo) {
             document.getElementById('producto-nombre').textContent = producto.nombre;
-            document.getElementById('producto-precio').textContent = window.app.formatPrecio(producto.precio, config.negocio.moneda);
+            document.getElementById('producto-precio').textContent = window.app.textoPrecio(producto, config.negocio.moneda);
             document.getElementById('producto-descripcion').textContent = producto.descripcion;
             
             // Categoria y tipo
@@ -140,11 +140,15 @@
             
             // Mostrar enlace de Calendly si está disponible
             const calendlyContainer = document.getElementById('producto-calendly');
-            const esCita = window.app.requiereAgendamiento(producto, catalogo);
+            const esCotizacion = window.app.requiereCotizacion(producto);
+            const esCita = !esCotizacion && window.app.requiereAgendamiento(producto, catalogo);
             const calendlyUrl = esCita
                 ? (producto.calendly_url || config.negocio.calendly_url)
                 : null;
-            if (calendlyUrl) {
+            if (esCotizacion) {
+                calendlyContainer.innerHTML = `<a href="${window.app.buildCotizacionLink(config, producto)}" class="btn btn-primary" target="_blank" rel="noopener">Consultar por WhatsApp</a>`;
+                calendlyContainer.style.display = 'block';
+            } else if (calendlyUrl) {
                 calendlyContainer.innerHTML = `<a href="${calendlyUrl}" class="btn btn-primary" target="_blank" rel="noopener">Reservar Cita</a>`;
                 calendlyContainer.style.display = 'block';
             } else {
@@ -153,7 +157,7 @@
             
             // Mostrar/ocultar botón de agregar al carrito
             const agregarBtn = document.querySelector('.producto-actions .btn-primary');
-            const mostrarCarrito = !calendlyUrl && (producto.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
+            const mostrarCarrito = !esCotizacion && !calendlyUrl && (producto.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
             if (mostrarCarrito) {
                 agregarBtn.classList.remove('oculto');
             } else {
