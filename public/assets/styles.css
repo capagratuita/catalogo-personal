@@ -1185,10 +1185,11 @@ footer .redes-sociales {
    «moderno» es la base (variables de :root). Los demás cambian bordes, sombras, tipografía de títulos
    y espaciado; nunca los colores (la paleta es fija y el acento se configura aparte). */
 html[data-estilo="minimalista"] {
-  --radius-card: 2px;
-  --radius-box: 2px;
-  --radius-btn: 2px;
-  --radius-pill: 2px;
+  --radius-card: 12px;
+  --radius-box: 10px;
+  --radius-btn: 8px;
+  --radius-pill: 8px;
+  --card-tint: var(--card); /* sin fondo de color: solo línea fina */
   --shadow-soft: none;
   --shadow-faq: none;
   --shadow-hover: none;
@@ -1210,10 +1211,10 @@ html[data-estilo="minimalista"] .landing-seccion { padding-top: 5rem; padding-bo
 
 html[data-estilo="rustico"] {
   --font-heading: Georgia, 'Times New Roman', serif;
-  --radius-card: 6px;
-  --radius-box: 4px;
-  --radius-btn: 4px;
-  --radius-pill: 8px;
+  --radius-card: 14px;
+  --radius-box: 10px;
+  --radius-btn: 8px;
+  --radius-pill: 10px;
   --shadow-soft: 3px 3px 0 var(--line);
   --shadow-faq: 3px 3px 0 var(--line);
   --shadow-hover: 6px 6px 0 var(--line);

@@ -128,3 +128,7 @@
 - Toda la tarjeta lleva a la ficha (enlace del título extendido): probado en Chromium que el clic sobre la foto, bajo el título, junto al precio, en el pie y entre el botón y el borde abre la ficha; el botón «Añadir al Carrito» suma al carrito sin navegar y «Consultar por WhatsApp» abre WhatsApp en otra pestaña; el foco de teclado dibuja un contorno de 3px en la tarjeta.
 - Fallo propio corregido: el contenedor de la acción tapaba el enlace en su relleno (`pointer-events: none` en el contenedor y `auto` en los botones). Mis primeras pruebas fallaron por hacer clic fuera de la ventana, no por el CSS.
 - 18 pruebas pasan; 40 combinaciones página × estilo × ancho sin desbordes ni errores de JS. Landing local restaurada.
+
+## 2026-10-29 — Esquinas de las tarjetas por estilo
+- Minimalista (12px, tarjetas blancas sin fondo tenue, sin sombra), Rústico (14px) y Moderno (20px) con esquinas redondeadas; Elegante queda recto (0px) a propósito. Radios calculados en Chromium: tarjeta 20/12/14/0 px, botón 12/10/10/0 px, filtro 999/8/10/0 px. Capturas revisadas de los 4 estilos.
+- 18 pruebas pasan; 40 combinaciones página × estilo × ancho sin desbordes ni errores de JS. Landing local restaurada (rústico, serif).
