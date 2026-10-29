@@ -244,9 +244,34 @@ nav .carrito-contador {
 
 .item-card .item-enlace-imagen {
   display: block;
+  position: relative;
+}
+
+/* Al pasar el cursor sobre la foto aparece "Ver detalles" (solo con puntero; en táctil la foto sigue siendo el enlace) */
+@media (hover: hover) {
+  .item-card .item-enlace-imagen::after {
+    content: 'Ver detalles';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(18, 22, 28, 0.72);
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .item-card .item-enlace-imagen:hover::after {
+    opacity: 1;
+  }
 }
 
 .item-card .item-meta {
+  margin-top: auto;
+  padding-top: 0.5rem;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -287,8 +312,7 @@ nav .carrito-contador {
 }
 
 .item-card .item-actions {
-  margin-top: auto;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.5rem 1rem;
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
