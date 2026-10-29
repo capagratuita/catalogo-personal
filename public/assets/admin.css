@@ -330,10 +330,71 @@ details.avanzado .contenido {
   display: none !important;
 }
 
+/* Navegación del panel: en escritorio centrada, en móvil una sola fila */
+nav .nav-admin {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 1rem;
+}
+
 @media (max-width: 640px) {
+  /* La barra superior ocupaba ~140 px fijos: ahora es una fila y no se queda pegada */
+  nav {
+    position: static;
+  }
+
+  nav .container {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  nav .logo {
+    font-size: 1.05rem;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  nav .nav-admin {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  nav .nav-admin a {
+    padding: 0 0.45rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
   .admin-panel {
-    margin: 1rem 0.75rem;
-    padding: 1.25rem 1rem;
+    margin: 0.5rem;
+    padding: 1rem 0.85rem;
+  }
+
+  .admin-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .admin-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .grupo {
+    padding: 0.9rem 0.85rem 0.8rem;
+  }
+
+  /* Zonas táctiles de al menos 44 px */
+  .admin-panel summary {
+    padding: 0.65rem 0;
+    cursor: pointer;
+  }
+
+  .admin-panel .btn,
+  .admin-panel .btn-logout {
+    min-height: 44px;
   }
 
   .campos-2 {

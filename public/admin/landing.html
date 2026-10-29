@@ -27,6 +27,22 @@
             margin-right: 0;
         }
 
+        @media (max-width: 640px) {
+            .acciones-formulario {
+                position: sticky;
+                bottom: 0;
+                z-index: 5;
+                margin-top: 1.5rem;
+                padding: 0.75rem 0;
+                background: white;
+                border-top: 1px solid var(--line);
+            }
+
+            .acciones-formulario .btn {
+                flex: 1 1 auto;
+            }
+        }
+
         .tabs-barra {
             display: flex;
             align-items: flex-end;
@@ -482,7 +498,7 @@
 
                 <div class="acciones-formulario">
                     <button type="submit" class="btn">Guardar Portada</button>
-                    <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Previsualizar JSON</button>
+                    <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Ver JSON</button>
                 </div>
 
                 <div class="loading" id="loading">

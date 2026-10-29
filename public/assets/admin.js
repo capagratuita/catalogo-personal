@@ -210,9 +210,8 @@ function montarNavegacionAdmin() {
   if (!contenedor || !SECCIONES_ADMIN.some(([archivo]) => archivo.replace(/\.html$/, '') === actual)) return;
 
   const lista = document.createElement('ul');
-  lista.className = 'nav-links';
+  lista.className = 'nav-links nav-admin';
   lista.setAttribute('aria-label', 'Secciones del panel');
-  lista.style.cssText = 'flex-wrap:wrap;justify-content:center;gap:0 1rem;';
 
   for (const [archivo, nombre] of SECCIONES_ADMIN) {
     const item = document.createElement('li');

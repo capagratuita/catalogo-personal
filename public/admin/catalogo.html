@@ -80,6 +80,9 @@
             font-size: 1.1rem;
             line-height: 1;
             padding: 0;
+            min-width: 28px;
+            min-height: 28px;
+            margin: -0.35rem -0.3rem -0.35rem 0;
         }
 
         .categoria-chip button:hover {
@@ -525,6 +528,60 @@
                 justify-self: start;
             }
 
+            .categorias-tab,
+            .foto-boton,
+            .btn-remove-item,
+            .btn-var-agregar,
+            .btn-var-quitar,
+            .btn-add-item {
+                min-height: 44px;
+            }
+
+            .item-row-edit {
+                margin: 0.5rem 0;
+            }
+
+            /* Fila principal compacta: Nombre a todo el ancho y Tipo | Precio juntos */
+            .item-fila-principal {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .item-fila-principal > .campo:has(.item-nombre) {
+                grid-column: 1 / -1;
+                order: -1;
+            }
+
+            .item-fila-principal > .btn-remove-item {
+                grid-column: 1 / -1;
+            }
+
+            /* Fila de categoría en dos columnas: Disponible | Destacado, ID | Duración */
+            .item-fila-secundaria {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .item-fila-secundaria > .campo:first-child,
+            .item-fila-secundaria > .item-cotizar,
+            .item-fila-secundaria > .campo:last-child {
+                grid-column: 1 / -1;
+            }
+
+            .item-fila-secundaria > .campo:has(.item-id) {
+                order: 5;
+            }
+
+            .item-fila-secundaria > .campo:has(.item-id):has(~ .campo[hidden]) {
+                grid-column: 1 / -1;
+            }
+
+            .item-fila-secundaria > .campo:has(.item-duracion) {
+                order: 6;
+            }
+
+            .item-fila-secundaria > .campo:last-child {
+                order: 7;
+            }
+
         }
 
         .btn-add-item {
@@ -650,8 +707,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn">Guardar Catálogo</button>
-                <button type="button" class="btn btn-secondary" onclick="previsualizarCatalogo()">Previsualizar JSON</button>
+                <div class="barra-guardar">
+                    <button type="submit" class="btn">Guardar Catálogo</button>
+                    <button type="button" class="btn btn-secondary" onclick="previsualizarCatalogo()">Ver JSON</button>
+                </div>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
