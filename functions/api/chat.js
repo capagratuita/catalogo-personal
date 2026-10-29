@@ -36,7 +36,7 @@ export const onRequestPost = async ({ request, env }) => {
       Preguntas frecuentes: ${JSON.stringify(faq)}
       Instrucciones: responde en español, breve, sin inventar información.
       Si la pregunta no está cubierta por el catálogo ni las FAQ, sugiere
-      escribir por WhatsApp al ${config.negocio.whatsapp}.
+      escribir por WhatsApp (${config.negocio.whatsapp_usuario ? 'usuario ' + config.negocio.whatsapp_usuario : config.negocio.whatsapp}).
     `;
     
     if (!env.AI) {

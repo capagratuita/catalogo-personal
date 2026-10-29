@@ -99,3 +99,16 @@ test('faq: límites', () => {
   rechaza(() => validateFAQ({ preguntas: Array.from({ length: 16 }, () => ({ p: 'p', r: 'r' })), tono: '' }), /15/);
   rechaza(() => validateFAQ({ preguntas: [{ p: '', r: 'r' }], tono: '' }), /'p'/);
 });
+
+test('config: WhatsApp por número, por usuario o ambos', () => {
+  const con = cambios => { const c = copia(config); Object.assign(c.negocio, cambios); return c; };
+  validateConfig(con({ whatsapp: '', whatsapp_usuario: 'revelix360' }));
+  validateConfig(con({ whatsapp: null, whatsapp_usuario: '@revelix.360' }));
+  validateConfig(con({ whatsapp_usuario: 'revelix360' }));
+  rechaza(() => validateConfig(con({ whatsapp: '', whatsapp_usuario: null })), /número.*usuario/);
+  rechaza(() => validateConfig(con({ whatsapp_usuario: 'con espacios' })), /whatsapp_usuario/);
+  rechaza(() => validateConfig(con({ whatsapp_usuario: '12345' })), /whatsapp_usuario/);
+  const sinCampo = copia(config); delete sinCampo.negocio.whatsapp;
+  sinCampo.negocio.whatsapp_usuario = 'revelix360';
+  validateConfig(sinCampo);
+});

@@ -48,3 +48,14 @@ test('el carrito se oculta solo en solo-servicios', () => {
   assert.equal(app.usaCarrito(config('solo-productos')), true);
   assert.equal(app.usaCarrito(config('solo-servicios')), false);
 });
+
+test('WhatsApp: el usuario tiene prioridad sobre el número', () => {
+  const con = negocio => ({ negocio });
+  assert.equal(app.buildWhatsAppLink(con({ whatsapp: '+51 999' }), 'Hola, ¿qué tal?'), 'https://wa.me/51999?text=Hola%2C%20%C2%BFqu%C3%A9%20tal%3F');
+  assert.equal(
+    app.buildWhatsAppLink(con({ whatsapp: '+51 999', whatsapp_usuario: '@revelix360' }), 'Hola'),
+    'https://api.whatsapp.com/send/?text=Hola&username=revelix360&type=username&app_absent=0'
+  );
+  assert.equal(app.tieneWhatsApp(con({ whatsapp: '', whatsapp_usuario: 'revelix360' })), true);
+  assert.equal(app.tieneWhatsApp(con({ whatsapp: '', whatsapp_usuario: null })), false);
+});

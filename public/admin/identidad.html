@@ -196,8 +196,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-whatsapp">WhatsApp (con código de país, ej. +51999888777)</label>
-                    <input type="text" id="negocio-whatsapp" name="negocio-whatsapp" required>
+                    <label for="negocio-whatsapp">WhatsApp: número (con código de país, ej. +51999888777)</label>
+                    <input type="text" id="negocio-whatsapp" name="negocio-whatsapp" aria-describedby="ayuda-whatsapp">
+                </div>
+
+                <div class="form-group">
+                    <label for="negocio-whatsapp_usuario">WhatsApp: nombre de usuario (opcional)</label>
+                    <input type="text" id="negocio-whatsapp_usuario" name="negocio-whatsapp_usuario" autocapitalize="none" spellcheck="false" aria-describedby="ayuda-whatsapp">
+                    <small id="ayuda-whatsapp">Rellena al menos uno. Si indicas ambos, los enlaces usan el nombre de usuario.</small>
                 </div>
 
                 <div class="form-group">
@@ -296,6 +302,7 @@
             document.getElementById('negocio-nombre').value = negocio.nombre || '';
             document.getElementById('negocio-descripcion_corta').value = negocio.descripcion_corta || '';
             document.getElementById('negocio-whatsapp').value = negocio.whatsapp || '';
+            document.getElementById('negocio-whatsapp_usuario').value = negocio.whatsapp_usuario || '';
             document.getElementById('negocio-email').value = negocio.email || '';
             document.getElementById('negocio-moneda').value = negocio.moneda || 'PEN';
             document.getElementById('negocio-modo_negocio').value = negocio.modo_negocio || 'mixto';
@@ -311,7 +318,8 @@
             const negocio = {
                 nombre: document.getElementById('negocio-nombre').value,
                 descripcion_corta: document.getElementById('negocio-descripcion_corta').value,
-                whatsapp: document.getElementById('negocio-whatsapp').value,
+                whatsapp: document.getElementById('negocio-whatsapp').value.trim(),
+                whatsapp_usuario: document.getElementById('negocio-whatsapp_usuario').value.trim().replace(/^@/, '') || null,
                 email: document.getElementById('negocio-email').value.trim() || null,
                 moneda: document.getElementById('negocio-moneda').value,
                 modo_negocio: document.getElementById('negocio-modo_negocio').value,

@@ -80,6 +80,7 @@ function validarUrl(valor, campo, { relativa = false } = {}) {
   }
 }
 
+export const USUARIO_WHATSAPP = /^(?=.*[A-Za-z])[A-Za-z0-9._]{3,35}$/;
 export const TOKEN_ANALITICA = /^[A-Za-z0-9]{16,64}$/;
 
 export function validateConfig(data) {
@@ -87,7 +88,6 @@ export function validateConfig(data) {
     negocio: {
       nombre: 'string',
       descripcion_corta: 'string',
-      whatsapp: 'string',
       email: ['string', 'null'],
       moneda: 'string',
       modo_negocio: 'string',
@@ -99,6 +99,19 @@ export function validateConfig(data) {
       tono_chat: 'string',
     },
   });
+
+  // WhatsApp: número o nombre de usuario (al menos uno); si hay usuario, tiene prioridad en los enlaces.
+  for (const campo of ['whatsapp', 'whatsapp_usuario']) {
+    const valor = data.negocio[campo];
+    if (valor !== undefined) validateType(valor, ['string', 'null'], `negocio.${campo}`);
+  }
+  const usuario = String(data.negocio.whatsapp_usuario || '').trim().replace(/^@/, '');
+  if (usuario && !USUARIO_WHATSAPP.test(usuario)) {
+    fail("El campo 'negocio.whatsapp_usuario' debe tener entre 3 y 35 caracteres: letras, números, puntos o guiones bajos, y al menos una letra (sin espacios)");
+  }
+  if (!usuario && !String(data.negocio.whatsapp || '').trim()) {
+    fail("Indica un número en 'negocio.whatsapp' (con código de país) o un nombre de usuario en 'negocio.whatsapp_usuario'");
+  }
 
   if (!['solo-productos', 'solo-servicios', 'mixto'].includes(data.negocio.modo_negocio)) {
     fail("El campo 'negocio.modo_negocio' debe ser 'solo-productos', 'solo-servicios' o 'mixto'");

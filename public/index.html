@@ -334,7 +334,7 @@
             contacto(seccion, contenedor, { config }) {
                 const negocio = config.negocio;
                 const acciones = crear('div', 'contacto-acciones');
-                if (negocio.whatsapp) {
+                if (window.app.tieneWhatsApp(config)) {
                     const wa = crear('a', 'btn-contacto', 'Escribir por WhatsApp');
                     wa.href = window.app.buildWhatsAppLink(config, 'Hola, quisiera más información.');
                     wa.target = '_blank';

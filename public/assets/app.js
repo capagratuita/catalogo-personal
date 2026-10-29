@@ -92,7 +92,7 @@ function aplicarMarca(config) {
   const enlaces = {
     instagram: negocio.redes && negocio.redes.instagram,
     facebook: negocio.redes && negocio.redes.facebook,
-    whatsapp: negocio.whatsapp ? `https://wa.me/${negocio.whatsapp.replace(/\D/g, '')}` : null,
+    whatsapp: tieneWhatsApp(config) ? buildWhatsAppLink(config, '') : null,
   };
   document.querySelectorAll('[data-red]').forEach(el => {
     const url = enlaces[el.dataset.red];
@@ -136,9 +136,23 @@ function renderItem(item, config, catalogo) {
   `;
 }
 
+// Nombre de usuario de WhatsApp sin «@» ni espacios; '' si no hay.
+function usuarioWhatsApp(config) {
+  return String(config.negocio.whatsapp_usuario || '').trim().replace(/^@/, '');
+}
+
+function tieneWhatsApp(config) {
+  return Boolean(usuarioWhatsApp(config) || String(config.negocio.whatsapp || '').replace(/\D/g, ''));
+}
+
+// Con nombre de usuario se usa api.whatsapp.com (wa.me solo admite números); si no, el número.
 function buildWhatsAppLink(config, mensaje) {
+  const encodedMensaje = encodeURIComponent(mensaje || '');
+  const usuario = usuarioWhatsApp(config);
+  if (usuario) {
+    return `https://api.whatsapp.com/send/?text=${encodedMensaje}&username=${encodeURIComponent(usuario)}&type=username&app_absent=0`;
+  }
   const numero = String(config.negocio.whatsapp || '').replace(/\D/g, '');
-  const encodedMensaje = encodeURIComponent(mensaje);
   return `https://wa.me/${numero}?text=${encodedMensaje}`;
 }
 
@@ -303,6 +317,7 @@ window.app = {
   loadFAQ,
   renderItem,
   buildWhatsAppLink,
+  tieneWhatsApp,
   requiereAgendamiento,
   requiereCotizacion,
   textoPrecio,
