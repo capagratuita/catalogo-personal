@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo</title>
+    <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
     <nav>
         <div class="container">
-            <div class="logo"></div>
+            <a class="logo" href="/"></a>
             <ul class="nav-links">
                 <li><a href="/">Inicio</a></li>
                 <li><a href="/#catalogo">Catálogo</a></li>
                 <li><a href="/faq">Preguntas Frecuentes</a></li>
-                <li><a href="/carrito">Carrito</a></li>
             </ul>
-            <div class="carrito-icon" onclick="verCarrito()">
-                🛒<span class="carrito-contador" id="carrito-contador">0</span>
-            </div>
+            <a class="carrito-icon" href="/carrito">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.7l2.3 11.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.2l1.4-6.8H6.1"/></svg>
+                <span class="solo-lectores">Carrito:</span><span class="carrito-contador" id="carrito-contador">0</span>
+            </a>
         </div>
     </nav>
 
@@ -67,9 +68,9 @@
                 <li><a href="/carrito">Carrito</a></li>
             </ul>
             <div class="redes-sociales">
-                <a data-red="instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram" hidden>📷</a>
-                <a data-red="facebook" href="#" target="_blank" rel="noopener" aria-label="Facebook" hidden>📘</a>
-                <a data-red="whatsapp" href="#" target="_blank" rel="noopener" aria-label="WhatsApp" hidden>💬</a>
+                <a data-red="instagram" href="#" target="_blank" rel="noopener" hidden>Instagram</a>
+                <a data-red="facebook" href="#" target="_blank" rel="noopener" hidden>Facebook</a>
+                <a data-red="whatsapp" href="#" target="_blank" rel="noopener" hidden>WhatsApp</a>
             </div>
         </div>
     </footer>
@@ -155,6 +156,7 @@
                 }
 
                 if (esUrlFondoValida(hero.imagen_fondo_url)) {
+                    heroSection.classList.add('hero-imagen');
                     heroSection.style.backgroundColor = 'var(--primary)';
                     heroSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url("${hero.imagen_fondo_url}")`;
                     heroSection.style.backgroundSize = 'cover';
@@ -435,7 +437,7 @@
 
             let durationHtml = '';
             if (isService) {
-                durationHtml = `<span class="servicio-info"><span class="icono-reloj" aria-hidden="true">⏰</span> ${item.duracion_minutos} min</span>`;
+                durationHtml = `<span class="servicio-info">${item.duracion_minutos} min</span>`;
             }
 
             const accionHtml = accion ? window.app.htmlAccion(accion, item.id) : '';

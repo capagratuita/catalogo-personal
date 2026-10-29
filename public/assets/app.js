@@ -53,7 +53,7 @@ const loadLanding = () => loadContent('landing');
 const loadFAQ = () => loadContent('faq');
 
 const FUENTES = {
-  sans: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   serif: "Georgia, 'Times New Roman', serif",
   mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 };
@@ -118,7 +118,7 @@ function renderItem(item, config, catalogo) {
   const esServicio = item.tipo === 'servicio';
   const precioHtml = `<span class="precio">${textoPrecio(item, config.negocio.moneda)}</span>`;
   const duracionHtml = esServicio
-    ? `<div class="servicio-info"><span class="icono-reloj">⏰</span> ${item.duracion_minutos} minutos</div>`
+    ? `<div class="servicio-info">Duración: ${item.duracion_minutos} minutos</div>`
     : '';
   const accionHtml = accion ? htmlAccion(accion, item.id) : '';
 
