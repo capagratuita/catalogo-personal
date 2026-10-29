@@ -97,7 +97,7 @@ public/
 functions/
   _middleware.js
   _lib/auth.js
-  api/{content,login,logout,session,upload,image,chat}.js
+  api/{content,defaults,login,logout,session,upload,image,chat}.js
 config/*.example.json
 wrangler.toml, package.json, README.md
 validate-phase*.sh, test-all-phases.sh
@@ -129,19 +129,21 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 | `POST /api/logout` | cookie | 200 `{ok:true}`; borra la cookie. |
 | `GET /api/session` | cookie | 200 `{authenticated:true}`; 401 si no hay sesión válida. |
 | `POST /api/upload` | cookie `admin_session` | `multipart/form-data` con `id` y `file`; ≤5 MB; JPEG/PNG/WebP; item debe existir; guarda `items/{id}.{ext}` y borra extensiones viejas. |
+| `GET /api/defaults?key=...` | pública | 200 con el `config/*.example.json` de esa key (importado en el bundle); 400 si la key no es válida. Solo lectura: no escribe en KV. |
 | `GET /api/image?id=...` o `?url=items/...` | pública | 200 imagen desde KV; 404 si no existe o el id es inválido. |
 | `POST /api/chat` | pública | Body `{question}`; 200 `{answer}`; 400 pregunta vacía; 429 límite; 503 si falta el binding `AI`. |
 
 - Cookie esperada: `admin_session=<token>; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`.
 - Implementado en `functions/_lib/auth.js`: cookie firmada con HMAC-SHA256 usando `ADMIN_PASSWORD` como secreto; el middleware verifica `/admin/*` (excepto `/admin`, `/admin/` y `/admin/index.html`) y las escrituras. No hay sesiones en KV.
 - `window.admin.isAuthenticated()` es asíncrona; en las páginas admin debe usarse con `await`.
+- **Primer arranque sin terminal:** si una key no existe en KV, `admin.getContent` cae a `/api/defaults` y muestra un aviso de datos de ejemplo; no se guarda nada hasta que el admin pulse Guardar (`PUT /api/content`). `admin/respaldo.html` exporta/importa las 4 keys en un solo JSON (las fotos no van incluidas; se suben desde `fotos.html`). `admin.js` inyecta la barra de navegación del admin. Pages sirve `/admin/identidad` sin `.html`.
 
 ## 8. Convenciones de frontend
 
 - Cada página es HTML completo. Las públicas cargan `/assets/app.js`; las admin cargan `../assets/admin.js` antes de su script inline.
 - El admin separa las categorías en pestañas Productos y Servicios; cada categoría nace con su tipo y los selectores de categoría de cada item se filtran por el tipo del item.
 - `assets/app.js` expone `window.app`: `fetchJSON`, `loadCatalogo`, `loadConfig`, `loadLanding`, `loadFAQ`, `renderItem`, `buildWhatsAppLink`, `formatPrecio`, `getCarrito`, `saveCarrito`, `addToCarrito`, `getCarritoTotal`, `getCarritoItemsCount`.
-- `assets/admin.js` expone `window.admin`: `login`, `isAuthenticated` (async), `getContent`, `putContent`, `logout` (async). No expone `getToken`; la sesión viaja en cookie.
+- `assets/admin.js` expone `window.admin`: `login`, `isAuthenticated` (async), `getContent`, `putContent`, `exportarTodo`, `importarTodo`, `logout` (async). No expone `getToken`; la sesión viaja en cookie.
 - Carrito real en `localStorage` bajo `carrito`: `[{id, nombre, precio, moneda, cantidad}]` (no solo `{id,cantidad}`; la UI lee nombre/precio). El checkout arma el mensaje con nombre, cantidad, precio y total.
 - WhatsApp: `https://wa.me/{config.negocio.whatsapp}?text=${encodeURIComponent(mensaje)}`.
 - `producto.html` y `carrito.html` usan `config.negocio.moneda`/`formatPrecio`; si agregas precios nuevos, no hardcodees `PEN` ni `S/.`.
