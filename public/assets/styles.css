@@ -1165,7 +1165,7 @@ footer .redes-sociales {
   margin-top: auto;
 }
 
-.testimonio figcaption span {
+.testimonio-autor span {
   color: var(--muted);
 }
 
@@ -1178,6 +1178,150 @@ footer .redes-sociales {
   .sobre-mi-foto {
     width: 160px;
     height: 160px;
+  }
+}
+
+/* ===== Arte de las secciones ===== */
+/* Línea de acento bajo cada título */
+.landing-seccion h2::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin: 0.75rem auto 0;
+  background: var(--accent);
+  border-radius: var(--radius-btn);
+}
+
+/* Mensaje: título alineado con la columna de texto (ambos a la izquierda) */
+.landing-texto h2 {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.landing-texto h2::after,
+.landing-sobre-mi h2::after {
+  margin-left: 0;
+}
+
+.landing-sobre-mi h2 {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* Contacto: todo centrado, como cierre de la página */
+.landing-contacto p {
+  text-align: center;
+  font-size: 1.1rem;
+  text-wrap: balance;
+}
+
+/* Sobre mí: foto con marco desplazado; sin foto, iniciales */
+.sobre-mi-foto,
+.sobre-mi-iniciales {
+  box-shadow: 10px 10px 0 -2px var(--accent);
+}
+
+.sobre-mi-iniciales {
+  width: 220px;
+  height: 220px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 4rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* Testimonios: comilla en acento y avatar con iniciales */
+.testimonio::before {
+  content: "\201C";
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  line-height: 1;
+  padding-top: 0.45rem;
+  box-sizing: border-box;
+}
+
+.testimonio figcaption {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.testimonio-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.testimonio-autor {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .landing-sobre-mi h2 {
+    text-align: center;
+  }
+
+  .landing-sobre-mi h2::after {
+    margin-left: auto;
+  }
+
+  .sobre-mi-iniciales {
+    width: 160px;
+    height: 160px;
+    font-size: 3rem;
+  }
+}
+
+/* Testimonios deslizables en móvil */
+@media (max-width: 640px) {
+  .contacto-acciones {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .btn-contacto {
+    justify-content: center;
+  }
+
+  .testimonios-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .testimonio {
+    flex: 0 0 85%;
+    scroll-snap-align: center;
   }
 }
 

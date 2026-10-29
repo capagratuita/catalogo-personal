@@ -354,7 +354,7 @@
                 return true;
             },
 
-            'sobre-mi'(seccion, contenedor) {
+            'sobre-mi'(seccion, contenedor, { config }) {
                 const textos = parrafos(seccion.contenido);
                 if (!textos.length) return false;
                 const caja = crear('div', 'sobre-mi');
@@ -363,7 +363,14 @@
                 img.src = '/api/image?id=sobre-mi';
                 img.alt = seccion.titulo || 'Foto';
                 img.loading = 'lazy';
-                img.addEventListener('error', () => img.remove(), { once: true });
+                // Sin foto: círculo con las iniciales del nombre, para que no quede solo el texto
+                img.addEventListener('error', () => {
+                    const nombre = (config.perfil && config.perfil.nombre) || seccion.titulo || '';
+                    const iniciales = nombre.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+                    const marco = crear('div', 'sobre-mi-iniciales', iniciales || '·');
+                    marco.setAttribute('aria-hidden', 'true');
+                    img.replaceWith(marco);
+                }, { once: true });
                 const texto = crear('div', 'sobre-mi-texto');
                 texto.append(...textos);
                 caja.append(img, texto);
@@ -379,8 +386,13 @@
                     const cita = crear('figure', 'testimonio');
                     cita.appendChild(crear('blockquote', null, t.texto));
                     const pie = crear('figcaption');
-                    pie.appendChild(crear('strong', null, t.autor));
-                    if (t.detalle) pie.append(crear('span', null, t.detalle));
+                    const iniciales = (t.autor || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+                    const avatar = crear('span', 'testimonio-avatar', iniciales || '·');
+                    avatar.setAttribute('aria-hidden', 'true');
+                    const quien = crear('span', 'testimonio-autor');
+                    quien.appendChild(crear('strong', null, t.autor));
+                    if (t.detalle) quien.appendChild(crear('span', null, t.detalle));
+                    pie.append(avatar, quien);
                     cita.appendChild(pie);
                     grid.appendChild(cita);
                 });
