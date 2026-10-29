@@ -160,6 +160,33 @@
             font-weight: 600;
         }
 
+        .foto-sobre-mi-fila {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .foto-sobre-mi-vista,
+        .foto-sobre-mi-vacia {
+            width: 96px;
+            height: 96px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .foto-sobre-mi-vacia {
+            display: grid;
+            place-items: center;
+            background: #eef0f2;
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        .foto-sobre-mi-vista[hidden],
+        .foto-sobre-mi-vacia[hidden] { display: none; }
+
         .tab-panel h3 {
             color: var(--primary);
             margin-bottom: 1rem;
@@ -713,7 +740,19 @@
                 </div>`;
 
             if (s.tipo === 'texto') return textarea('Deja una línea en blanco para separar párrafos. Los enlaces que empiecen por https:// se vuelven clicables.');
-            if (s.tipo === 'sobre-mi') return textarea('Cuenta quién eres y a qué te dedicas. Tu foto se sube en <a href="/admin/fotos">Fotos</a> (opción «Sobre mí»); si no hay foto, solo se muestra el texto.', 'Tu presentación');
+            if (s.tipo === 'sobre-mi') return textarea('Cuenta quién eres y a qué te dedicas.', 'Tu presentación') + `
+                <div class="form-group foto-sobre-mi">
+                    <label for="sobre-mi-archivo">Tu foto</label>
+                    <div class="foto-sobre-mi-fila">
+                        <img id="sobre-mi-vista" class="foto-sobre-mi-vista" alt="" hidden>
+                        <div class="foto-sobre-mi-vacia" id="sobre-mi-vacia">Sin foto</div>
+                        <div>
+                            <input type="file" id="sobre-mi-archivo" accept="image/jpeg,image/png,image/webp">
+                            <button type="button" class="btn-mini" id="sobre-mi-subir" disabled>Subir foto</button>
+                        </div>
+                    </div>
+                    <p class="ayuda" id="sobre-mi-estado" role="status">La foto se sube al momento, sin pulsar «Guardar». Se ajusta sola a un tamaño ligero. Sin foto, el sitio muestra un círculo con tus iniciales.</p>
+                </div>`;
             if (s.tipo === 'contacto') return textarea('Los botones de WhatsApp y de correo salen de <a href="/admin/identidad">General</a>. Aquí puedes añadir un mensaje o un enlace (por ejemplo, tu comunidad).', 'Mensaje (opcional)');
 
             // destacados y galería: texto opcional + selector de items
@@ -786,7 +825,51 @@
 
             if (s.tipo === 'destacados' || s.tipo === 'galeria') renderItems(s);
             if (s.tipo === 'testimonios') renderTestimonios(s);
+            if (s.tipo === 'sobre-mi') montarFotoSobreMi(panel);
             actualizarAviso(s);
+        }
+
+        // La foto vive en el KV de imágenes (id reservado «sobre-mi»), no en el JSON de la portada
+        function montarFotoSobreMi(panel) {
+            const vista = panel.querySelector('#sobre-mi-vista');
+            const vacia = panel.querySelector('#sobre-mi-vacia');
+            const archivo = panel.querySelector('#sobre-mi-archivo');
+            const subir = panel.querySelector('#sobre-mi-subir');
+            const estado = panel.querySelector('#sobre-mi-estado');
+
+            function mostrar(src) {
+                vista.onload = () => { vista.hidden = false; vacia.hidden = true; };
+                vista.onerror = () => { vista.hidden = true; vacia.hidden = false; };
+                vista.src = src;
+            }
+            mostrar('/api/image?id=sobre-mi&v=' + Date.now());
+
+            archivo.addEventListener('change', () => { subir.disabled = !archivo.files[0]; });
+            subir.addEventListener('click', async () => {
+                const original = archivo.files[0];
+                if (!original) return;
+                subir.disabled = true;
+                subir.textContent = 'Subiendo…';
+                try {
+                    const optimizada = await window.admin.optimizarImagen(original);
+                    const datos = new FormData();
+                    datos.append('id', 'sobre-mi');
+                    datos.append('file', optimizada);
+                    const respuesta = await fetch('/api/upload', { method: 'POST', body: datos });
+                    if (!respuesta.ok) {
+                        const error = await respuesta.json().catch(() => ({}));
+                        throw new Error(error.detalle || error.error || 'No se pudo subir la foto');
+                    }
+                    mostrar('/api/image?id=sobre-mi&v=' + Date.now());
+                    archivo.value = '';
+                    estado.textContent = 'Foto subida. Puede tardar hasta un minuto en verse en el sitio.';
+                } catch (error) {
+                    mostrarError(error.message || 'No se pudo subir la foto. Inténtalo de nuevo.');
+                    subir.disabled = false;
+                } finally {
+                    subir.textContent = 'Subir foto';
+                }
+            });
         }
 
         function mover(s, delta) {

@@ -30,6 +30,7 @@
 - Commits: `e53827a`, `cf6cdab`, `6e2bd96`, `3ea1c0a`.
 - **Arte de las secciones de la portada pública** (`44e4992`): línea de acento bajo cada título; título alineado con la columna de texto en `texto`/`sobre-mi`; `contacto` centrado (antes texto a la izquierda y botones centrados) con botones iguales en móvil; `sobre-mi` con marco de acento e iniciales si no hay foto; `testimonios` con comilla, avatar de iniciales y deslizables en móvil. Revisado en Chromium a 375px y 1200px solo con el estilo `moderno`; faltan `minimalista`, `rustico` y `elegante`.
 - Sin probar en navegador real (ni en 375px).
+- **Foto de «Sobre mí» desde la sección:** el editor de la sección tiene «Tu foto» (vista previa circular, selector y «Subir foto»). Sube al momento por `/api/upload` con id `sobre-mi` (no depende de «Guardar Portada»). Probado en Chromium a 375px; la foto de prueba se borró del KV local. No hay botón para quitar la foto (no existe endpoint de borrado).
 - **Datos de prueba:** el KV local `landing` tiene una portada ficticia con los 6 tipos (Mensaje con `posicion: antes`, Destacados, Galería, Sobre mí, Testimonios con 3 opiniones inventadas, Contacto) sobre el catálogo de panadería. Solo está en `.wrangler/state`; `landing.example.json` sigue sin testimonios a propósito. Pasa `validateLanding`.
 
 ## Estado y pendientes
