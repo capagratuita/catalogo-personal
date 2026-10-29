@@ -32,6 +32,7 @@
             align-items: flex-end;
             gap: 0.5rem;
             overflow-x: auto;
+            overflow-y: hidden;
             border-bottom: 2px solid #e0e0e0;
             margin-bottom: 1.5rem;
         }
@@ -157,13 +158,6 @@
         .tab-agregar {
             color: #0B6B3F;
             font-weight: 600;
-        }
-
-        .tab-tipo {
-            font-size: 0.75rem;
-            color: #666;
-            margin-left: 0.4rem;
-            font-weight: 400;
         }
 
         .tab-panel h3 {
@@ -610,10 +604,6 @@
                 boton.setAttribute('aria-controls', 'panel-seccion');
                 boton.tabIndex = clave === activa ? 0 : -1;
                 boton.textContent = etiquetaDe(s);
-                const tipo = document.createElement('span');
-                tipo.className = 'tab-tipo';
-                tipo.textContent = TIPOS[s.tipo].nombre;
-                boton.appendChild(tipo);
                 boton.addEventListener('click', () => seleccionar(clave));
                 tabs.appendChild(boton);
             });
