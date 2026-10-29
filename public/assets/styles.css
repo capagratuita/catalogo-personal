@@ -1213,6 +1213,12 @@ footer .redes-sociales {
   text-align: left;
 }
 
+/* Destacados y Galería: la frase introductoria va centrada bajo el título centrado */
+.landing-destacados .container > p,
+.landing-galeria .container > p {
+  text-align: center;
+}
+
 /* Contacto: todo centrado, como cierre de la página */
 .landing-contacto p {
   text-align: center;
@@ -1286,7 +1292,8 @@ footer .redes-sociales {
     text-align: center;
   }
 
-  .landing-sobre-mi h2::after {
+  .landing-sobre-mi h2::after,
+  html[data-estilo="rustico"] .landing-sobre-mi h2::after {
     margin-left: auto;
   }
 
@@ -1375,7 +1382,11 @@ html[data-estilo="rustico"] .landing-seccion h2::after {
   width: 90px;
   margin: 0.6rem auto 0;
   border-top: 4px double var(--ink-soft);
+  height: auto;
+  background: none;
 }
+html[data-estilo="rustico"] .landing-texto h2::after,
+html[data-estilo="rustico"] .landing-sobre-mi h2::after { margin-left: 0; }
 html[data-estilo="rustico"] .hero .btn,
 html[data-estilo="rustico"] .btn-contacto,
 html[data-estilo="rustico"] .item-card .btn-add-to-cart,
