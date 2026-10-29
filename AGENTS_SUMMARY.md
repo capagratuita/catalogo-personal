@@ -22,6 +22,15 @@
 - «Tono del Chat» se quitó de General; `perfil.tono_chat` sigue en los datos (el validador lo exige y el chat opcional lo usa) y se conserva al guardar.
 - Commits: `5f9c869` (refactor y textos), `5ae4b36` (redes y tono del chat).
 
+## Admin de Portada: pestañas en dos niveles (2026-10-29)
+
+- `admin/landing.html`: selector de nivel 1 `Portada | Apariencia y SEO | Secciones (n)` (ancho completo, sin scroll en móvil). Dentro de «Secciones» hay una cabecera fija con «+ Añadir sección» (antes estaba al final de la cinta, oculto en móvil) y una cinta de nivel 2 con una pestaña por sección.
+- La cinta de secciones no muestra scroll vertical (`overflow-y: hidden`) y la pestaña lleva solo el nombre, sin el tipo. «Secciones» abre la última sección vista; sin secciones muestra un aviso; al eliminar una sección se vuelve a «Secciones». Las flechas/Inicio/Fin navegan dentro de cada fila.
+- El tipo `texto` se llama ahora **«Mensaje»** en el admin (desplegable, selector de alta, encabezado, título propuesto y etiqueta del campo). El valor guardado sigue siendo `texto`.
+- Commits: `e53827a`, `cf6cdab`, `6e2bd96`, `3ea1c0a`.
+- Sin probar en navegador real (ni en 375px).
+- **Datos de prueba:** el KV local `landing` tiene una portada ficticia con los 6 tipos (Mensaje con `posicion: antes`, Destacados, Galería, Sobre mí, Testimonios con 3 opiniones inventadas, Contacto) sobre el catálogo de panadería. Solo está en `.wrangler/state`; `landing.example.json` sigue sin testimonios a propósito. Pasa `validateLanding`.
+
 ## Estado y pendientes
 
 - Todo está commiteado en `main`.
