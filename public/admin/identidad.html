@@ -6,165 +6,8 @@
     <meta name="robots" content="noindex">
     <title>Admin - General</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="../assets/admin.css">
     <style>
-        .admin-panel {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .admin-header h2 {
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .btn-logout {
-            background: #d32f2f;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .btn-logout:hover {
-            background: #b71c1c;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-            margin-right: 1rem;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background: #757575;
-        }
-
-        .btn-secondary:hover {
-            background: #616161;
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .error {
-            background: #ffebee;
-            color: #d32f2f;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-        .success {
-            background: #e8f5e8;
-            color: #388e3c;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 0.5rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .preview-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-
-        .preview-section h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .preview-content {
-            padding: 1rem;
-            background: white;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
-        }
     </style>
 </head>
 <body>
@@ -178,109 +21,129 @@
         <div class="admin-panel">
             <div class="admin-header">
                 <h2>Configuración general</h2>
-                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+                <button type="button" class="btn-logout" id="btn-logout">Cerrar Sesión</button>
             </div>
 
-            <div id="mensaje-error" class="oculto"></div>
-            <div id="mensaje-exito" class="oculto"></div>
+            <p class="ayuda">Estos datos aparecen en el encabezado, el pie y los botones de contacto de tu sitio.</p>
 
-            <form id="form-config" onsubmit="guardarConfig(event)">
-                <div class="form-group">
-                    <label for="perfil-nombre">Nombre del catálogo</label>
-                    <input type="text" id="perfil-nombre" name="perfil-nombre" required>
-                </div>
+            <div id="mensaje-error" class="oculto" role="alert"></div>
+            <div id="mensaje-exito" class="oculto" role="status"></div>
 
-                <div class="form-group">
-                    <label for="perfil-descripcion_corta">Descripción Corta</label>
-                    <textarea id="perfil-descripcion_corta" name="perfil-descripcion_corta" required></textarea>
-                </div>
+            <form id="form-config" novalidate>
+                <section class="grupo" aria-labelledby="g-perfil">
+                    <h3 id="g-perfil">Tu catálogo</h3>
+                    <div class="form-group">
+                        <label for="perfil-nombre">Nombre del catálogo</label>
+                        <input type="text" id="perfil-nombre" name="perfil-nombre" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="perfil-whatsapp">WhatsApp: número (con código de país, ej. +51999888777)</label>
-                    <input type="text" id="perfil-whatsapp" name="perfil-whatsapp" aria-describedby="ayuda-whatsapp">
-                </div>
+                    <div class="form-group">
+                        <label for="perfil-descripcion_corta">Descripción corta</label>
+                        <textarea id="perfil-descripcion_corta" name="perfil-descripcion_corta" required></textarea>
+                    </div>
 
-                <div class="form-group">
-                    <label for="perfil-whatsapp_usuario">WhatsApp: nombre de usuario (opcional)</label>
-                    <input type="text" id="perfil-whatsapp_usuario" name="perfil-whatsapp_usuario" autocapitalize="none" spellcheck="false" aria-describedby="ayuda-whatsapp">
-                    <small id="ayuda-whatsapp">Rellena al menos uno. Si indicas ambos, los enlaces usan el nombre de usuario.</small>
-                </div>
+                    <div class="campos-2">
+                        <div class="form-group">
+                            <label for="perfil-tipo_catalogo">Tipo de catálogo</label>
+                            <select id="perfil-tipo_catalogo" name="perfil-tipo_catalogo" required>
+                                <option value="solo-servicios">Solo servicios</option>
+                                <option value="solo-productos">Solo productos</option>
+                                <option value="mixto">Mixto (servicios y productos)</option>
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="perfil-email">Email (opcional)</label>
-                    <input type="email" id="perfil-email" name="perfil-email">
-                </div>
+                        <div class="form-group">
+                            <label for="perfil-moneda">Moneda</label>
+                            <select id="perfil-moneda" name="perfil-moneda" required>
+                                <option value="PEN">PEN - Sol Peruano</option>
+                                <option value="USD">USD - Dólar Estadounidense</option>
+                                <option value="MXN">MXN - Peso Mexicano</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="perfil-moneda">Moneda</label>
-                    <select id="perfil-moneda" name="perfil-moneda" required>
-                        <option value="PEN">PEN - Sol Peruano</option>
-                        <option value="USD">USD - Dólar Estadounidense</option>
-                        <option value="MXN">MXN - Peso Mexicano</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="perfil-logo_url">URL del logo (opcional)</label>
+                        <input type="url" id="perfil-logo_url" name="perfil-logo_url" placeholder="https://ejemplo.com/logo.png">
+                    </div>
+                </section>
 
-                <div class="form-group">
-                    <label for="perfil-tipo_catalogo">Tipo de catálogo</label>
-                    <select id="perfil-tipo_catalogo" name="perfil-tipo_catalogo" required>
-                        <option value="solo-servicios">Solo servicios</option>
-                        <option value="solo-productos">Solo productos</option>
-                        <option value="mixto">Mixto (servicios y productos)</option>
-                    </select>
-                </div>
+                <section class="grupo" aria-labelledby="g-contacto">
+                    <h3 id="g-contacto">Contacto y reservas</h3>
+                    <p class="ayuda" id="ayuda-whatsapp">Rellena al menos un dato de WhatsApp. Si indicas ambos, los enlaces usan el nombre de usuario.</p>
 
-                <div class="form-group">
-                    <label for="perfil-reserva_url">Enlace de reserva (opcional)</label>
-                    <input type="url" id="perfil-reserva_url" name="perfil-reserva_url" placeholder="https://calendly.com/tu-cita" aria-describedby="reserva-ayuda">
-                    <small id="reserva-ayuda">Calendly, Cal.com, Google Calendar u otra agenda. Se usa en los servicios cuya categoría marcaste como «con reserva» en Catálogo.</small>
-                </div>
+                    <div class="campos-2">
+                        <div class="form-group">
+                            <label for="perfil-whatsapp">WhatsApp: número</label>
+                            <input type="text" id="perfil-whatsapp" name="perfil-whatsapp" placeholder="+51999888777" aria-describedby="ayuda-whatsapp">
+                            <small>Con código de país.</small>
+                        </div>
 
-                <div class="form-group">
-                    <label for="analitica-cf_token">Token de Cloudflare Web Analytics (opcional)</label>
-                    <input type="text" id="analitica-cf_token" name="analitica-cf_token" placeholder="Pega el token de tu propiedad" autocomplete="off" aria-describedby="analitica-ayuda">
-                    <small id="analitica-ayuda">Gratis y sin cookies: te dice cuánta gente visita el sitio. Cloudflare → Analytics &amp; Logs → Web Analytics → Add a site → copia el «token». No se mide el admin ni el carrito.</small>
-                </div>
+                        <div class="form-group">
+                            <label for="perfil-whatsapp_usuario">WhatsApp: usuario (opcional)</label>
+                            <input type="text" id="perfil-whatsapp_usuario" name="perfil-whatsapp_usuario" autocapitalize="none" spellcheck="false" aria-describedby="ayuda-whatsapp">
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="perfil-logo_url">URL del Logo (opcional)</label>
-                    <input type="url" id="perfil-logo_url" name="perfil-logo_url" placeholder="https://ejemplo.com/logo.png">
-                </div>
+                    <div class="form-group">
+                        <label for="perfil-email">Email (opcional)</label>
+                        <input type="email" id="perfil-email" name="perfil-email">
+                    </div>
 
-                <h3>Redes Sociales</h3>
+                    <div class="form-group">
+                        <label for="perfil-reserva_url">Enlace de reserva (opcional)</label>
+                        <input type="url" id="perfil-reserva_url" name="perfil-reserva_url" placeholder="https://calendly.com/tu-cita" aria-describedby="reserva-ayuda">
+                        <small id="reserva-ayuda">Calendly, Cal.com, Google Calendar u otra agenda. Se usa en los servicios cuya categoría marcaste como «con reserva» en Catálogo.</small>
+                    </div>
+                </section>
 
-                <div class="form-group">
-                    <label for="perfil-redes-instagram">Instagram (opcional)</label>
-                    <input type="url" id="perfil-redes-instagram" name="perfil-redes-instagram" placeholder="https://instagram.com/tu-usuario">
-                </div>
+                <section class="grupo" aria-labelledby="g-redes">
+                    <h3 id="g-redes">Redes sociales</h3>
+                    <p class="ayuda">Todas son opcionales. Solo se muestran las que rellenes.</p>
+                    <div class="campos-2">
+                        <div class="form-group">
+                            <label for="perfil-redes-instagram">Instagram</label>
+                            <input type="url" id="perfil-redes-instagram" name="perfil-redes-instagram" placeholder="https://instagram.com/tu-usuario">
+                        </div>
 
-                <div class="form-group">
-                    <label for="perfil-redes-facebook">Facebook (opcional)</label>
-                    <input type="url" id="perfil-redes-facebook" name="perfil-redes-facebook" placeholder="https://facebook.com/tu-usuario">
-                </div>
+                        <div class="form-group">
+                            <label for="perfil-redes-facebook">Facebook</label>
+                            <input type="url" id="perfil-redes-facebook" name="perfil-redes-facebook" placeholder="https://facebook.com/tu-usuario">
+                        </div>
 
-                <div class="form-group">
-                    <label for="perfil-redes-tiktok">TikTok (opcional)</label>
-                    <input type="url" id="perfil-redes-tiktok" name="perfil-redes-tiktok" placeholder="https://tiktok.com/@tu-usuario">
-                </div>
+                        <div class="form-group">
+                            <label for="perfil-redes-tiktok">TikTok</label>
+                            <input type="url" id="perfil-redes-tiktok" name="perfil-redes-tiktok" placeholder="https://tiktok.com/@tu-usuario">
+                        </div>
 
-                <div class="form-group">
-                    <label for="perfil-redes-youtube">YouTube (opcional)</label>
-                    <input type="url" id="perfil-redes-youtube" name="perfil-redes-youtube" placeholder="https://youtube.com/@tu-canal">
-                </div>
+                        <div class="form-group">
+                            <label for="perfil-redes-youtube">YouTube</label>
+                            <input type="url" id="perfil-redes-youtube" name="perfil-redes-youtube" placeholder="https://youtube.com/@tu-canal">
+                        </div>
+                    </div>
+                </section>
 
-                <button type="submit" class="btn">Guardar Configuración</button>
-                <button type="button" class="btn btn-secondary" onclick="previsualizarConfig()">Previsualizar JSON</button>
+                <details class="avanzado">
+                    <summary>Analítica (opcional)</summary>
+                    <div class="contenido">
+                        <div class="form-group">
+                            <label for="analitica-cf_token">Token de Cloudflare Web Analytics</label>
+                            <input type="text" id="analitica-cf_token" name="analitica-cf_token" placeholder="Pega el token de tu propiedad" autocomplete="off" aria-describedby="analitica-ayuda">
+                            <small id="analitica-ayuda">Gratis y sin cookies: te dice cuánta gente visita el sitio. Cloudflare → Analytics &amp; Logs → Web Analytics → Add a site → copia el «token». No se mide el admin ni el carrito.</small>
+                        </div>
+                    </div>
+                </details>
 
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Guardando...</p>
+                <details class="avanzado">
+                    <summary>Ver JSON</summary>
+                    <pre id="preview-content" class="preview-content"></pre>
+                </details>
+
+                <div class="barra-guardar">
+                    <button type="submit" class="btn" id="btn-guardar">Guardar configuración</button>
+                    <span class="estado-cambios" id="estado-cambios" role="status">Sin cambios</span>
                 </div>
             </form>
-
-            <div class="preview-section" id="preview-section" style="display: none;">
-                <h3>Vista Previa del JSON</h3>
-                <div id="preview-content" class="preview-content"></div>
-            </div>
         </div>
     </main>
 
@@ -347,80 +210,74 @@
             return resultado;
         }
 
+        let modificado = false;
+
+        function marcarModificado() {
+            modificado = true;
+            const estado = document.getElementById('estado-cambios');
+            estado.textContent = 'Cambios sin guardar';
+            estado.classList.add('pendiente');
+            actualizarPreview();
+        }
+
+        function marcarGuardado() {
+            modificado = false;
+            const estado = document.getElementById('estado-cambios');
+            estado.textContent = 'Todo guardado';
+            estado.classList.remove('pendiente');
+        }
+
         async function guardarConfig(event) {
             event.preventDefault();
-            
+
             if (!(await window.admin.isAuthenticated())) {
                 window.location.href = '/admin/index.html';
                 return;
             }
-            
+
             const formData = obtenerFormulario();
-            
-            const btnSubmit = document.querySelector('#form-config button[type="submit"]');
-            const loading = document.getElementById('loading');
-            const errorDiv = document.getElementById('mensaje-error');
-            const successDiv = document.getElementById('mensaje-exito');
-            
-            btnSubmit.disabled = true;
-            loading.style.display = 'block';
-            errorDiv.classList.add('oculto');
-            successDiv.classList.add('oculto');
-            
+
+            const btn = document.getElementById('btn-guardar');
+            btn.disabled = true;
+            btn.textContent = 'Guardando…';
+            ocultarMensajes();
+
             try {
                 await window.admin.putContent('config', formData);
                 configActual = formData;
-                
-                mostrarExito('Configuración guardada exitosamente');
-                actualizarPreview();
+                marcarGuardado();
+                mostrarExito('Configuración guardada. Los cambios pueden tardar hasta un minuto en verse en el sitio.');
             } catch (error) {
                 console.error('Error guardando config:', error);
-                mostrarError(error.message || 'Error guardando la configuración. Por favor, intente nuevamente.');
+                mostrarError(error.message || 'No se pudo guardar la configuración. Inténtalo de nuevo.');
             } finally {
-                btnSubmit.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-
-        function previsualizarConfig() {
-            const previewSection = document.getElementById('preview-section');
-            const previewContent = document.getElementById('preview-content');
-            
-            if (previewSection.style.display === 'none') {
-                actualizarPreview();
-                previewSection.style.display = 'block';
-            } else {
-                previewSection.style.display = 'none';
+                btn.disabled = false;
+                btn.textContent = 'Guardar configuración';
             }
         }
 
         function actualizarPreview() {
-            const previewContent = document.getElementById('preview-content');
-            previewContent.textContent = JSON.stringify(configActual || {}, null, 2);
+            document.getElementById('preview-content').textContent = JSON.stringify(obtenerFormulario(), null, 2);
         }
 
-        function cerrarSesion() {
-            window.admin.logout();
+        function ocultarMensajes() {
+            document.getElementById('mensaje-error').classList.add('oculto');
+            document.getElementById('mensaje-exito').classList.add('oculto');
         }
 
         function mostrarError(mensaje) {
-            const errorDiv = document.getElementById('mensaje-error');
-            errorDiv.textContent = mensaje;
-            errorDiv.classList.remove('oculto');
-            errorDiv.classList.add('error');
-            
-            const successDiv = document.getElementById('mensaje-exito');
-            successDiv.classList.add('oculto');
+            ocultarMensajes();
+            const div = document.getElementById('mensaje-error');
+            div.textContent = mensaje;
+            div.className = 'error';
+            div.scrollIntoView({ block: 'nearest' });
         }
 
         function mostrarExito(mensaje) {
-            const successDiv = document.getElementById('mensaje-exito');
-            successDiv.textContent = mensaje;
-            successDiv.classList.remove('oculto');
-            successDiv.classList.add('success');
-            
-            const errorDiv = document.getElementById('mensaje-error');
-            errorDiv.classList.add('oculto');
+            ocultarMensajes();
+            const div = document.getElementById('mensaje-exito');
+            div.textContent = mensaje;
+            div.className = 'success';
         }
 
         async function verificarAuth() {
@@ -430,9 +287,22 @@
             }
             
             await cargarConfig();
+            actualizarPreview();
+            marcarGuardado();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('form-config');
+            document.getElementById('btn-logout').addEventListener('click', () => window.admin.logout());
+            form.addEventListener('submit', guardarConfig);
+            form.addEventListener('input', marcarModificado);
+            form.addEventListener('change', marcarModificado);
+            window.addEventListener('beforeunload', evento => {
+                if (modificado) {
+                    evento.preventDefault();
+                    evento.returnValue = '';
+                }
+            });
             verificarAuth();
         });
     </script>

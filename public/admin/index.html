@@ -6,105 +6,37 @@
     <meta name="robots" content="noindex">
     <title>Admin - Iniciar Sesión</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="../assets/admin.css">
     <style>
         .admin-login {
             max-width: 400px;
             margin: 100px auto;
             padding: 2rem;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-card);
         }
 
         .admin-login h2 {
             text-align: center;
-            color: var(--primary);
             margin-bottom: 1.5rem;
-        }
-
-        .admin-login .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .admin-login label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #555;
         }
 
         .admin-login input[type="password"] {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .admin-login input[type="password"]:focus {
-            outline: none;
-            border-color: var(--primary);
         }
 
         .admin-login .btn {
             width: 100%;
-            padding: 0.8rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
 
-        .admin-login .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .admin-login .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .admin-login .error {
-            background: #ffebee;
-            color: #d32f2f;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
+        .admin-login .error,
         .admin-login .success {
-            background: #e8f5e8;
-            color: #388e3c;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1.5rem;
             text-align: center;
         }
 
-        .admin-login .loading {
-            display: none;
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .admin-login .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @media (max-width: 640px) {
+            .admin-login { margin: 2rem 0.75rem; padding: 1.5rem 1.25rem; }
         }
     </style>
 </head>

@@ -6,54 +6,8 @@
     <meta name="robots" content="noindex">
     <title>Admin - Fotos</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="../assets/admin.css">
     <style>
-        .admin-panel {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .admin-header h2 {
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .btn-logout {
-            background: #d32f2f;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .btn-logout:hover {
-            background: #b71c1c;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #555;
-        }
 
         .form-group select,
         .form-group input {
@@ -68,18 +22,6 @@
         .form-group input:focus {
             outline: none;
             border-color: var(--primary);
-        }
-
-        .preview-section {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-
-        .preview-section h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
         }
 
         .items-preview {
@@ -186,76 +128,6 @@
             color: var(--primary);
             margin-bottom: 0.5rem;
         }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-            margin-right: 1rem;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background: #757575;
-        }
-
-        .btn-secondary:hover {
-            background: #616161;
-        }
-
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .error {
-            background: #ffebee;
-            color: #d32f2f;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-        .success {
-            background: #e8f5e8;
-            color: #388e3c;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .oculto {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
@@ -269,11 +141,13 @@
         <div class="admin-panel">
             <div class="admin-header">
                 <h2>Fotos</h2>
-                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+                <button type="button" class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
 
-            <div id="mensaje-error" class="oculto"></div>
-            <div id="mensaje-exito" class="oculto"></div>
+            <p class="ayuda">Sube una foto para cada servicio o producto. Se muestra en la tarjeta, en la ficha y al compartir el enlace.</p>
+
+            <div id="mensaje-error" class="oculto" role="alert"></div>
+            <div id="mensaje-exito" class="oculto" role="status"></div>
 
             <div class="form-group">
                 <label for="item-select">Seleccionar Item</label>
@@ -306,8 +180,10 @@
                 <img id="selected-item-preview" alt="Vista previa de la imagen seleccionada" style="display: none; max-width: 100%; max-height: 220px; border-radius: 5px; margin-top: 0.5rem;">
             </div>
 
+            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:1rem;">
             <button class="btn" id="btn-upload" onclick="subirImagen()" disabled>Subir Imagen</button>
             <button class="btn btn-secondary" onclick="previsualizarImagenes()">Previsualizar Todas las Imágenes</button>
+            </div>
 
             <div class="loading" id="loading">
                 <div class="spinner"></div>

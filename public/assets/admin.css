@@ -1,0 +1,342 @@
+/* Estilos compartidos del panel de administración. Cada página admin añade solo lo suyo. */
+
+.admin-panel {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-header h2 {
+  color: var(--ink);
+  margin: 0;
+}
+
+.btn-logout {
+  background: white;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  padding: 0.5rem 1rem;
+  min-height: 40px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  background: #ffebee;
+  border-color: #d32f2f;
+  color: #b71c1c;
+}
+
+.ayuda {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem;
+}
+
+/* Formularios */
+.form-group {
+  margin-bottom: 1.1rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid #ccd0d6;
+  border-radius: var(--radius-btn);
+  font-size: 1rem;
+  font-family: inherit;
+  background: white;
+  color: var(--ink);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus,
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+
+.form-group textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-group small,
+.pista {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.form-group input.invalido,
+.form-group textarea.invalido,
+.form-group select.invalido {
+  border-color: #d32f2f;
+}
+
+/* Grupo de campos: tarjeta con título */
+.grupo {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-box);
+  padding: 1.25rem 1.25rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.grupo > h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+}
+
+.grupo > .ayuda {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.grupo > h3:not(:has(+ .ayuda)) {
+  margin-bottom: 1rem;
+}
+
+.campos-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+}
+
+/* Botones */
+.btn {
+  background: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+  padding: 0.7rem 1.4rem;
+  min-height: 44px;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: background-color 0.2s;
+}
+
+.btn:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--ink);
+  border: 1px solid #ccd0d6;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-alt);
+}
+
+.btn:disabled {
+  background: #ccc;
+  border-color: #ccc;
+  color: white;
+  cursor: not-allowed;
+}
+
+.btn-secondary:disabled {
+  background: white;
+  border-color: var(--line);
+  color: #999;
+}
+
+.btn:focus-visible,
+.btn-logout:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Botón pequeño para acciones de fila (subir, bajar, quitar) */
+.btn-icono {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  border-radius: var(--radius-btn);
+  min-width: 44px;
+  height: 36px;
+  padding: 0 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.btn-icono:hover:not(:disabled) {
+  background: var(--bg-alt);
+  border-color: var(--muted);
+}
+
+.btn-icono:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn-icono.peligro {
+  color: #b71c1c;
+}
+
+.btn-icono.peligro:hover:not(:disabled) {
+  background: #ffebee;
+  border-color: #d32f2f;
+}
+
+/* Barra de guardado: se queda visible al bajar por formularios largos */
+.barra-guardar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  background: white;
+  border-top: 1px solid var(--line);
+  padding: 0.9rem 0;
+  margin-top: 1.5rem;
+  z-index: 5;
+}
+
+.estado-cambios {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.estado-cambios.pendiente {
+  color: #8a5a00;
+  font-weight: 600;
+}
+
+/* Secciones plegables (opciones avanzadas, JSON) */
+details.avanzado {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-box);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+details.avanzado summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+details.avanzado .contenido {
+  margin-top: 0.9rem;
+}
+
+.preview-content {
+  margin-top: 0.9rem;
+  padding: 1rem;
+  background: var(--bg-alt);
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Mensajes */
+.error,
+.success {
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-btn);
+  margin-bottom: 1rem;
+}
+
+.error {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+.success {
+  background: #e8f5e8;
+  color: #2e6b32;
+}
+
+.loading {
+  display: none;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--primary);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.oculto {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .admin-panel {
+    margin: 1rem 0.75rem;
+    padding: 1.25rem 1rem;
+  }
+
+  .campos-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .barra-guardar .btn {
+    flex: 1 1 auto;
+  }
+}
+
+.preview-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: var(--bg-alt);
+  border-radius: var(--radius-box);
+}
+
+.preview-section h3 {
+  margin-bottom: 1rem;
+}
