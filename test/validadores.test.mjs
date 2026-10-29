@@ -86,6 +86,9 @@ test('landing: secciones, testimonios e items_ids', () => {
   rechaza(() => validateLanding(con({ tipo: 'testimonios', testimonios: [{ texto: 'x', autor: '' }] }), ids), /autor/);
   rechaza(() => validateLanding(con({ tipo: 'testimonios', testimonios: Array.from({ length: 9 }, () => ({ texto: 'x', autor: 'y' })) }), ids), /máximo 8/);
   rechaza(() => validateLanding(con({ tipo: 'texto', testimonios: [] }), ids), /no es de testimonios/);
+  validateLanding(con({ tipo: 'sobre-mi', contenido: 'Hola', nombre: 'Lucía' }), ids);
+  rechaza(() => validateLanding(con({ tipo: 'texto', nombre: 'Lucía' }), ids), /no puede tener 'nombre'/);
+  rechaza(() => validateLanding(con({ tipo: 'sobre-mi', nombre: 'a'.repeat(61) }), ids), /máximo 60/);
   rechaza(() => validateLanding(con({ tipo: 'texto', contenido: 'a'.repeat(2001) }), ids), /2000/);
   rechaza(() => validateLanding(con({ tipo: 'destacados', items_ids: ['fantasma'] }), ids), /no existen en el catálogo: fantasma/);
   validateLanding(con({ tipo: 'destacados', items_ids: ['fantasma'] })); // sin catálogo, no se comprueba

@@ -416,6 +416,14 @@ export function validateLanding(data, idsCatalogo) {
       fail(`La posición de la sección '${seccion.titulo}' debe ser 'antes' o 'despues' del catálogo`);
     }
     validarTestimonios(seccion);
+    if (seccion.nombre !== undefined) {
+      if (seccion.tipo !== 'sobre-mi') {
+        fail(`La sección '${seccion.titulo}' no es de tipo «Sobre mí»: no puede tener 'nombre'`);
+      }
+      if (typeof seccion.nombre !== 'string' || seccion.nombre.length > 60) {
+        fail(`El nombre de la sección '${seccion.titulo}' debe ser texto de máximo 60 caracteres`);
+      }
+    }
     if (!Array.isArray(seccion.items_ids) || !seccion.items_ids.every(id => typeof id === 'string')) {
       fail("Cada sección debe tener 'items_ids' como array de strings");
     }

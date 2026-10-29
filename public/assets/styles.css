@@ -1232,6 +1232,11 @@ footer .redes-sociales {
   box-shadow: 10px 10px 0 -2px var(--accent);
 }
 
+.sobre-mi-firma {
+  font-weight: 700;
+  color: var(--ink);
+}
+
 .sobre-mi-iniciales {
   width: 220px;
   height: 220px;

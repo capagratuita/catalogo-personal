@@ -536,6 +536,7 @@
                 contenido: datos.contenido || '',
                 items_ids: Array.isArray(datos.items_ids) ? [...datos.items_ids] : [],
                 posicion: datos.posicion === 'antes' ? 'antes' : 'despues',
+                nombre: datos.nombre || '',
                 testimonios: Array.isArray(datos.testimonios) ? datos.testimonios.map(t => ({ texto: t.texto || '', autor: t.autor || '', detalle: t.detalle || '' })) : []
             };
         }
@@ -557,6 +558,7 @@
                     items_ids: s.tipo === 'destacados' || s.tipo === 'galeria' ? s.items_ids : []
                 };
                 if (s.posicion === 'antes') seccion.posicion = 'antes';
+                if (s.tipo === 'sobre-mi' && s.nombre.trim()) seccion.nombre = s.nombre.trim();
                 if (s.tipo === 'testimonios') {
                     seccion.testimonios = s.testimonios
                         .filter(t => t.texto.trim() || t.autor.trim())
@@ -741,6 +743,11 @@
 
             if (s.tipo === 'texto') return textarea('Deja una línea en blanco para separar párrafos. Los enlaces que empiecen por https:// se vuelven clicables.');
             if (s.tipo === 'sobre-mi') return textarea('Cuenta quién eres y a qué te dedicas.', 'Tu presentación') + `
+                <div class="form-group">
+                    <label for="seccion-nombre">Tu nombre (opcional)</label>
+                    <input type="text" id="seccion-nombre" maxlength="60" value="${escapeHtml(s.nombre)}" aria-describedby="seccion-nombre-ayuda">
+                    <p class="ayuda" id="seccion-nombre-ayuda">Se muestra como firma bajo tu presentación y, sin foto, sus iniciales ocupan el lugar de la foto. Si lo dejas vacío, sin foto solo se ve el texto.</p>
+                </div>
                 <div class="form-group foto-sobre-mi">
                     <label for="sobre-mi-archivo">Tu foto</label>
                     <div class="foto-sobre-mi-fila">
@@ -825,7 +832,13 @@
 
             if (s.tipo === 'destacados' || s.tipo === 'galeria') renderItems(s);
             if (s.tipo === 'testimonios') renderTestimonios(s);
-            if (s.tipo === 'sobre-mi') montarFotoSobreMi(panel);
+            if (s.tipo === 'sobre-mi') {
+                panel.querySelector('#seccion-nombre').addEventListener('input', e => {
+                    s.nombre = e.target.value;
+                    marcarModificado();
+                });
+                montarFotoSobreMi(panel);
+            }
             actualizarAviso(s);
         }
 

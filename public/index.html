@@ -354,7 +354,7 @@
                 return true;
             },
 
-            'sobre-mi'(seccion, contenedor, { config }) {
+            'sobre-mi'(seccion, contenedor) {
                 const textos = parrafos(seccion.contenido);
                 if (!textos.length) return false;
                 const caja = crear('div', 'sobre-mi');
@@ -363,16 +363,17 @@
                 img.src = '/api/image?id=sobre-mi';
                 img.alt = seccion.titulo || 'Foto';
                 img.loading = 'lazy';
-                // Sin foto: círculo con las iniciales del nombre, para que no quede solo el texto
+                // Sin foto: círculo con las iniciales de seccion.nombre; sin nombre, solo el texto
                 img.addEventListener('error', () => {
-                    const nombre = (config.perfil && config.perfil.nombre) || seccion.titulo || '';
-                    const iniciales = nombre.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
-                    const marco = crear('div', 'sobre-mi-iniciales', iniciales || '·');
+                    const iniciales = (seccion.nombre || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+                    if (!iniciales) { img.remove(); return; }
+                    const marco = crear('div', 'sobre-mi-iniciales', iniciales);
                     marco.setAttribute('aria-hidden', 'true');
                     img.replaceWith(marco);
                 }, { once: true });
                 const texto = crear('div', 'sobre-mi-texto');
                 texto.append(...textos);
+                if (seccion.nombre) texto.appendChild(crear('p', 'sobre-mi-firma', seccion.nombre));
                 caja.append(img, texto);
                 contenedor.appendChild(caja);
                 return true;
