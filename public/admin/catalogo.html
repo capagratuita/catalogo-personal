@@ -1242,7 +1242,7 @@
                     <label class="campo"><span>Duración (min)</span>
                         <input class="item-duracion" type="number" placeholder="Minutos" value="0">
                     </label>
-                    <label class="campo"><span>Enlace de reserva propio</span>
+                    <label class="campo"><span>Enlace de reserva propio (opcional)</span>
                         <input class="item-reserva" type="text" placeholder="Opcional: https://…">
                     </label>
                 </div>
@@ -1298,8 +1298,20 @@
             if (!esServicio) check.checked = false;
             // Duración, enlace de reserva y detalles solo existen en servicios
             row.querySelector('.item-duracion').closest('.campo').hidden = !esServicio;
-            row.querySelector('.item-reserva').closest('.campo').hidden = !esServicio;
             row.querySelector('.item-servicio-detalle').hidden = !esServicio;
+            actualizarReserva(row);
+        }
+
+        // El enlace de reserva propio solo se usa si la categoría del servicio es agendable;
+        // oculto conserva su valor (se ignora en la web) y vuelve a verse al marcarla.
+        function actualizarReserva(row) {
+            const esServicio = row.querySelector('.item-tipo').value === 'servicio';
+            const agendable = esServicio && categoriasAgendamiento.includes(row.querySelector('.item-categoria').value);
+            row.querySelector('.item-reserva').closest('.campo').hidden = !agendable;
+        }
+
+        function actualizarTodasReservas() {
+            document.querySelectorAll('#items-container .item-row').forEach(actualizarReserva);
         }
 
         function actualizarOpcionesCategoria() {
@@ -1329,6 +1341,7 @@
                 // Mantener la selección previa si la categoría sigue existiendo
                 select.value = categorias.includes(seleccionActual) ? seleccionActual : '';
             });
+            actualizarTodasReservas();
         }
 
         function renderizarCategorias() {
@@ -1403,6 +1416,7 @@
         function renderizarOpcionesAgendamiento() {
             const contenedor = document.getElementById('categorias-agendamiento');
             contenedor.innerHTML = '';
+            actualizarTodasReservas();
 
             const opciones = categoriasPorTipo.servicio;
 
@@ -1429,6 +1443,7 @@
                     } else {
                         categoriasAgendamiento = categoriasAgendamiento.filter(c => c !== categoria);
                     }
+                    actualizarTodasReservas();
                 });
 
                 label.appendChild(checkbox);
@@ -1595,7 +1610,7 @@
                     <label class="campo"><span>Duración (min)</span>
                         <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
                     </label>
-                    <label class="campo"><span>Enlace de reserva propio</span>
+                    <label class="campo"><span>Enlace de reserva propio (opcional)</span>
                         <input class="item-reserva" type="text" placeholder="Opcional: https://…" value="${escapeHtml(item.reserva_url || item.calendly_url)}">
                     </label>
                 </div>
@@ -1790,6 +1805,10 @@
                     const archivo = event.target.files[0];
                     event.target.value = '';
                     if (archivo) subirFotoItem(event.target.closest('.item-row'), archivo);
+                    return;
+                }
+                if (event.target.matches('.item-categoria')) {
+                    actualizarReserva(event.target.closest('.item-row'));
                     return;
                 }
                 if (event.target.matches('.item-tipo')) {
