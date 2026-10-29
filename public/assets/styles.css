@@ -312,6 +312,12 @@ nav .carrito-contador {
   box-shadow: var(--shadow-hover);
 }
 
+/* Tarjeta de producto: no enlaza a ninguna parte, así que no se eleva ni cambia el cursor */
+.item-card-estatica:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .item-card:has(h3 a:focus-visible) {
   outline: 3px solid var(--accent);
   outline-offset: 2px;

@@ -143,3 +143,9 @@
 - `/admin/fotos` con cookie responde con la página de Catálogo en local. No verificado: la regla `public/_redirects` (301) en un despliegue real de Pages.
 - No verificado: renombrar el `id` de un item ya guardado (el botón se desactiva hasta guardar; la foto antigua queda huérfana, como antes) ni el flujo completo en navegador real fuera de este script.
 - La prueba subió una foto roja de prueba a `pan-integral` en el KV local `IMAGES`.
+
+## 2026-10-29 — Orden de items, galería de servicios y tarjetas de producto estáticas
+- `npm test`: 22 pruebas pasan (nueva: galería solo en servicios, máx. 6, `n` 1–6 sin repetir, `alt` ≤100, colisión de ids `x-g1`).
+- `npm run dev` + curl: subir `taller-masa-madre-g1…g5` devuelve 200; subir `pan-integral-g1` devuelve 400 («solo los servicios pueden tener galería»); `PUT catalogo` con `galeria` devuelve 200.
+- Los scripts inline de `producto.html`, `admin/catalogo.html` e `index.html` pasan `node --check`.
+- No verificado en navegador (Brave headless no cargó la página): mosaico en sus 4 disposiciones, visor, editor de galería, botones Subir/Bajar y tarjetas de producto estáticas a 375px y escritorio.

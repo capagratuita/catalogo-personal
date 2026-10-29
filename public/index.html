@@ -457,18 +457,16 @@
 
             const accionHtml = accion ? window.app.htmlAccion(accion, item.id) : '';
 
-            // La tarjeta es un resumen (foto, nombre, precio y acción); la descripción completa
-            // y el resto del detalle viven en la ficha, a la que llevan la foto y el nombre.
-            // Los servicios añaden un adelanto de la descripción, cortado a 2 líneas por CSS.
-            const descripcionHtml = isService
-                ? `<p class="descripcion">${escapeHtml(item.descripcion)}</p>`
-                : '';
+            // Los servicios llevan a la ficha (galería, qué incluye, opciones). Los productos no:
+            // la ficha mostraría lo mismo que la tarjeta, así que su tarjeta es estática y trae
+            // la descripción cortada a 2 líneas por CSS.
+            const descripcionHtml = `<p class="descripcion">${escapeHtml(item.descripcion)}</p>`;
             const urlFicha = `/producto?id=${encodeURIComponent(item.id)}`;
+            const imagenHtml = `<img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="" loading="lazy" width="400" height="300">`;
+            card.classList.toggle('item-card-estatica', !isService);
             card.innerHTML = `
-                <a class="item-enlace-imagen" href="${urlFicha}" tabindex="-1" aria-hidden="true">
-                    <img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="" loading="lazy" width="400" height="300">
-                </a>
-                <h3><a href="${urlFicha}">${escapeHtml(item.nombre)}</a></h3>
+                ${isService ? `<a class="item-enlace-imagen" href="${urlFicha}" tabindex="-1" aria-hidden="true">${imagenHtml}</a>` : imagenHtml}
+                <h3>${isService ? `<a href="${urlFicha}">${escapeHtml(item.nombre)}</a>` : escapeHtml(item.nombre)}</h3>
                 ${descripcionHtml}
                 <div class="item-meta">
                     ${priceHtml}

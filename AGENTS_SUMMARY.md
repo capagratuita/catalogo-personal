@@ -38,6 +38,12 @@
 ## Fotos dentro de Catálogo (2026-10-29)
 - Se eliminó `admin/fotos.html`; cada fila de Catálogo tiene miniatura y «Subir foto» (`admin.subirFoto`, compartido con la foto de «Sobre mí»). El botón solo se activa si el `id` ya está guardado. `/admin/fotos` redirige a Catálogo (`public/_redirects`). Catálogo: pestañas globales Productos/Servicios filtran categorías e items (Tipo oculto en la fila); se quitó la tabla «Validación del Catálogo». Cada campo de la fila lleva una etiqueta sutil (`label.campo > span`); las filas de opciones de precio siguen solo con placeholder. El ID está en la fila de Categoría y se autogenera del nombre (slug; `item-N` si no hay nombre) solo en items sin guardar y sin edición manual; vaciarlo lo regenera. Los campos que no aplican al tipo (duración, reserva, «Precio a consultar», detalles) se ocultan, no se deshabilitan; al lado del precio se muestra la moneda de General (solo lectura).
 
+## Catálogo: orden, galería de servicios y tarjetas de producto (2026-10-29)
+- Admin de Catálogo: foto en columna lateral, «Eliminar» en la cabecera de la card y botones Subir/Bajar para ordenar items dentro de su tipo.
+- Galería de servicios: `galeria[{n,alt}]` (≤6), fotos en `items/{id}-g{n}.{ext}` vía `/api/upload`; mosaico asimétrico y visor en `producto.html`; editor en «Detalles del servicio». Detalle en AGENTS.md sección 9.
+- Las tarjetas de producto ya no enlazan a la ficha (sería lo mismo) y muestran la descripción a 2 líneas; las de servicio sí.
+- El KV local tiene los dos servicios (`taller-masa-madre`, `asesoria-pan`) poblados con datos e imágenes ficticias generadas con Pillow.
+
 ## Estado y pendientes
 
 - Todo está commiteado en `main`.
