@@ -1,45 +1,56 @@
 {
   "hero": {
-    "titulo": "Bienvenidos a Panadería Artesanal El Molino",
-    "subtitulo": "Pan recién horneado todos los días y talleres para compartir nuestra pasión",
-    "cta_texto": "Ver Catálogo",
-    "cta_enlace": "/catalogo",
-    "imagen_fondo_url": "https://r2.dev/items/fondo-panaderia.jpg"
+    "titulo": "Aprende con capas gratuitas, apoya el sitio",
+    "subtitulo": "Mercancía de Capa Gratuita para apoyar las guías, y servicios para desplegar, resolver y crear tu propia solución. Siempre te decimos qué se puede y qué no.",
+    "cta_texto": "Ver la tienda",
+    "cta_enlace": "/#catalogo",
+    "imagen_fondo_url": null
   },
   "secciones": [
     {
       "tipo": "texto",
-      "titulo": "Nuestra Historia",
-      "contenido": "Fundada en 2015, Panadería Artesanal El Molino ha estado horneando pan con amor desde entonces. Usamos masa madre fermentada naturalmente y técnicas tradicionales para crear panes que saben como el hogar.",
+      "titulo": "Cómo trabajamos",
+      "contenido": "Documentamos cada solución con un despliegue real. Lo que explicamos en las guías lo puedes replicar sin pagar; lo que cobramos es el tiempo, la comodidad o la adaptación a tu caso. La mercancía ayuda a sostener el sitio.",
       "items_ids": []
     },
     {
       "tipo": "destacados",
-      "titulo": "Productos Destacados",
+      "titulo": "Destacados",
       "contenido": "",
-      "items_ids": ["pan-integral", "torta-chocolate"]
+      "items_ids": [
+        "hoodie-capa-gratuita",
+        "mug-capa-gratuita",
+        "soporte-premium",
+        "taller-solucion-desde-cero"
+      ]
     },
     {
       "tipo": "galeria",
-      "titulo": "Nuestros Productos",
+      "titulo": "Mercancía",
       "contenido": "",
-      "items_ids": ["pan-integral", "pan-sourdough", "torta-chocolate"]
+      "items_ids": [
+        "mug-capa-gratuita",
+        "polo-capa-gratuita",
+        "hoodie-capa-gratuita",
+        "gorra-capa-gratuita",
+        "stickers-capa-gratuita"
+      ]
     },
     {
       "tipo": "contacto",
-      "titulo": "Visítanos",
-      "contenido": "Estamos ubicados en el corazón de Miraflores. ¡Visítanos y prueba nuestro pan!",
+      "titulo": "Comunidad",
+      "contenido": "Resolvemos dudas y compartimos cambios de servicios en nuestra comunidad de Telegram: https://t.me/capagratuita",
       "items_ids": []
     }
   ],
   "tema": {
-    "color_primario": "#8B4513",
-    "color_secundario": "#FFD700",
-    "fuente": "serif",
-    "estilo": "rustico"
+    "color_primario": "#12161c",
+    "color_secundario": "#b6f23c",
+    "fuente": "sans",
+    "estilo": "moderno"
   },
   "seo": {
-    "titulo": "Panadería Artesanal El Molino - Pan Recién Horneado y Talleres",
-    "descripcion": "Pan integral, sourdough y tortas de chocolate recién horneadas. También ofrecemos talleres de masa madre y asesoría de panificación."
+    "titulo": "Capa Gratuita - Mercancía, despliegue, soporte y talleres",
+    "descripcion": "Mercancía de apoyo al sitio y servicios de despliegue, soporte premium, consultoría y talleres para crear tu propia solución con capas gratuitas."
   }
 }

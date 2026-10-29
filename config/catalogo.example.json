@@ -1,68 +1,127 @@
 {
   "categorias": {
-    "producto": ["pan", "pasteles"],
-    "servicio": ["citas", "talleres"]
+    "producto": [
+      "ropa",
+      "accesorios"
+    ],
+    "servicio": [
+      "despliegue",
+      "soporte",
+      "consultoria",
+      "talleres"
+    ]
   },
-  "categorias_agendamiento": ["citas"],
+  "categorias_agendamiento": [
+    "soporte",
+    "consultoria"
+  ],
   "items": [
     {
-      "id": "pan-integral",
+      "id": "mug-capa-gratuita",
       "tipo": "producto",
-      "nombre": "Pan Integral",
-      "descripcion": "Pan integral hecho con masa madre, 450g",
-      "precio": 8.5,
-      "categoria": "pan",
+      "nombre": "Mug Capa Gratuita",
+      "descripcion": "Mug de cerámica con el logo de Capa Gratuita, ideal para las sesiones de despliegue.",
+      "precio": 12,
+      "categoria": "accesorios",
       "disponible": true,
       "destacado": true,
       "duracion_minutos": null,
       "calendly_url": null
     },
     {
-      "id": "pan-sourdough",
+      "id": "polo-capa-gratuita",
       "tipo": "producto",
-      "nombre": "Pan Sourdough",
-      "descripcion": "Pan fermentado naturalmente, corteza crujiente, 500g",
-      "precio": 12.0,
-      "categoria": "pan",
+      "nombre": "Polo Capa Gratuita",
+      "descripcion": "Polo de algodón con el logo bordado. Consulta las tallas disponibles al hacer tu pedido.",
+      "precio": 22,
+      "categoria": "ropa",
+      "disponible": true,
+      "destacado": true,
+      "duracion_minutos": null,
+      "calendly_url": null
+    },
+    {
+      "id": "hoodie-capa-gratuita",
+      "tipo": "producto",
+      "nombre": "Hoodie Capa Gratuita",
+      "descripcion": "Hoodie cómodo con el logo de Capa Gratuita. Consulta las tallas disponibles al hacer tu pedido.",
+      "precio": 45,
+      "categoria": "ropa",
+      "disponible": true,
+      "destacado": true,
+      "duracion_minutos": null,
+      "calendly_url": null
+    },
+    {
+      "id": "gorra-capa-gratuita",
+      "tipo": "producto",
+      "nombre": "Gorra Capa Gratuita",
+      "descripcion": "Gorra ajustable con el logo de Capa Gratuita bordado al frente.",
+      "precio": 15,
+      "categoria": "ropa",
       "disponible": true,
       "destacado": false,
       "duracion_minutos": null,
       "calendly_url": null
     },
     {
-      "id": "torta-chocolate",
+      "id": "stickers-capa-gratuita",
       "tipo": "producto",
-      "nombre": "Torta de Chocolate",
-      "descripcion": "Húmeda, con cobertura de chocolate amargo, 8 porciones",
-      "precio": 35.0,
-      "categoria": "pasteles",
+      "nombre": "Pack de stickers",
+      "descripcion": "Pack de stickers para laptop con el logo y frases de la comunidad.",
+      "precio": 6,
+      "categoria": "accesorios",
       "disponible": true,
-      "destacado": true,
+      "destacado": false,
       "duracion_minutos": null,
       "calendly_url": null
     },
     {
-      "id": "taller-masa-madre",
+      "id": "despliegue-solucion",
       "tipo": "servicio",
-      "nombre": "Taller de Masa Madre",
-      "descripcion": "Clase práctica de 2 horas para aprender a hacer masa madre",
-      "precio": 45.0,
-      "categoria": "talleres",
+      "nombre": "Despliegue de una solución de las guías",
+      "descripcion": "Desplegamos contigo la solución de una de nuestras guías, paso a paso, en tus propias cuentas.",
+      "precio": 60,
+      "categoria": "despliegue",
       "disponible": true,
-      "destacado": false,
+      "destacado": true,
       "duracion_minutos": 120,
       "calendly_url": null
     },
     {
-      "id": "asesoria-pan",
+      "id": "soporte-premium",
       "tipo": "servicio",
-      "nombre": "Asesoría de Panificación",
-      "descripcion": "Consultoría personalizada para mejorar tus panes",
-      "precio": 80.0,
-      "categoria": "citas",
+      "nombre": "Soporte premium (por hora)",
+      "descripcion": "Soporte prioritario para resolver un bloqueo o adaptar una solución a tu caso. Precio por hora.",
+      "precio": 35,
+      "categoria": "soporte",
       "disponible": true,
       "destacado": true,
       "duracion_minutos": 60,
+      "calendly_url": null
+    },
+    {
+      "id": "consultoria",
+      "tipo": "servicio",
+      "nombre": "Consultoría",
+      "descripcion": "Revisamos tu caso y definimos qué solución con capas gratuitas te conviene y cómo implementarla.",
+      "precio": 50,
+      "categoria": "consultoria",
+      "disponible": true,
+      "destacado": false,
+      "duracion_minutos": 60,
+      "calendly_url": null
+    },
+    {
+      "id": "taller-solucion-desde-cero",
+      "tipo": "servicio",
+      "nombre": "Taller: crea tu solución desde cero",
+      "descripcion": "Construimos contigo una solución propia, similar a este catálogo personal, de la idea al despliegue.",
+      "precio": 150,
+      "categoria": "talleres",
+      "disponible": true,
+      "destacado": true,
+      "duracion_minutos": 180,
       "calendly_url": null
     }
   ]

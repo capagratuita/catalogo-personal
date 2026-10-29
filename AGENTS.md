@@ -110,7 +110,7 @@ AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
 
 ## 6. Contratos de datos
 
-La referencia ejecutable son `config/*.example.json`. Campos y límites que el validador y la UI esperan:
+La referencia ejecutable son `config/*.example.json` (ejemplo: tienda de Capa Gratuita; precios, WhatsApp `+00000000000` y email son marcadores a reemplazar). Las páginas públicas no llevan el nombre del negocio en el HTML: `app.js` lo rellena desde `config.negocio` (`aplicarMarca`: logo, pie, redes con `data-red`, título). Campos y límites que el validador y la UI esperan:
 
 - `config`: `negocio` con `nombre`, `descripcion_corta`, `whatsapp`, `email`, `moneda` (ISO 4217), `modo_negocio` (`solo-productos|solo-servicios|mixto`), `calendly_url` (string|null), `logo_url` (string|null), `redes.instagram/facebook` (string|null), `tono_chat`.
 - `catalogo`: `categorias` tipadas como `{ producto: [...], servicio: [...] }` e `items` (máx. 200). El array plano legacy sigue aceptándose y el admin lo migra al cargar. Cada item: `id` slug único `^[a-z0-9-]+$`, `tipo` (`producto|servicio`), `nombre`, `descripcion` (spec ≤200), `precio` número ≥0, `categoria` existente en la lista de su tipo o `""` (opcional), `disponible`/`destacado` booleanos, `duracion_minutos` número en servicios y `null` en productos, `calendly_url` string|null. `categorias_agendamiento` es un array opcional de categorías de servicio; solo los servicios de esas categorías usan Calendly. Si falta el campo, el admin infiere `cita`/`citas` al cargar y las páginas públicas no marcan ninguna. El panel del admin solo lista categorías de servicio y guarda únicamente esas.
@@ -142,7 +142,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 - Cada página es HTML completo. Las públicas cargan `/assets/app.js`; las admin cargan `../assets/admin.js` antes de su script inline.
 - El admin separa las categorías en pestañas Productos y Servicios; cada categoría nace con su tipo y los selectores de categoría de cada item se filtran por el tipo del item.
-- `assets/app.js` expone `window.app`: `fetchJSON`, `loadCatalogo`, `loadConfig`, `loadLanding`, `loadFAQ`, `renderItem`, `buildWhatsAppLink`, `formatPrecio`, `getCarrito`, `saveCarrito`, `addToCarrito`, `getCarritoTotal`, `getCarritoItemsCount`.
+- `assets/app.js` expone `window.app`: `fetchJSON`, `loadCatalogo`, `loadConfig` (memoizada), `aplicarMarca`, `loadLanding`, `loadFAQ`, `renderItem`, `buildWhatsAppLink`, `formatPrecio`, `getCarrito`, `saveCarrito`, `addToCarrito`, `getCarritoTotal`, `getCarritoItemsCount`.
 - `assets/admin.js` expone `window.admin`: `login`, `isAuthenticated` (async), `getContent`, `putContent`, `exportarTodo`, `importarTodo`, `logout` (async). No expone `getToken`; la sesión viaja en cookie.
 - Carrito real en `localStorage` bajo `carrito`: `[{id, nombre, precio, moneda, cantidad}]` (no solo `{id,cantidad}`; la UI lee nombre/precio). El checkout arma el mensaje con nombre, cantidad, precio y total.
 - WhatsApp: `https://wa.me/{config.negocio.whatsapp}?text=${encodeURIComponent(mensaje)}`.

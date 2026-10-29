@@ -18,9 +18,53 @@ async function loadCatalogo() {
   return await fetchJSON('/api/content?key=catalogo');
 }
 
-async function loadConfig() {
-  return await fetchJSON('/api/content?key=config');
+let configPromise = null;
+
+// La config se pide una sola vez por página; si falla, el siguiente intento vuelve a pedirla.
+function loadConfig() {
+  if (!configPromise) {
+    configPromise = fetchJSON('/api/content?key=config').catch(error => {
+      configPromise = null;
+      throw error;
+    });
+  }
+  return configPromise;
 }
+
+// Rellena nombre, pie de página, redes y título con los datos de config.negocio.
+function aplicarMarca(config) {
+  const negocio = config && config.negocio;
+  if (!negocio) return;
+
+  document.querySelectorAll('nav .logo').forEach(el => { el.textContent = negocio.nombre; });
+
+  const footerNombre = document.querySelector('footer h3');
+  if (footerNombre) footerNombre.textContent = negocio.nombre;
+  const footerDescripcion = document.querySelector('footer .container > div > p');
+  if (footerDescripcion) footerDescripcion.textContent = negocio.descripcion_corta;
+
+  const enlaces = {
+    instagram: negocio.redes && negocio.redes.instagram,
+    facebook: negocio.redes && negocio.redes.facebook,
+    whatsapp: negocio.whatsapp ? `https://wa.me/${negocio.whatsapp.replace(/\D/g, '')}` : null,
+  };
+  document.querySelectorAll('[data-red]').forEach(el => {
+    const url = enlaces[el.dataset.red];
+    el.hidden = !url;
+    if (url) el.setAttribute('href', url);
+  });
+
+  if (!document.documentElement.dataset.marca) {
+    document.documentElement.dataset.marca = '1';
+    if (!document.title.includes(negocio.nombre)) {
+      document.title = document.title ? `${document.title} - ${negocio.nombre}` : negocio.nombre;
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadConfig().then(aplicarMarca).catch(() => {});
+});
 
 async function loadLanding() {
   return await fetchJSON('/api/content?key=landing');
@@ -138,6 +182,7 @@ window.app = {
   fetchJSON,
   loadCatalogo,
   loadConfig,
+  aplicarMarca,
   loadLanding,
   loadFAQ,
   renderItem,
