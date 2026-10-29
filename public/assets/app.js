@@ -58,12 +58,18 @@ const FUENTES = {
   mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 };
 
-// Aplica landing.tema.fuente y color_acento. El resto de la paleta es fija (styles.css).
+// Aplica landing.tema.fuente, estilo y color_acento. El resto de la paleta es fija (styles.css).
 // El servidor ya inyecta el acento en <head>; aquí se repite por si la página no pasó por paginaPublica.
 function aplicarTema(tema) {
   if (!tema) return;
   if (FUENTES[tema.fuente]) {
     document.documentElement.style.setProperty('--font-body', FUENTES[tema.fuente]);
+  }
+  // Estilo visual (ver styles.css); «moderno» es la base y se queda sin atributo
+  if (['rustico', 'minimalista', 'elegante'].includes(tema.estilo)) {
+    document.documentElement.dataset.estilo = tema.estilo;
+  } else {
+    delete document.documentElement.dataset.estilo;
   }
   if (/^#[0-9a-fA-F]{6}$/.test(tema.color_acento || '')) {
     document.documentElement.style.setProperty('--accent', tema.color_acento);

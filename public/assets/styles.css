@@ -18,6 +18,19 @@
   --ok: #0B6B3F;
   --ok-hover: #09582F;
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Estilo (landing.tema.estilo). Estos valores son el estilo «moderno»; los otros los sobrescriben al final del archivo. */
+  --font-heading: var(--font-body);
+  --radius-card: 10px;
+  --radius-box: 8px;
+  --radius-btn: 5px;
+  --radius-pill: 50px;
+  --shadow-soft: 0 2px 10px rgba(0,0,0,0.1);
+  --shadow-faq: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-hover: 0 10px 25px rgba(0,0,0,0.1);
+  --shadow-media: 0 5px 20px rgba(0,0,0,0.1);
+  --shadow-btn: 0 5px 15px rgba(0,0,0,0.2);
+  --shadow-btn-warm: 0 6px 16px rgba(139, 69, 19, 0.25);
 }
 
 /* Reset y base */
@@ -41,6 +54,7 @@ body {
 }
 
 /* Tipografía escalable */
+h1, h2, h3, nav .logo { font-family: var(--font-heading); }
 h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
 h2 { font-size: clamp(1.5rem, 4vw, 2rem); }
 h3 { font-size: clamp(1.2rem, 3vw, 1.5rem); }
@@ -49,7 +63,7 @@ h3 { font-size: clamp(1.2rem, 3vw, 1.5rem); }
 nav {
   background: white;
   padding: 1rem 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-soft);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -135,14 +149,14 @@ nav .carrito-contador {
   background: var(--accent);
   color: var(--ink);
   text-decoration: none;
-  border-radius: 50px;
+  border-radius: var(--radius-pill);
   font-weight: bold;
   transition: all 0.3s;
 }
 
 .hero .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-btn);
 }
 
 /* Catálogo */
@@ -175,7 +189,7 @@ nav .carrito-contador {
   min-height: 44px;
   background: white;
   border: 2px solid var(--primary);
-  border-radius: 50px;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -193,7 +207,7 @@ nav .carrito-contador {
 
 .item-card {
   background: white;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   border: 1px solid var(--line);
   overflow: hidden;
   transition: all 0.3s;
@@ -203,7 +217,7 @@ nav .carrito-contador {
 
 .item-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-hover);
 }
 
 .item-card .item-imagen {
@@ -325,7 +339,7 @@ nav .carrito-contador {
 .item-card .btn-ver, .item-card .btn-calendly, .item-card .btn-add-to-cart {
   padding: 0.4rem 1rem;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-btn);
   cursor: pointer;
   font-size: 0.8rem;
   text-decoration: none;
@@ -383,8 +397,8 @@ nav .carrito-contador {
   width: 100%;
   height: 400px;
   object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-media);
 }
 
 .producto-info h2 {
@@ -395,7 +409,7 @@ nav .carrito-contador {
 .producto-meta {
   display: inline-flex;
   overflow: hidden;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg-alt);
 }
 
@@ -433,7 +447,7 @@ nav .carrito-contador {
   color: var(--ink-soft);
   background: var(--card);
   border-left: 4px solid var(--primary);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 var(--radius-box) var(--radius-box) 0;
   padding: 1rem 1.25rem;
 }
 
@@ -496,7 +510,7 @@ nav .carrito-contador {
 .producto-actions .btn {
   padding: 0.8rem 2rem;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--radius-btn);
   cursor: pointer;
   font-size: 1rem;
   transition: all 0.3s;
@@ -565,7 +579,7 @@ nav .carrito-contador {
   background: white;
   color: var(--primary);
   border: 2px solid var(--primary);
-  border-radius: 50px;
+  border-radius: var(--radius-pill);
   font-weight: bold;
   text-decoration: none;
   transition: all 0.3s;
@@ -575,7 +589,7 @@ nav .carrito-contador {
   background: var(--primary);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
+  box-shadow: var(--shadow-btn-warm);
 }
 
 /* Cart page */
@@ -596,9 +610,9 @@ nav .carrito-contador {
 
 .carrito-items {
   background: white;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-soft);
 }
 
 .carrito-item {
@@ -645,7 +659,7 @@ nav .carrito-contador {
   height: 30px;
   border: 1px solid #ddd;
   background: white;
-  border-radius: 5px;
+  border-radius: var(--radius-btn);
   cursor: pointer;
   font-size: 1.2rem;
 }
@@ -663,7 +677,7 @@ nav .carrito-contador {
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  border-radius: 5px;
+  border-radius: var(--radius-btn);
   cursor: pointer;
 }
 
@@ -673,9 +687,9 @@ nav .carrito-contador {
 
 .carrito-resumen {
   background: white;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-soft);
   height: fit-content;
 }
 
@@ -700,7 +714,7 @@ nav .carrito-contador {
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-pill);
   font-size: 1rem;
   font-weight: bold;
   text-align: center;
@@ -711,7 +725,7 @@ nav .carrito-contador {
 .carrito-resumen .btn:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(139, 69, 19, 0.25);
+  box-shadow: var(--shadow-btn-warm);
 }
 
 /* FAQ */
@@ -733,9 +747,9 @@ nav .carrito-contador {
 
 .faq-item {
   background: white;
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   margin-bottom: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-faq);
   overflow: hidden;
 }
 
@@ -794,7 +808,7 @@ nav .carrito-contador {
   background: var(--primary);
   color: white;
   text-decoration: none;
-  border-radius: 50px;
+  border-radius: var(--radius-pill);
   font-weight: bold;
 }
 
@@ -866,7 +880,7 @@ footer {
     color: #d32f2f;
     background: #ffebee;
     padding: 1rem;
-    border-radius: 5px;
+    border-radius: var(--radius-btn);
     margin: 1rem 0;
   }
 
@@ -874,7 +888,7 @@ footer {
     color: #388e3c;
     background: #e8f5e8;
     padding: 1rem;
-    border-radius: 5px;
+    border-radius: var(--radius-btn);
     margin: 1rem 0;
   }
 
@@ -962,7 +976,7 @@ footer {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   display: block;
   margin-bottom: 0.4rem;
   background: var(--bg-alt);
@@ -981,7 +995,7 @@ footer {
   align-items: center;
   min-height: 44px;
   padding: 0.6rem 1.5rem;
-  border-radius: 50px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   color: var(--ink);
   font-weight: bold;
@@ -1027,7 +1041,7 @@ footer {
 .testimonio {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -1065,3 +1079,112 @@ footer {
     height: 160px;
   }
 }
+
+/* ===== Estilos (landing.tema.estilo) =====
+   «moderno» es la base (variables de :root). Los demás cambian bordes, sombras, tipografía de títulos
+   y espaciado; nunca los colores (la paleta es fija y el acento se configura aparte). */
+html[data-estilo="minimalista"] {
+  --radius-card: 2px;
+  --radius-box: 2px;
+  --radius-btn: 2px;
+  --radius-pill: 2px;
+  --shadow-soft: none;
+  --shadow-faq: none;
+  --shadow-hover: none;
+  --shadow-media: none;
+  --shadow-btn: none;
+  --shadow-btn-warm: none;
+}
+
+html[data-estilo="minimalista"] nav { border-bottom: 1px solid var(--line); }
+html[data-estilo="minimalista"] .faq-item,
+html[data-estilo="minimalista"] .carrito-items,
+html[data-estilo="minimalista"] .carrito-resumen { border: 1px solid var(--line); }
+html[data-estilo="minimalista"] .item-card:hover { transform: none; border-color: var(--ink); }
+html[data-estilo="minimalista"] h1,
+html[data-estilo="minimalista"] h2,
+html[data-estilo="minimalista"] h3 { font-weight: 500; }
+html[data-estilo="minimalista"] .catalogo,
+html[data-estilo="minimalista"] .landing-seccion { padding-top: 5rem; padding-bottom: 5rem; }
+
+html[data-estilo="rustico"] {
+  --font-heading: Georgia, 'Times New Roman', serif;
+  --radius-card: 6px;
+  --radius-box: 4px;
+  --radius-btn: 4px;
+  --radius-pill: 8px;
+  --shadow-soft: 3px 3px 0 var(--line);
+  --shadow-faq: 3px 3px 0 var(--line);
+  --shadow-hover: 6px 6px 0 var(--line);
+  --shadow-media: 6px 6px 0 var(--line);
+  --shadow-btn: 3px 3px 0 rgba(0,0,0,0.3);
+  --shadow-btn-warm: 3px 3px 0 rgba(0,0,0,0.3);
+}
+
+html[data-estilo="rustico"] nav { border-bottom: 4px double var(--line); box-shadow: none; }
+html[data-estilo="rustico"] .catalogo h2::after,
+html[data-estilo="rustico"] .landing-seccion h2::after {
+  content: '';
+  display: block;
+  width: 90px;
+  margin: 0.6rem auto 0;
+  border-top: 4px double var(--ink-soft);
+}
+html[data-estilo="rustico"] .hero .btn,
+html[data-estilo="rustico"] .btn-contacto,
+html[data-estilo="rustico"] .item-card .btn-add-to-cart,
+html[data-estilo="rustico"] .item-card .btn-calendly,
+html[data-estilo="rustico"] .producto-actions .btn-primary { border: 2px solid var(--ink); }
+html[data-estilo="rustico"] .item-card,
+html[data-estilo="rustico"] .testimonio,
+html[data-estilo="rustico"] .faq-item,
+html[data-estilo="rustico"] .carrito-items,
+html[data-estilo="rustico"] .carrito-resumen { border: 2px solid var(--line); }
+html[data-estilo="rustico"] .item-card:hover { transform: translate(-2px, -2px); }
+html[data-estilo="rustico"] .landing-seccion { border-top: 4px double var(--line); }
+
+html[data-estilo="elegante"] {
+  --font-heading: Georgia, 'Times New Roman', serif;
+  --radius-card: 0;
+  --radius-box: 0;
+  --radius-btn: 0;
+  --radius-pill: 0;
+  --shadow-soft: none;
+  --shadow-faq: none;
+  --shadow-hover: none;
+  --shadow-media: none;
+  --shadow-btn: none;
+  --shadow-btn-warm: none;
+}
+
+html[data-estilo="elegante"] nav { border-bottom: 1px solid var(--ink); }
+html[data-estilo="elegante"] h1,
+html[data-estilo="elegante"] h2,
+html[data-estilo="elegante"] h3,
+html[data-estilo="elegante"] nav .logo { font-weight: 400; letter-spacing: 0.04em; }
+html[data-estilo="elegante"] .catalogo h2,
+html[data-estilo="elegante"] .landing-seccion h2 {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 1.4rem;
+}
+html[data-estilo="elegante"] .hero .btn,
+html[data-estilo="elegante"] .categoria-btn,
+html[data-estilo="elegante"] .btn-contacto,
+html[data-estilo="elegante"] .item-card .btn-ver,
+html[data-estilo="elegante"] .item-card .btn-calendly,
+html[data-estilo="elegante"] .item-card .btn-add-to-cart,
+html[data-estilo="elegante"] .producto-actions .btn,
+html[data-estilo="elegante"] .carrito-resumen .btn {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+html[data-estilo="elegante"] .item-card { border-color: var(--ink); }
+html[data-estilo="elegante"] .item-card:hover { transform: none; }
+html[data-estilo="elegante"] .faq-item,
+html[data-estilo="elegante"] .testimonio,
+html[data-estilo="elegante"] .carrito-items,
+html[data-estilo="elegante"] .carrito-resumen { border: 1px solid var(--ink); }
+html[data-estilo="elegante"] .catalogo,
+html[data-estilo="elegante"] .landing-seccion { padding-top: 5rem; padding-bottom: 5rem; }

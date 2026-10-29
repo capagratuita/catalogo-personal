@@ -18,6 +18,7 @@ Marca cada punto a mano en un sitio recién desplegado (o en `npm run dev`). Pru
 - [ ] Catálogo: marcar una categoría como *con reserva* y poner un enlace de reserva.
 - [ ] Fotos: subir una foto de más de 1 MB; se reduce y aparece en la tarjeta y en la ficha.
 - [ ] Landing: añadir *Sobre mí* (con foto desde Fotos), *Testimonios* y *Contacto* desde **+ Añadir sección**; marcar items en *Destacados*; subir/bajar y eliminar una sección; poner una sección «Antes del catálogo» y comprobar que aparece justo bajo la portada; cambiar el color de acento (uno muy oscuro se rechaza con un mensaje claro).
+- [ ] Apariencia: cambiar **Estilo** (Moderno, Minimalista, Rústico, Elegante) y recargar el sitio: cambian bordes, sombras y títulos en portada, ficha, carrito y FAQ, sin cambiar los colores.
 - [ ] Landing: las pestañas se pueden recorrer con las flechas del teclado, y al salir con cambios sin guardar el navegador avisa.
 - [ ] FAQ: añadir una pregunta y verla en `/faq`.
 - [ ] Respaldo: exportar, borrar una pregunta, importar el respaldo y comprobar que vuelve.

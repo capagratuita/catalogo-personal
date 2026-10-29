@@ -108,3 +108,9 @@
 ## 2026-10-29 — Separador entre pestañas fijas y secciones (Landing)
 - Las pestañas fijas (Portada, Apariencia y SEO) quedan a la izquierda y un separador con la etiqueta «Secciones» las divide de las pestañas de cada sección. jsdom: el separador es `role="presentation"` (no entra en la navegación por flechas: de Apariencia pasa directo a la primera sección) y también aparece si no hay ninguna sección. No se guardó nada en el servidor.
 - Pendiente: revisión visual a 375px y en escritorio.
+
+## 2026-10-29 — Estilos visuales (`tema.estilo`) y primera revisión en navegador real
+- Hallazgo: `estilo` se guardaba pero no hacía nada. Ahora cambia radios, sombras, títulos y espaciado (variables en `styles.css`; `data-estilo` en `<html>` desde el servidor y desde `aplicarTema`). La prueba con el KV local no se notaba porque sus datos tenían `estilo: rustico`, que antes no hacía nada.
+- Se instaló Chromium con Playwright en el directorio temporal (fuera del repo). `moderno` queda pixel-idéntico al CSS anterior a 375 y 1280 px sin contar fotos (las fotos difieren por decodificación, no por CSS). 40 combinaciones página × estilo × ancho: sin scroll horizontal, sin errores de JS y con el atributo correcto.
+- Se corrigieron fallos visibles solo en navegador real: sombra sólida desplazada en la barra de `rustico` (muesca en el borde), selector de color del admin que se veía como una barra gris, choque del título con «Cerrar Sesión», nota cortada en la lista de items y botones del formulario pegados.
+- Revisado a ojo: portada en los 4 estilos (375 y 1280), editor de Landing (portada, apariencia, sección) y filas de opciones de precio en Catálogo a 375px. Sin revisar a ojo: ficha, carrito y FAQ, y un celular real.

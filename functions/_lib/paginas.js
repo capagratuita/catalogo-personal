@@ -108,7 +108,12 @@ export function paginaPublica({ claves, meta }) {
       `<script type="application/json" id="sitio-datos">${jsonParaScript(sitio)}</script>`,
     ].join('\n');
 
+    // Estilo visual de la landing (moderno es la base y no necesita atributo)
+    const estilo = sitio.landing?.tema?.estilo;
+    const estiloValido = ['rustico', 'minimalista', 'elegante'].includes(estilo) ? estilo : null;
+
     const reescrita = new HTMLRewriter()
+      .on('html', { element(el) { if (estiloValido) el.setAttribute('data-estilo', estiloValido); } })
       .on('title', { element(el) { if (datos.titulo) el.setInnerContent(datos.titulo); } })
       .on('head', { element(el) { el.append(cabecera, { html: true }); } })
       .transform(respuesta);

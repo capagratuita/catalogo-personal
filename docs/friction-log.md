@@ -18,4 +18,4 @@ Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la 
 | 6 | Admin | ~~Opciones de precio de un servicio escritas como texto con `|`.~~ | Resuelto: filas con nombre, precio y minutos, y botones para añadir y quitar. | Resuelto (jsdom) |
 | 7 | Admin | ~~Testimonios con `|` e IDs de items a mano en Landing.~~ | Resuelto: pestañas por sección, tarjetas de testimonios y casillas de items. | Resuelto (jsdom) |
 | 8 | Cuota | Un ataque de contraseñas desde muchas IP podría gastar las escrituras diarias de KV. | Revisar el uso de KV tras unos días en línea. | Sin verificar |
-| 9 | Revisión visual | Las pantallas se probaron con pruebas automáticas, no con un navegador real a 375 px. | Pasar el checklist E2E. | Pendiente |
+| 9 | Revisión visual | Revisado con Chromium (Playwright) la portada en los 4 estilos y los editores del admin a 375 px; sin desbordes en 40 combinaciones de página, estilo y ancho. Faltan ficha, carrito y FAQ a ojo, y probar en un celular real. | Pasar el checklist E2E. | Parcial |
