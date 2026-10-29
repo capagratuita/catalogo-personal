@@ -240,6 +240,18 @@
             const data = window.paginaActual;
             if (!data || !data.catalogo || !data.config) return;
             TIPOS.forEach(renderizarSeccion);
+            ajustarCta();
+        }
+
+        // El botón del hero no debe apuntar a una sección que no se muestra
+        // (p. ej. "Ver servicios" en un negocio solo-productos).
+        function ajustarCta() {
+            const cta = document.querySelector('.hero .btn');
+            if (!cta) return;
+
+            const destino = (cta.getAttribute('href') || '').match(/^\/?#(.+)$/);
+            const seccion = destino && document.getElementById(destino[1]);
+            cta.hidden = Boolean(destino) && (!seccion || seccion.hidden);
         }
 
         function escapeHtml(texto) {

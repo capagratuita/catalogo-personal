@@ -2,8 +2,8 @@
   "hero": {
     "titulo": "Aprende con capas gratuitas, apoya el sitio",
     "subtitulo": "Mercancía de Capa Gratuita para apoyar las guías, y servicios para desplegar, resolver y crear tu propia solución. Siempre te decimos qué se puede y qué no.",
-    "cta_texto": "Ver la tienda",
-    "cta_enlace": "/#catalogo",
+    "cta_texto": "Ver servicios",
+    "cta_enlace": "/#seccion-servicio",
     "imagen_fondo_url": null
   },
   "secciones": [
