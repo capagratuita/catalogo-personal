@@ -55,7 +55,8 @@
         }
 
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid #ddd;
@@ -64,7 +65,8 @@
         }
 
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
         }
@@ -291,7 +293,12 @@
                     </div>
                     <div class="form-group">
                         <label for="landing-hero-cta_enlace">Enlace del CTA</label>
-                        <input type="text" id="landing-hero-cta_enlace" name="landing-hero-cta_enlace" required>
+                        <select id="landing-hero-cta_enlace" name="landing-hero-cta_enlace" required>
+                            <option value="/#seccion-servicio">Servicios</option>
+                            <option value="/#seccion-producto">Productos</option>
+                            <option value="/faq">Preguntas frecuentes</option>
+                            <option value="/carrito">Carrito</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="landing-hero-imagen_fondo_url">URL de Imagen de Fondo (opcional)</label>
@@ -464,7 +471,7 @@
                 document.getElementById('landing-hero-titulo').value = landing.hero.titulo || '';
                 document.getElementById('landing-hero-subtitulo').value = landing.hero.subtitulo || '';
                 document.getElementById('landing-hero-cta_texto').value = landing.hero.cta_texto || '';
-                document.getElementById('landing-hero-cta_enlace').value = landing.hero.cta_enlace || '';
+                asignarEnlaceCta(landing.hero.cta_enlace);
                 document.getElementById('landing-hero-imagen_fondo_url').value = landing.hero.imagen_fondo_url || '';
             }
 
@@ -514,6 +521,16 @@
             } else {
                 previewSection.style.display = 'none';
             }
+        }
+
+        // Si el enlace guardado no es una de las secciones conocidas (p. ej. uno anterior),
+        // se conserva como opción para no perderlo al guardar.
+        function asignarEnlaceCta(valor) {
+            const select = document.getElementById('landing-hero-cta_enlace');
+            if (valor && ![...select.options].some(o => o.value === valor)) {
+                select.add(new Option(`Enlace actual: ${valor}`, valor), 0);
+            }
+            select.value = valor || select.options[0].value;
         }
 
         async function guardarLanding(event) {
