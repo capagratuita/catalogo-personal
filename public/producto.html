@@ -48,6 +48,13 @@
                         <div id="producto-calendly" class="producto-calendly" style="display: none;">
                             <!-- Calendly will be injected here -->
                         </div>
+                        <p class="producto-compartir" id="producto-compartir" hidden>
+                            Compartir:
+                            <a id="compartir-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+                            <span aria-hidden="true">·</span>
+                            <button type="button" id="compartir-copiar">Copiar enlace</button>
+                            <span class="compartir-estado" id="compartir-estado" role="status"></span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -117,6 +124,7 @@
         }
 
         function renderizarProducto(producto, config, catalogo) {
+            prepararCompartir(producto, config);
             document.getElementById('producto-nombre').textContent = producto.nombre;
             document.getElementById('producto-precio').textContent = window.app.textoPrecio(producto, config.negocio.moneda);
             document.getElementById('producto-descripcion').textContent = producto.descripcion;
@@ -163,6 +171,36 @@
             } else {
                 agregarBtn.classList.add('oculto');
             }
+        }
+
+        // Compartir sin protagonismo: enlace a WhatsApp con el mensaje escrito y copiar el enlace
+        function prepararCompartir(producto, config) {
+            const url = `${location.origin}/producto?id=${encodeURIComponent(producto.id)}`;
+            const mensaje = `${producto.nombre} en ${config.negocio.nombre}: ${url}`;
+
+            document.getElementById('compartir-whatsapp').href = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+
+            // El resultado se muestra en el propio texto del enlace (sin mover el diseño)
+            // y se anuncia a lectores de pantalla en un aviso oculto.
+            const copiar = document.getElementById('compartir-copiar');
+            const estado = document.getElementById('compartir-estado');
+            copiar.onclick = async () => {
+                let resultado;
+                try {
+                    await navigator.clipboard.writeText(url);
+                    resultado = 'Enlace copiado';
+                } catch {
+                    resultado = 'No se pudo copiar';
+                }
+                copiar.textContent = resultado;
+                estado.textContent = resultado;
+                setTimeout(() => {
+                    copiar.textContent = 'Copiar enlace';
+                    estado.textContent = '';
+                }, 2500);
+            };
+
+            document.getElementById('producto-compartir').hidden = false;
         }
 
         function cargarImagenProducto(productId) {
