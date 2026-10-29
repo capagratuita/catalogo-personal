@@ -276,7 +276,7 @@
 
             let durationHtml = '';
             if (isService) {
-                durationHtml = `<div class="servicio-info"><span class="icono-reloj">⏰</span> ${item.duracion_minutos} minutos</div>`;
+                durationHtml = `<span class="servicio-info"><span class="icono-reloj" aria-hidden="true">⏰</span> ${item.duracion_minutos} min</span>`;
             }
 
             let calendlyHtml = '';
@@ -292,14 +292,24 @@
                 actionButton = '<button type="button" class="btn-add-to-cart">Añadir al Carrito</button>';
             }
 
+            // La tarjeta es un resumen (foto, nombre, precio y acción); la descripción completa
+            // y el resto del detalle viven en la ficha, a la que llevan la foto y el nombre.
+            // Los servicios añaden un adelanto de la descripción, cortado a 2 líneas por CSS.
+            const descripcionHtml = isService
+                ? `<p class="descripcion">${escapeHtml(item.descripcion)}</p>`
+                : '';
+            const urlFicha = `/producto?id=${encodeURIComponent(item.id)}`;
             card.innerHTML = `
-                <img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="${escapeHtml(item.nombre)}" loading="lazy" width="400" height="300">
-                <h3>${escapeHtml(item.nombre)}</h3>
-                <p class="descripcion">${escapeHtml(item.descripcion)}</p>
-                ${priceHtml}
-                ${durationHtml}
+                <a class="item-enlace-imagen" href="${urlFicha}" tabindex="-1" aria-hidden="true">
+                    <img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="" loading="lazy" width="400" height="300">
+                </a>
+                <h3><a href="${urlFicha}">${escapeHtml(item.nombre)}</a></h3>
+                ${descripcionHtml}
+                <div class="item-meta">
+                    ${priceHtml}
+                    ${durationHtml}
+                </div>
                 <div class="item-actions">
-                    <a href="/producto?id=${encodeURIComponent(item.id)}" class="btn-ver">Ver Detalles</a>
                     ${calendlyHtml}
                     ${actionButton}
                 </div>
