@@ -333,7 +333,14 @@
         async function cargarCatalogo() {
             try {
                 const catalogoData = await window.admin.getContent('catalogo');
-                catalogo = catalogoData;
+                // «Sobre mí» no es un item del catálogo: usa el id reservado de la landing
+                catalogo = {
+                    ...catalogoData,
+                    items: [
+                        { id: 'sobre-mi', nombre: 'Foto de «Sobre mí» (landing)', categoria: 'landing', precio: 0 },
+                        ...((catalogoData && catalogoData.items) || [])
+                    ]
+                };
                 actualizarSelectItems();
             } catch (error) {
                 console.error('Error cargando catálogo:', error);

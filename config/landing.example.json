@@ -37,6 +37,12 @@
       ]
     },
     {
+      "tipo": "sobre-mi",
+      "titulo": "Sobre mí",
+      "contenido": "Cuéntale a tu cliente quién eres, a qué te dedicas y qué te diferencia. Edita este texto en Admin → Landing y sube tu foto en Admin → Fotos.",
+      "items_ids": []
+    },
+    {
       "tipo": "contacto",
       "titulo": "Comunidad",
       "contenido": "Resolvemos dudas y compartimos cambios de servicios en nuestra comunidad de Telegram: https://t.me/capagratuita",
@@ -44,8 +50,7 @@
     }
   ],
   "tema": {
-    "color_primario": "#12161c",
-    "color_secundario": "#b6f23c",
+    "color_acento": "#b6f23c",
     "fuente": "sans",
     "estilo": "moderno"
   },

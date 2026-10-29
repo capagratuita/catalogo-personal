@@ -26,7 +26,7 @@
       "disponible": true,
       "destacado": true,
       "duracion_minutos": null,
-      "calendly_url": null
+      "reserva_url": null
     },
     {
       "id": "polo-capa-gratuita",
@@ -38,7 +38,7 @@
       "disponible": true,
       "destacado": true,
       "duracion_minutos": null,
-      "calendly_url": null
+      "reserva_url": null
     },
     {
       "id": "hoodie-capa-gratuita",
@@ -50,7 +50,7 @@
       "disponible": true,
       "destacado": true,
       "duracion_minutos": null,
-      "calendly_url": null
+      "reserva_url": null
     },
     {
       "id": "gorra-capa-gratuita",
@@ -62,7 +62,7 @@
       "disponible": true,
       "destacado": false,
       "duracion_minutos": null,
-      "calendly_url": null
+      "reserva_url": null
     },
     {
       "id": "stickers-capa-gratuita",
@@ -74,7 +74,7 @@
       "disponible": true,
       "destacado": false,
       "duracion_minutos": null,
-      "calendly_url": null
+      "reserva_url": null
     },
     {
       "id": "despliegue-landing",
@@ -86,7 +86,7 @@
       "disponible": true,
       "destacado": true,
       "duracion_minutos": 30,
-      "calendly_url": null,
+      "reserva_url": null,
       "precio_a_consultar": true
     },
     {
@@ -99,7 +99,7 @@
       "disponible": true,
       "destacado": false,
       "duracion_minutos": 60,
-      "calendly_url": null,
+      "reserva_url": null,
       "precio_a_consultar": true
     },
     {
@@ -112,7 +112,16 @@
       "disponible": true,
       "destacado": true,
       "duracion_minutos": 60,
-      "calendly_url": null
+      "reserva_url": null,
+      "modalidad": "online",
+      "incluye": [
+        "Sesión por videollamada",
+        "Resumen por escrito de lo resuelto"
+      ],
+      "variantes": [
+        { "nombre": "1 hora", "precio": 35, "duracion_minutos": 60 },
+        { "nombre": "Pack de 4 horas", "precio": 120, "duracion_minutos": 240 }
+      ]
     },
     {
       "id": "consultoria",
@@ -124,7 +133,7 @@
       "disponible": true,
       "destacado": false,
       "duracion_minutos": 60,
-      "calendly_url": null,
+      "reserva_url": null,
       "precio_a_consultar": true
     },
     {
@@ -137,7 +146,13 @@
       "disponible": true,
       "destacado": true,
       "duracion_minutos": 180,
-      "calendly_url": null
+      "reserva_url": null,
+      "modalidad": "ambas",
+      "zona": "Online o presencial en Lima",
+      "incluye": [
+        "Material del taller",
+        "Acompañamiento hasta el despliegue"
+      ]
     }
   ]
 }

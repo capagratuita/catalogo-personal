@@ -58,10 +58,15 @@ const FUENTES = {
   mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 };
 
-// Aplica landing.tema.fuente. Los colores no se tocan: la paleta de Capa Gratuita es fija (styles.css).
+// Aplica landing.tema.fuente y color_acento. El resto de la paleta es fija (styles.css).
+// El servidor ya inyecta el acento en <head>; aquí se repite por si la página no pasó por paginaPublica.
 function aplicarTema(tema) {
-  if (tema && FUENTES[tema.fuente]) {
+  if (!tema) return;
+  if (FUENTES[tema.fuente]) {
     document.documentElement.style.setProperty('--font-body', FUENTES[tema.fuente]);
+  }
+  if (/^#[0-9a-fA-F]{6}$/.test(tema.color_acento || '')) {
+    document.documentElement.style.setProperty('--accent', tema.color_acento);
   }
 }
 
@@ -70,6 +75,7 @@ function aplicarMarca(config) {
   const negocio = config && config.negocio;
   if (!negocio) return;
 
+  aplicarCarrito(config);
   document.querySelectorAll('nav .logo').forEach(el => { el.textContent = negocio.nombre; });
 
   const footerNombre = document.querySelector('footer h3');
@@ -102,42 +108,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function renderItem(item, config, catalogo) {
-  const isService = item.tipo === 'servicio';
-  const isProduct = item.tipo === 'producto';
-  const esCita = requiereAgendamiento(item, catalogo);
-  const calendlyUrl = esCita ? (item.calendly_url || config.negocio.calendly_url) : null;
-  
-  let priceHtml = '';
-  if (isProduct) {
-    priceHtml = `<span class="precio">${formatPrecio(item.precio, config.negocio.moneda)}</span>`;
-  }
-  
-  let durationHtml = '';
-  if (isService) {
-    durationHtml = `<div class="servicio-info"><span class="icono-reloj">⏰</span> ${item.duracion_minutos} minutos</div>`;
-  }
-  
-  let calendlyHtml = '';
-  if (calendlyUrl) {
-    calendlyHtml = `<a href="${calendlyUrl}" class="btn-calendly" target="_blank" rel="noopener">Reservar Cita</a>`;
-  }
-  
-  let actionButton = '';
-  const mostrarCarrito = !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
-  if (mostrarCarrito) {
-    actionButton = `<button class="btn-add-to-cart" data-id="${item.id}">Añadir al Carrito</button>`;
-  }
-  
+  const accion = accionItem(item, config, catalogo);
+  const esServicio = item.tipo === 'servicio';
+  const precioHtml = `<span class="precio">${textoPrecio(item, config.negocio.moneda)}</span>`;
+  const duracionHtml = esServicio
+    ? `<div class="servicio-info"><span class="icono-reloj">⏰</span> ${item.duracion_minutos} minutos</div>`
+    : '';
+  const accionHtml = accion ? htmlAccion(accion, item.id) : '';
+
   return `
     <div class="item-card" data-id="${item.id}" data-tipo="${item.tipo}">
       <h3>${item.nombre}</h3>
       <p class="descripcion">${item.descripcion}</p>
-      ${priceHtml}
-      ${durationHtml}
+      ${precioHtml}
+      ${duracionHtml}
       <div class="item-actions">
         <a href="/producto?id=${item.id}" class="btn-ver">Ver Detalles</a>
-        ${calendlyHtml}
-        ${actionButton}
+        ${accionHtml}
       </div>
     </div>
   `;
@@ -147,6 +134,11 @@ function buildWhatsAppLink(config, mensaje) {
   const numero = String(config.negocio.whatsapp || '').replace(/\D/g, '');
   const encodedMensaje = encodeURIComponent(mensaje);
   return `https://wa.me/${numero}?text=${encodedMensaje}`;
+}
+
+// Enlace de reserva (Calendly, Cal.com…). `calendly_url` es el nombre anterior y se sigue leyendo.
+function urlReserva(objeto) {
+  return (objeto && (objeto.reserva_url || objeto.calendly_url)) || null;
 }
 
 function requiereAgendamiento(item, catalogo) {
@@ -162,8 +154,21 @@ function requiereCotizacion(item) {
   return Boolean(item) && item.tipo === 'servicio' && item.precio_a_consultar === true;
 }
 
-// "Desde X" si hay precio orientativo, "Precio a consultar" si es 0; precio normal en el resto.
+// Opciones de precio de un servicio (sesión suelta, pack…), o [] si no tiene.
+function variantesDe(item) {
+  return item && item.tipo === 'servicio' && Array.isArray(item.variantes) ? item.variantes : [];
+}
+
+// "Desde X" si hay precio orientativo o varias opciones de precio, "Precio a consultar" si es 0;
+// precio normal en el resto.
 function textoPrecio(item, moneda) {
+  const variantes = variantesDe(item);
+  if (variantes.length > 0) {
+    const precios = variantes.map(v => v.precio);
+    const minimo = Math.min(...precios);
+    if (minimo === 0 && requiereCotizacion(item)) return 'Precio a consultar';
+    return precios.every(p => p === minimo) ? formatPrecio(minimo, moneda) : `Desde ${formatPrecio(minimo, moneda)}`;
+  }
   if (!requiereCotizacion(item)) return formatPrecio(item.precio, moneda);
   return item.precio > 0 ? `Desde ${formatPrecio(item.precio, moneda)}` : 'Precio a consultar';
 }
@@ -173,6 +178,65 @@ function buildCotizacionLink(config, item) {
   if (item.duracion_minutos > 0) mensaje += ` (duración estimada: ${item.duracion_minutos} min)`;
   mensaje += '. ¿Me confirmas el precio y la disponibilidad?';
   return buildWhatsAppLink(config, mensaje);
+}
+
+// Consulta general de un servicio con precio fijo y sin agenda: pregunta por disponibilidad.
+function buildConsultaLink(config, item) {
+  if (requiereCotizacion(item)) return buildCotizacionLink(config, item);
+  let mensaje = `Hola, me interesa el servicio "${item.nombre}"`;
+  if (item.precio > 0) mensaje += ` (${formatPrecio(item.precio, config.negocio.moneda)}`;
+  if (item.duracion_minutos > 0) mensaje += `${item.precio > 0 ? ', ' : ' ('}${item.duracion_minutos} min`;
+  if (item.precio > 0 || item.duracion_minutos > 0) mensaje += ')';
+  mensaje += '. ¿Me confirmas la disponibilidad?';
+  return buildWhatsAppLink(config, mensaje);
+}
+
+// El carrito solo existe para productos: un negocio solo-servicios no lo muestra.
+function usaCarrito(config) {
+  return config?.negocio?.modo_negocio !== 'solo-servicios';
+}
+
+// Única acción de una oferta. Los servicios nunca van al carrito:
+//  - precio a consultar -> cotizar por WhatsApp
+//  - categoría con agenda y enlace de reserva -> reservar
+//  - resto -> consultar disponibilidad por WhatsApp
+// Los productos van al carrito (o ninguna acción si el negocio es solo-servicios).
+function accionItem(item, config, catalogo) {
+  if (item.tipo !== 'servicio') return usaCarrito(config) ? { tipo: 'carrito' } : null;
+  if (requiereCotizacion(item)) return { tipo: 'cotizar', url: buildCotizacionLink(config, item) };
+  if (requiereAgendamiento(item, catalogo)) {
+    const url = urlReserva(item) || urlReserva(config.negocio);
+    if (url) return { tipo: 'reservar', url };
+  }
+  return { tipo: 'consultar', url: buildConsultaLink(config, item) };
+}
+
+const ETIQUETAS_ACCION = {
+  carrito: 'Añadir al Carrito',
+  cotizar: 'Consultar por WhatsApp',
+  reservar: 'Reservar Cita',
+  consultar: 'Consultar por WhatsApp',
+};
+
+function escaparAtributo(texto) {
+  return String(texto ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+// HTML del botón de una acción en las tarjetas; el carrito se enlaza luego por clase.
+function htmlAccion(accion, id) {
+  if (accion.tipo === 'carrito') {
+    return `<button type="button" class="btn-add-to-cart" data-id="${escaparAtributo(id)}">${ETIQUETAS_ACCION.carrito}</button>`;
+  }
+  return `<a href="${escaparAtributo(accion.url)}" class="btn-calendly" target="_blank" rel="noopener">${ETIQUETAS_ACCION[accion.tipo]}</a>`;
+}
+
+// Oculta el carrito (icono y enlaces) cuando el negocio no vende productos.
+function aplicarCarrito(config) {
+  const mostrar = usaCarrito(config);
+  document.querySelectorAll('.carrito-icon, a[href="/carrito"]').forEach(el => {
+    const contenedor = el.matches('a') ? (el.closest('li') || el) : el;
+    contenedor.hidden = !mostrar;
+  });
 }
 
 function formatPrecio(precio, moneda) {
@@ -236,7 +300,13 @@ window.app = {
   requiereAgendamiento,
   requiereCotizacion,
   textoPrecio,
+  variantesDe,
   buildCotizacionLink,
+  buildConsultaLink,
+  usaCarrito,
+  accionItem,
+  urlReserva,
+  htmlAccion,
   formatPrecio,
   getCarrito,
   saveCarrito,

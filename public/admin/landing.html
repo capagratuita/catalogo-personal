@@ -87,7 +87,7 @@
 
         .seccion-row {
             display: grid;
-            grid-template-columns: 100px 150px 1fr 80px auto;
+            grid-template-columns: 130px 150px 1fr 120px auto;
             gap: 1rem;
             padding: 1rem;
             border-bottom: 1px solid #eee;
@@ -332,6 +332,11 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="landing-tema-acento">Color de acento (botones)</label>
+                        <input type="color" id="landing-tema-acento" name="landing-tema-acento" value="#b6f23c" aria-describedby="acento-aviso">
+                        <p id="acento-aviso" role="status"></p>
+                    </div>
+                    <div class="form-group">
                         <label for="landing-tema-estilo">Estilo</label>
                         <select id="landing-tema-estilo" name="landing-tema-estilo">
                             <option value="rustico">Rústico</option>
@@ -387,23 +392,25 @@
             const seccionesRows = document.querySelectorAll('#secciones-preview .seccion-row:not(.header)');
 
             seccionesRows.forEach(row => {
-                const inputs = row.querySelectorAll('input, textarea, select');
-                const itemsIds = inputs[inputs.length - 1].value.split(',').map(id => id.trim()).filter(id => id);
-
+                const tipo = row.querySelector('.seccion-tipo').value;
+                const contenido = row.querySelector('.seccion-contenido').value;
                 const seccion = {
-                    tipo: inputs[0].value,
-                    titulo: inputs[1].value,
-                    contenido: inputs[2].value,
-                    items_ids: itemsIds
+                    tipo: tipo,
+                    titulo: row.querySelector('.seccion-titulo').value,
+                    contenido: contenido,
+                    items_ids: row.querySelector('.seccion-items').value.split(',').map(id => id.trim()).filter(id => id)
                 };
+
+                if (tipo === 'testimonios') {
+                    seccion.contenido = '';
+                    seccion.testimonios = parsearTestimonios(contenido);
+                }
 
                 secciones.push(seccion);
             });
 
             const tema = {
-                // La paleta es fija (Capa Gratuita); el esquema aún exige estos campos
-                color_primario: '#12161c',
-                color_secundario: '#b6f23c',
+                color_acento: document.getElementById('landing-tema-acento').value,
                 fuente: document.getElementById('landing-tema-fuente').value,
                 estilo: document.getElementById('landing-tema-estilo').value
             };
@@ -421,25 +428,89 @@
             };
         }
 
-        function agregarSeccion() {
-            const previewContainer = document.getElementById('secciones-preview');
-            const nuevaSeccion = document.createElement('div');
-            nuevaSeccion.className = 'seccion-row';
-            nuevaSeccion.innerHTML = `
-                <select required>
-                    <option value="">Seleccionar...</option>
-                    <option value="texto">Texto</option>
-                    <option value="destacados">Destacados</option>
-                    <option value="galeria">Galería</option>
-                    <option value="contacto">Contacto</option>
-                </select>
-                <input type="text" placeholder="Título" required>
-                <textarea placeholder="Contenido (opcional según el tipo)"></textarea>
-                <input type="text" placeholder="IDs de items (opcional, separados por comas)">
-                <button type="button" class="btn-remove-seccion" onclick="eliminarSeccion(this)">-</button>
-            `;
+        const TIPOS_SECCION = [
+            ['texto', 'Texto'],
+            ['destacados', 'Destacados'],
+            ['galeria', 'Galería'],
+            ['contacto', 'Contacto'],
+            ['sobre-mi', 'Sobre mí'],
+            ['testimonios', 'Testimonios']
+        ];
 
-            previewContainer.appendChild(nuevaSeccion);
+        const AYUDA_CONTENIDO = {
+            texto: 'Texto de la sección. Deja una línea en blanco para separar párrafos.',
+            destacados: 'Texto opcional. Los items se eligen en «IDs de items».',
+            galeria: 'Texto opcional. Los items se eligen en «IDs de items».',
+            contacto: 'Texto opcional. Los botones de WhatsApp y correo salen de Identidad.',
+            'sobre-mi': 'Preséntate: quién eres y qué haces. La foto se sube en Fotos («Sobre mí»).',
+            testimonios: 'Una opinión por línea: Texto | Autor | Detalle (opcional). Máx. 8.'
+        };
+
+        // Texto del admin -> testimonios. Una línea por opinión: "Texto | Autor | Detalle (opcional)"
+        function parsearTestimonios(texto) {
+            return texto.split('\n').map(linea => linea.trim()).filter(Boolean).map(linea => {
+                const [cita, autor, detalle] = linea.split('|').map(parte => parte.trim());
+                const testimonio = { texto: cita || '', autor: autor || '' };
+                if (detalle) testimonio.detalle = detalle;
+                return testimonio;
+            });
+        }
+
+        function testimoniosATexto(lista) {
+            return (lista || []).map(t => [t.texto, t.autor, t.detalle].filter((v, i) => i < 2 || v).join(' | ')).join('\n');
+        }
+
+        function escapeHtml(valor) {
+            return String(valor ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function crearFilaSeccion(seccion = {}) {
+            const row = document.createElement('div');
+            row.className = 'seccion-row';
+            const contenido = seccion.tipo === 'testimonios' ? testimoniosATexto(seccion.testimonios) : (seccion.contenido || '');
+            row.innerHTML = `
+                <select class="seccion-tipo" aria-label="Tipo de sección" required>
+                    <option value="">Seleccionar...</option>
+                    ${TIPOS_SECCION.map(([valor, etiqueta]) => `<option value="${valor}" ${seccion.tipo === valor ? 'selected' : ''}>${etiqueta}</option>`).join('')}
+                </select>
+                <input class="seccion-titulo" type="text" aria-label="Título de la sección" placeholder="Título" value="${escapeHtml(seccion.titulo)}" required>
+                <textarea class="seccion-contenido" aria-label="Contenido de la sección">${escapeHtml(contenido)}</textarea>
+                <input class="seccion-items" type="text" aria-label="IDs de items" placeholder="IDs de items (opcional, separados por comas)" value="${escapeHtml((seccion.items_ids || []).join(', '))}">
+                <button type="button" class="btn-remove-seccion" aria-label="Quitar sección" onclick="eliminarSeccion(this)">-</button>
+            `;
+            const tipo = row.querySelector('.seccion-tipo');
+            const area = row.querySelector('.seccion-contenido');
+            const ajustar = () => { area.placeholder = AYUDA_CONTENIDO[tipo.value] || 'Contenido (opcional según el tipo)'; };
+            tipo.addEventListener('change', ajustar);
+            ajustar();
+            return row;
+        }
+
+        function agregarSeccion() {
+            document.getElementById('secciones-preview').appendChild(crearFilaSeccion());
+        }
+
+        const ACENTO_POR_DEFECTO = '#b6f23c';
+
+        // Mismo cálculo que el servidor (functions/_lib/validadores.js): texto #12161C sobre el acento, mínimo 4.5:1
+        function contrasteConTinta(hex) {
+            const luz = h => [1, 3, 5].map(i => {
+                const c = parseInt(h.slice(i, i + 2), 16) / 255;
+                return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+            }).reduce((acc, c, i) => acc + c * [0.2126, 0.7152, 0.0722][i], 0);
+            const [claro, oscuro] = [luz(hex), luz('#12161c')].sort((a, b) => b - a);
+            return (claro + 0.05) / (oscuro + 0.05);
+        }
+
+        function avisarContraste() {
+            const input = document.getElementById('landing-tema-acento');
+            const aviso = document.getElementById('acento-aviso');
+            const ratio = contrasteConTinta(input.value);
+            const cumple = ratio >= 4.5;
+            aviso.textContent = cumple
+                ? `Contraste ${ratio.toFixed(1)}:1: el texto de los botones se lee bien.`
+                : `Contraste ${ratio.toFixed(1)}:1: demasiado oscuro, el texto de los botones no se leería bien. Elige un tono más claro (mínimo 4.5:1).`;
+            aviso.style.color = cumple ? '#0B6B3F' : '#b71c1c';
         }
 
         function eliminarSeccion(button) {
@@ -480,30 +551,15 @@
                 const previewContainer = document.getElementById('secciones-preview');
                 previewContainer.innerHTML = '';
 
-                landing.secciones.forEach(seccion => {
-                    const row = document.createElement('div');
-                    row.className = 'seccion-row';
-                    row.innerHTML = `
-                        <select required>
-                            <option value="">Seleccionar...</option>
-                            <option value="texto" ${seccion.tipo === 'texto' ? 'selected' : ''}>Texto</option>
-                            <option value="destacados" ${seccion.tipo === 'destacados' ? 'selected' : ''}>Destacados</option>
-                            <option value="galeria" ${seccion.tipo === 'galeria' ? 'selected' : ''}>Galería</option>
-                            <option value="contacto" ${seccion.tipo === 'contacto' ? 'selected' : ''}>Contacto</option>
-                        </select>
-                        <input type="text" placeholder="Título" value="${seccion.titulo || ''}" required>
-                        <textarea placeholder="Contenido (opcional según el tipo)">${seccion.contenido || ''}</textarea>
-                        <input type="text" placeholder="IDs de items (opcional, separados por comas)" value="${seccion.items_ids ? seccion.items_ids.join(', ') : ''}">
-                        <button type="button" class="btn-remove-seccion" onclick="eliminarSeccion(this)">-</button>
-                    `;
-                    previewContainer.appendChild(row);
-                });
+                landing.secciones.forEach(seccion => previewContainer.appendChild(crearFilaSeccion(seccion)));
             }
 
             if (landing.tema) {
                 document.getElementById('landing-tema-fuente').value = landing.tema.fuente || 'serif';
                 document.getElementById('landing-tema-estilo').value = landing.tema.estilo || 'rustico';
+                document.getElementById('landing-tema-acento').value = landing.tema.color_acento || ACENTO_POR_DEFECTO;
             }
+            avisarContraste();
 
             if (landing.seo) {
                 document.getElementById('landing-seo-titulo').value = landing.seo.titulo || '';
@@ -605,6 +661,8 @@
             verificarAuth();
 
             document.getElementById('form-landing').addEventListener('submit', guardarLanding);
+            document.getElementById('landing-tema-acento').addEventListener('input', avisarContraste);
+            avisarContraste();
         });
     </script>
 </body>

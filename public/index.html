@@ -48,6 +48,8 @@
             </div>
         </section>
         </div>
+
+        <div id="secciones-landing"></div>
     </main>
 
     <footer>
@@ -240,7 +242,162 @@
             const data = window.paginaActual;
             if (!data || !data.catalogo || !data.config) return;
             TIPOS.forEach(renderizarSeccion);
+            renderizarSecciones(data.landing, data.catalogo, data.config);
             ajustarCta();
+        }
+
+        // ---- Secciones de la landing (landing.secciones), en el orden guardado, bajo el catálogo ----
+
+        function crear(etiqueta, clase, texto) {
+            const el = document.createElement(etiqueta);
+            if (clase) el.className = clase;
+            if (texto !== undefined) el.textContent = texto;
+            return el;
+        }
+
+        // Texto plano con enlaces https:// clicables; sin HTML (todo va como texto)
+        function textoConEnlaces(texto) {
+            const fragmento = document.createDocumentFragment();
+            const patron = /https?:\/\/\S+/g;
+            let ultimo = 0;
+            let coincidencia;
+            while ((coincidencia = patron.exec(texto))) {
+                const url = coincidencia[0].replace(/[.,;:!?)]+$/, '');
+                fragmento.append(texto.slice(ultimo, coincidencia.index));
+                const enlace = crear('a', null, url);
+                enlace.href = url;
+                enlace.target = '_blank';
+                enlace.rel = 'noopener';
+                fragmento.append(enlace);
+                ultimo = coincidencia.index + url.length;
+                patron.lastIndex = ultimo;
+            }
+            fragmento.append(texto.slice(ultimo));
+            return fragmento;
+        }
+
+        function parrafos(texto) {
+            return String(texto || '').split(/\n{2,}/).map(p => p.trim()).filter(Boolean).map(p => {
+                const el = crear('p');
+                el.append(textoConEnlaces(p));
+                return el;
+            });
+        }
+
+        function itemsDeSeccion(seccion, catalogo, config) {
+            const visibles = tiposVisibles(config);
+            return (seccion.items_ids || [])
+                .map(id => catalogo.items.find(item => item.id === id))
+                .filter(item => item && visibles.includes(item.tipo));
+        }
+
+        const CONSTRUCTORES_SECCION = {
+            texto(seccion, contenedor) {
+                const textos = parrafos(seccion.contenido);
+                if (!textos.length) return false;
+                contenedor.append(...textos);
+                return true;
+            },
+
+            destacados(seccion, contenedor, { catalogo, config }) {
+                const items = itemsDeSeccion(seccion, catalogo, config);
+                if (!items.length) return false;
+                const grid = crear('div', 'items-grid');
+                items.forEach(item => grid.appendChild(crearItemCard(item, config, catalogo)));
+                contenedor.append(...parrafos(seccion.contenido), grid);
+                return true;
+            },
+
+            galeria(seccion, contenedor, { catalogo, config }) {
+                const items = itemsDeSeccion(seccion, catalogo, config);
+                if (!items.length) return false;
+                const grid = crear('div', 'galeria-grid');
+                items.forEach(item => {
+                    const enlace = crear('a', 'galeria-item');
+                    enlace.href = `/producto?id=${encodeURIComponent(item.id)}`;
+                    const img = crear('img');
+                    img.src = `/api/image?id=${encodeURIComponent(item.id)}`;
+                    img.alt = item.nombre;
+                    img.loading = 'lazy';
+                    img.addEventListener('error', () => { img.src = '/assets/images/placeholder.png'; }, { once: true });
+                    enlace.append(img, crear('span', null, item.nombre));
+                    grid.appendChild(enlace);
+                });
+                contenedor.append(...parrafos(seccion.contenido), grid);
+                return true;
+            },
+
+            contacto(seccion, contenedor, { config }) {
+                const negocio = config.negocio;
+                const acciones = crear('div', 'contacto-acciones');
+                if (negocio.whatsapp) {
+                    const wa = crear('a', 'btn-contacto', 'Escribir por WhatsApp');
+                    wa.href = window.app.buildWhatsAppLink(config, 'Hola, quisiera más información.');
+                    wa.target = '_blank';
+                    wa.rel = 'noopener';
+                    acciones.appendChild(wa);
+                }
+                if (negocio.email) {
+                    const mail = crear('a', 'btn-contacto btn-contacto-sec', negocio.email);
+                    mail.href = `mailto:${negocio.email}`;
+                    acciones.appendChild(mail);
+                }
+                const textos = parrafos(seccion.contenido);
+                if (!textos.length && !acciones.childElementCount) return false;
+                contenedor.append(...textos, acciones);
+                return true;
+            },
+
+            'sobre-mi'(seccion, contenedor) {
+                const textos = parrafos(seccion.contenido);
+                if (!textos.length) return false;
+                const caja = crear('div', 'sobre-mi');
+                // Foto opcional (id reservado «sobre-mi», se sube desde Fotos): si no existe, se quita
+                const img = crear('img', 'sobre-mi-foto');
+                img.src = '/api/image?id=sobre-mi';
+                img.alt = seccion.titulo || 'Foto';
+                img.loading = 'lazy';
+                img.addEventListener('error', () => img.remove(), { once: true });
+                const texto = crear('div', 'sobre-mi-texto');
+                texto.append(...textos);
+                caja.append(img, texto);
+                contenedor.appendChild(caja);
+                return true;
+            },
+
+            testimonios(seccion, contenedor) {
+                const lista = Array.isArray(seccion.testimonios) ? seccion.testimonios : [];
+                if (!lista.length) return false;
+                const grid = crear('div', 'testimonios-grid');
+                lista.forEach(t => {
+                    const cita = crear('figure', 'testimonio');
+                    cita.appendChild(crear('blockquote', null, t.texto));
+                    const pie = crear('figcaption');
+                    pie.appendChild(crear('strong', null, t.autor));
+                    if (t.detalle) pie.append(crear('span', null, t.detalle));
+                    cita.appendChild(pie);
+                    grid.appendChild(cita);
+                });
+                contenedor.appendChild(grid);
+                return true;
+            },
+        };
+
+        function renderizarSecciones(landing, catalogo, config) {
+            const raiz = document.getElementById('secciones-landing');
+            if (!raiz) return;
+            raiz.replaceChildren();
+            ((landing && landing.secciones) || []).forEach(seccion => {
+                const construir = CONSTRUCTORES_SECCION[seccion.tipo];
+                if (!construir) return;
+                const seccionEl = crear('section', `landing-seccion landing-${seccion.tipo}`);
+                const contenedor = crear('div', 'container');
+                if (seccion.titulo) contenedor.appendChild(crear('h2', null, seccion.titulo));
+                if (construir(seccion, contenedor, { catalogo, config })) {
+                    seccionEl.appendChild(contenedor);
+                    raiz.appendChild(seccionEl);
+                }
+            });
         }
 
         // El botón del hero no debe apuntar a una sección que no se muestra
@@ -267,10 +424,7 @@
             card.setAttribute('data-tipo', item.tipo);
 
             const isService = item.tipo === 'servicio';
-            const isProduct = item.tipo === 'producto';
-            const esCotizacion = window.app.requiereCotizacion(item);
-            const esCita = !esCotizacion && window.app.requiereAgendamiento(item, catalogo);
-            const calendlyUrl = esCita ? (item.calendly_url || config.negocio.calendly_url) : null;
+            const accion = window.app.accionItem(item, config, catalogo);
 
             const priceHtml = `<span class="precio">${window.app.textoPrecio(item, config.negocio.moneda)}</span>`;
 
@@ -279,18 +433,7 @@
                 durationHtml = `<span class="servicio-info"><span class="icono-reloj" aria-hidden="true">⏰</span> ${item.duracion_minutos} min</span>`;
             }
 
-            let calendlyHtml = '';
-            if (calendlyUrl) {
-                calendlyHtml = `<a href="${calendlyUrl}" class="btn-calendly" target="_blank" rel="noopener">Reservar Cita</a>`;
-            }
-
-            let actionButton = '';
-            const mostrarCarrito = !esCotizacion && !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
-            if (esCotizacion) {
-                actionButton = `<a href="${window.app.buildCotizacionLink(config, item)}" class="btn-calendly" target="_blank" rel="noopener">Consultar por WhatsApp</a>`;
-            } else if (mostrarCarrito) {
-                actionButton = '<button type="button" class="btn-add-to-cart">Añadir al Carrito</button>';
-            }
+            const accionHtml = accion ? window.app.htmlAccion(accion, item.id) : '';
 
             // La tarjeta es un resumen (foto, nombre, precio y acción); la descripción completa
             // y el resto del detalle viven en la ficha, a la que llevan la foto y el nombre.
@@ -310,8 +453,7 @@
                     ${durationHtml}
                 </div>
                 <div class="item-actions">
-                    ${calendlyHtml}
-                    ${actionButton}
+                    ${accionHtml}
                 </div>
             `;
 

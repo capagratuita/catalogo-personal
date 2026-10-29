@@ -18,8 +18,21 @@ export const onRequestGet = paginaPublica({
     const esServicio = item.tipo === 'servicio';
     const aConsultar = esServicio && item.precio_a_consultar === true;
 
+    const variantes = esServicio && Array.isArray(item.variantes) ? item.variantes : [];
+    const precios = variantes.map(v => v.precio);
+
     let oferta;
-    if (aConsultar) {
+    if (variantes.length > 0 && !(aConsultar && Math.min(...precios) === 0)) {
+      // Varias opciones de precio (sesión suelta, pack…): rango y una oferta por opción
+      oferta = {
+        '@type': 'AggregateOffer',
+        priceCurrency: negocio.moneda,
+        lowPrice: Math.min(...precios),
+        highPrice: Math.max(...precios),
+        offerCount: variantes.length,
+        offers: variantes.map(v => ({ '@type': 'Offer', name: v.nombre, priceCurrency: negocio.moneda, price: v.precio })),
+      };
+    } else if (aConsultar) {
       // «Desde X»: precio base orientativo; con 0 no hay precio que publicar
       if (item.precio > 0) oferta = { '@type': 'AggregateOffer', priceCurrency: negocio.moneda, lowPrice: item.precio };
     } else {

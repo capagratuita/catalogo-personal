@@ -73,6 +73,31 @@
     <script>
         let carrito = [];
 
+        // El carrito solo admite productos: se descartan servicios que quedaron de versiones anteriores
+        async function depurarCarrito() {
+            try {
+                const [config, catalogo] = await Promise.all([window.app.loadConfig(), window.app.loadCatalogo()]);
+                const guardado = obtenerCarrito();
+                const tipos = new Map(catalogo.items.map(item => [item.id, item.tipo]));
+                const productos = window.app.usaCarrito(config)
+                    ? guardado.filter(item => tipos.get(item.id) !== 'servicio')
+                    : [];
+                if (productos.length !== guardado.length) {
+                    carrito = productos;
+                    guardarCarrito();
+                }
+                if (!window.app.usaCarrito(config)) {
+                    document.querySelector('.carrito-contenido').hidden = true;
+                    const aviso = document.createElement('p');
+                    aviso.className = 'vacio-carrito';
+                    aviso.innerHTML = 'Este sitio no usa carrito. <a href="/#catalogo">Ver el catálogo</a>';
+                    document.querySelector('.carrito .container').appendChild(aviso);
+                }
+            } catch (error) {
+                console.error('Error depurando el carrito:', error);
+            }
+        }
+
         function obtenerCarrito() {
             const carritoGuardado = localStorage.getItem('carrito');
             if (carritoGuardado) {
@@ -230,7 +255,8 @@
             window.location.href = '/carrito';
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            await depurarCarrito();
             actualizarCarrito();
             actualizarContadorCarrito();
         });

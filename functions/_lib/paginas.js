@@ -1,4 +1,5 @@
 import { getContent } from './defaults.js';
+import { TOKEN_ANALITICA } from './validadores.js';
 
 const EXTENSIONES_FOTO = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -88,7 +89,21 @@ export function paginaPublica({ claves, meta }) {
     const datos = (await meta?.(sitio, { ...context, origen })) ?? {};
     const nombreSitio = sitio.config?.negocio?.nombre;
 
+    // Color de acento de la landing: se pinta desde el servidor para que no parpadee al cargar
+    const acento = sitio.landing?.tema?.color_acento;
+    const estiloAcento = typeof acento === 'string' && /^#[0-9a-fA-F]{6}$/.test(acento)
+      ? `<style>:root{--accent:${acento}}</style>`
+      : '';
+
+    // Cloudflare Web Analytics (sin cookies). No se mide el carrito ni las páginas noindex (404).
+    const token = sitio.config?.analitica?.cf_token;
+    const analitica = typeof token === 'string' && TOKEN_ANALITICA.test(token) && !datos.noindex
+      ? `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "${token}"}'></script>`
+      : '';
+
     const cabecera = [
+      estiloAcento,
+      analitica,
       datos.titulo ? etiquetasMeta(datos, origen, nombreSitio) : '',
       `<script type="application/json" id="sitio-datos">${jsonParaScript(sitio)}</script>`,
     ].join('\n');

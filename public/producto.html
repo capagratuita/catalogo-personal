@@ -41,12 +41,13 @@
                             <span class="icono-reloj">⏰</span>
                             <span id="producto-duracion">0 minutos</span>
                         </div>
+                        <div class="producto-servicio-detalle" id="producto-servicio-detalle" hidden></div>
                         <div class="producto-actions">
-                            <button class="btn btn-primary" onclick="agregarAlCarritoDesdePagina()">Añadir al Carrito</button>
-                            <button class="btn btn-secondary" onclick="window.location.href='/#catalogo'">Seguir Comprando</button>
+                            <button class="btn btn-primary" id="btn-agregar" onclick="agregarAlCarritoDesdePagina()">Añadir al Carrito</button>
+                            <button class="btn btn-secondary" id="btn-seguir" onclick="window.location.href='/#catalogo'">Seguir Comprando</button>
                         </div>
                         <div id="producto-calendly" class="producto-calendly" style="display: none;">
-                            <!-- Calendly will be injected here -->
+                            <!-- Aquí va el botón de reservar o consultar -->
                         </div>
                         <p class="producto-compartir" id="producto-compartir" hidden>
                             Compartir:
@@ -139,38 +140,82 @@
             // Mostrar información de servicio si es un servicio
             const servicioInfo = document.getElementById('producto-servicio-info');
             const duracionSpan = document.getElementById('producto-duracion');
-            if (producto.tipo === 'servicio') {
+            if (producto.tipo === 'servicio' && producto.duracion_minutos > 0) {
                 servicioInfo.style.display = 'flex';
                 duracionSpan.textContent = `${producto.duracion_minutos} minutos`;
             } else {
                 servicioInfo.style.display = 'none';
             }
+            renderizarDetalleServicio(producto, config);
             
-            // Mostrar enlace de Calendly si está disponible
+            // Una sola acción: carrito (productos), cotizar/reservar/consultar (servicios)
+            const accion = window.app.accionItem(producto, config, catalogo);
             const calendlyContainer = document.getElementById('producto-calendly');
-            const esCotizacion = window.app.requiereCotizacion(producto);
-            const esCita = !esCotizacion && window.app.requiereAgendamiento(producto, catalogo);
-            const calendlyUrl = esCita
-                ? (producto.calendly_url || config.negocio.calendly_url)
-                : null;
-            if (esCotizacion) {
-                calendlyContainer.innerHTML = `<a href="${window.app.buildCotizacionLink(config, producto)}" class="btn btn-primary" target="_blank" rel="noopener">Consultar por WhatsApp</a>`;
-                calendlyContainer.style.display = 'block';
-            } else if (calendlyUrl) {
-                calendlyContainer.innerHTML = `<a href="${calendlyUrl}" class="btn btn-primary" target="_blank" rel="noopener">Reservar Cita</a>`;
+            const agregarBtn = document.getElementById('btn-agregar');
+            const seguirBtn = document.getElementById('btn-seguir');
+
+            const esCarrito = Boolean(accion) && accion.tipo === 'carrito';
+            agregarBtn.hidden = !esCarrito;
+            seguirBtn.textContent = esCarrito ? 'Seguir Comprando' : 'Volver al Catálogo';
+
+            if (accion && accion.url) {
+                const enlace = document.createElement('a');
+                enlace.className = 'btn btn-primary';
+                enlace.target = '_blank';
+                enlace.rel = 'noopener';
+                enlace.href = accion.url;
+                enlace.textContent = accion.tipo === 'reservar' ? 'Reservar Cita' : 'Consultar por WhatsApp';
+                calendlyContainer.replaceChildren(enlace);
                 calendlyContainer.style.display = 'block';
             } else {
+                calendlyContainer.replaceChildren();
                 calendlyContainer.style.display = 'none';
             }
-            
-            // Mostrar/ocultar botón de agregar al carrito
-            const agregarBtn = document.querySelector('.producto-actions .btn-primary');
-            const mostrarCarrito = !esCotizacion && !calendlyUrl && (producto.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
-            if (mostrarCarrito) {
-                agregarBtn.classList.remove('oculto');
-            } else {
-                agregarBtn.classList.add('oculto');
+        }
+
+        const MODALIDADES = { online: 'Online', presencial: 'Presencial', ambas: 'Online o presencial' };
+
+        function crearElemento(etiqueta, clase, texto) {
+            const el = document.createElement(etiqueta);
+            if (clase) el.className = clase;
+            if (texto !== undefined) el.textContent = texto;
+            return el;
+        }
+
+        // Modalidad, zona, qué incluye y opciones de precio (solo servicios; todo es opcional)
+        function renderizarDetalleServicio(producto, config) {
+            const contenedor = document.getElementById('producto-servicio-detalle');
+            contenedor.replaceChildren();
+            if (producto.tipo !== 'servicio') { contenedor.hidden = true; return; }
+
+            const datos = [];
+            if (MODALIDADES[producto.modalidad]) datos.push(MODALIDADES[producto.modalidad]);
+            if (producto.zona) datos.push(producto.zona);
+            if (datos.length) contenedor.appendChild(crearElemento('p', 'servicio-modalidad', datos.join(' · ')));
+
+            const incluye = Array.isArray(producto.incluye) ? producto.incluye : [];
+            if (incluye.length) {
+                contenedor.appendChild(crearElemento('h3', null, 'Qué incluye'));
+                const lista = crearElemento('ul', 'servicio-incluye');
+                incluye.forEach(linea => lista.appendChild(crearElemento('li', null, linea)));
+                contenedor.appendChild(lista);
             }
+
+            const variantes = window.app.variantesDe(producto);
+            if (variantes.length) {
+                contenedor.appendChild(crearElemento('h3', null, 'Opciones'));
+                const lista = crearElemento('ul', 'servicio-variantes');
+                variantes.forEach(v => {
+                    const li = crearElemento('li');
+                    li.appendChild(crearElemento('span', 'variante-nombre', v.nombre));
+                    const duracion = v.duracion_minutos > 0 ? ` · ${v.duracion_minutos} min` : '';
+                    li.appendChild(crearElemento('span', 'variante-precio', window.app.formatPrecio(v.precio, config.negocio.moneda) + duracion));
+                    lista.appendChild(li);
+                });
+                contenedor.appendChild(lista);
+            }
+
+            contenedor.hidden = contenedor.childElementCount === 0;
         }
 
         // Compartir sin protagonismo: enlace a WhatsApp con el mensaje escrito y copiar el enlace

@@ -224,8 +224,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-calendly_url">URL de Calendly (opcional)</label>
-                    <input type="url" id="negocio-calendly_url" name="negocio-calendly_url" placeholder="https://calendly.com/tu-cita">
+                    <label for="negocio-reserva_url">Enlace de reserva (opcional)</label>
+                    <input type="url" id="negocio-reserva_url" name="negocio-reserva_url" placeholder="https://calendly.com/tu-cita" aria-describedby="reserva-ayuda">
+                    <small id="reserva-ayuda">Calendly, Cal.com, Google Calendar u otra agenda. Se usa en los servicios cuya categoría marcaste como «con reserva» en Catálogo.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="analitica-cf_token">Token de Cloudflare Web Analytics (opcional)</label>
+                    <input type="text" id="analitica-cf_token" name="analitica-cf_token" placeholder="Pega el token de tu propiedad" autocomplete="off" aria-describedby="analitica-ayuda">
+                    <small id="analitica-ayuda">Gratis y sin cookies: te dice cuánta gente visita el sitio. Cloudflare → Analytics &amp; Logs → Web Analytics → Add a site → copia el «token». No se mide el admin ni el carrito.</small>
                 </div>
 
                 <div class="form-group">
@@ -292,7 +299,8 @@
             document.getElementById('negocio-email').value = negocio.email || '';
             document.getElementById('negocio-moneda').value = negocio.moneda || 'PEN';
             document.getElementById('negocio-modo_negocio').value = negocio.modo_negocio || 'mixto';
-            document.getElementById('negocio-calendly_url').value = negocio.calendly_url || '';
+            document.getElementById('negocio-reserva_url').value = negocio.reserva_url || negocio.calendly_url || '';
+            document.getElementById('analitica-cf_token').value = config.analitica?.cf_token || '';
             document.getElementById('negocio-logo_url').value = negocio.logo_url || '';
             document.getElementById('negocio-redes-instagram').value = negocio.redes?.instagram || '';
             document.getElementById('negocio-redes-facebook').value = negocio.redes?.facebook || '';
@@ -307,7 +315,7 @@
                 email: document.getElementById('negocio-email').value.trim() || null,
                 moneda: document.getElementById('negocio-moneda').value,
                 modo_negocio: document.getElementById('negocio-modo_negocio').value,
-                calendly_url: document.getElementById('negocio-calendly_url').value || null,
+                reserva_url: document.getElementById('negocio-reserva_url').value.trim() || null,
                 logo_url: document.getElementById('negocio-logo_url').value || null,
                 redes: {
                     instagram: document.getElementById('negocio-redes-instagram').value || null,
@@ -316,9 +324,10 @@
                 tono_chat: document.getElementById('negocio-tono_chat').value
             };
 
-            return {
-                negocio: negocio
-            };
+            const resultado = { negocio: negocio };
+            const token = document.getElementById('analitica-cf_token').value.trim();
+            if (token) resultado.analitica = { cf_token: token };
+            return resultado;
         }
 
         async function guardarConfig(event) {

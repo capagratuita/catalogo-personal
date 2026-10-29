@@ -359,9 +359,50 @@
             justify-self: end;
         }
 
+        .item-servicio-detalle {
+            margin-top: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .item-servicio-detalle summary {
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .item-servicio-detalle summary:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .item-servicio-detalle .item-fila {
+            margin-top: 0.75rem;
+            grid-template-columns: 170px 1fr;
+        }
+
+        .item-servicio-detalle textarea {
+            width: 100%;
+            min-height: 70px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-family: inherit;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .item-servicio-detalle .ayuda {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 0.25rem;
+        }
+
         @media (max-width: 768px) {
             .item-fila-principal,
-            .item-fila-secundaria {
+            .item-fila-secundaria,
+            .item-servicio-detalle .item-fila {
                 grid-template-columns: 1fr;
             }
 
@@ -550,8 +591,8 @@
                             <p class="categorias-ayuda">Solo se asignan a servicios.</p>
                             <div class="categorias-agendamiento">
                                 <div class="categorias-agendamiento-info">
-                                    <span class="categorias-agendamiento-titulo">Agendamiento con Calendly</span>
-                                    <span class="categorias-agendamiento-ayuda">Marca las categorías de servicios que se reservan con Calendly. El resto va al carrito.</span>
+                                    <span class="categorias-agendamiento-titulo">Servicios con reserva</span>
+                                    <span class="categorias-agendamiento-ayuda">Marca las categorías de servicios que se reservan con un enlace de agenda (Calendly, Cal.com…). El resto se consulta por WhatsApp.</span>
                                 </div>
                                 <div class="categorias-agendamiento-opciones" id="categorias-agendamiento"></div>
                             </div>
@@ -612,7 +653,67 @@
             }[caracter]));
         }
 
+        let erroresDetalle = [];
+
+        // Texto del admin -> datos. Una línea por opción: "Nombre | precio | minutos (opcional)"
+        function parsearVariantes(texto, idItem) {
+            const variantes = [];
+            texto.split('\n').map(linea => linea.trim()).filter(Boolean).forEach(linea => {
+                const [nombre, precio, minutos] = linea.split('|').map(parte => parte.trim());
+                const precioNum = Number(String(precio ?? '').replace(',', '.'));
+                const minutosNum = minutos ? Number(minutos) : null;
+                if (!nombre || precio === undefined || precio === '' || !Number.isFinite(precioNum) || precioNum < 0
+                    || (minutos && (!Number.isFinite(minutosNum) || minutosNum < 0))) {
+                    erroresDetalle.push(`Opción mal escrita en '${idItem}': "${linea}". Usa «Nombre | precio | minutos» (los minutos son opcionales).`);
+                    return;
+                }
+                variantes.push({ nombre, precio: precioNum, duracion_minutos: minutosNum });
+            });
+            return variantes;
+        }
+
+        let detalleUid = 0;
+
+        function htmlDetalleServicio(item, visible) {
+            const uid = ++detalleUid;
+            const modalidad = item.modalidad || '';
+            const incluye = Array.isArray(item.incluye) ? item.incluye.join('\n') : '';
+            const variantes = Array.isArray(item.variantes)
+                ? item.variantes.map(v => `${v.nombre} | ${v.precio}${v.duracion_minutos ? ' | ' + v.duracion_minutos : ''}`).join('\n')
+                : '';
+            const abierto = modalidad || item.zona || incluye || variantes ? 'open' : '';
+            return `
+                <details class="item-servicio-detalle" ${abierto} ${visible ? '' : 'hidden'}>
+                    <summary>Detalles del servicio (opcional)</summary>
+                    <div class="item-fila">
+                        <label>Modalidad
+                            <select class="item-modalidad">
+                                <option value="">Sin indicar</option>
+                                <option value="online" ${modalidad === 'online' ? 'selected' : ''}>Online</option>
+                                <option value="presencial" ${modalidad === 'presencial' ? 'selected' : ''}>Presencial</option>
+                                <option value="ambas" ${modalidad === 'ambas' ? 'selected' : ''}>Online o presencial</option>
+                            </select>
+                        </label>
+                        <input class="item-zona" type="text" maxlength="80" placeholder="Zona de atención (ej. Lima y alrededores)" aria-label="Zona de atención" value="${escapeHtml(item.zona)}">
+                    </div>
+                    <div class="item-fila">
+                        <label for="incluye-${uid}">Qué incluye</label>
+                        <div>
+                            <textarea id="incluye-${uid}" class="item-incluye" placeholder="Una línea por cada cosa que incluye (máx. 8)">${escapeHtml(incluye)}</textarea>
+                        </div>
+                    </div>
+                    <div class="item-fila">
+                        <label for="variantes-${uid}">Opciones de precio</label>
+                        <div>
+                            <textarea id="variantes-${uid}" class="item-variantes" placeholder="Sesión suelta | 30 | 60&#10;Pack de 4 | 100 | 240">${escapeHtml(variantes)}</textarea>
+                            <p class="ayuda">Una opción por línea: Nombre | precio | minutos (opcional). Máx. 6. Si las usas, la tarjeta muestra «Desde» el precio más bajo.</p>
+                        </div>
+                    </div>
+                </details>`;
+        }
+
         function obtenerCatalogo() {
+            erroresDetalle = [];
             const categorias = {
                 producto: [...categoriasPorTipo.producto],
                 servicio: [...categoriasPorTipo.servicio]
@@ -631,7 +732,7 @@
                     categoria: row.querySelector('.item-categoria').value,
                     disponible: row.querySelector('.item-disponible input').checked,
                     destacado: row.querySelector('.item-destacado input').checked,
-                    calendly_url: row.querySelector('.item-calendly').value || null
+                    reserva_url: row.querySelector('.item-reserva').value.trim() || null
                 };
 
                 if (item.tipo === 'servicio' && row.querySelector('.item-cotizar input').checked) {
@@ -641,6 +742,21 @@
                 item.duracion_minutos = item.tipo === 'servicio'
                     ? parseInt(row.querySelector('.item-duracion').value) || 0
                     : null;
+
+                if (item.tipo === 'servicio') {
+                    const modalidad = row.querySelector('.item-modalidad').value;
+                    const zona = row.querySelector('.item-zona').value.trim();
+                    const incluye = row.querySelector('.item-incluye').value.split('\n').map(l => l.trim()).filter(Boolean);
+                    const variantes = parsearVariantes(row.querySelector('.item-variantes').value, item.id);
+                    if (modalidad) item.modalidad = modalidad;
+                    if (zona) item.zona = zona;
+                    if (incluye.length) item.incluye = incluye;
+                    if (variantes.length) {
+                        item.variantes = variantes;
+                        // El precio base es el más bajo de las opciones ("Desde X")
+                        item.precio = Math.min(...variantes.map(v => v.precio));
+                    }
+                }
 
                 items.push(item);
             });
@@ -681,8 +797,9 @@
                     <label class="item-destacado"><input type="checkbox"> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox"> Precio a consultar</label>
                     <input class="item-duracion" type="number" placeholder="Minutos" value="0">
-                    <input class="item-calendly" type="text" placeholder="URL de Calendly (opcional)">
+                    <input class="item-reserva" type="text" aria-label="Enlace de reserva propio" placeholder="Enlace de reserva propio (opcional)">
                 </div>
+                ${htmlDetalleServicio({}, false)}
             `;
 
             itemsContainer.appendChild(nuevoItem);
@@ -712,6 +829,7 @@
             label.style.visibility = esServicio ? 'visible' : 'hidden';
             check.disabled = !esServicio;
             if (!esServicio) check.checked = false;
+            row.querySelector('.item-servicio-detalle').hidden = !esServicio;
         }
 
         function actualizarOpcionesCategoria() {
@@ -976,8 +1094,9 @@
                     <label class="item-destacado"><input type="checkbox" ${item.destacado ? 'checked' : ''}> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox" ${item.precio_a_consultar ? 'checked' : ''}> Precio a consultar</label>
                     <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
-                    <input class="item-calendly" type="text" placeholder="URL de Calendly (opcional)" value="${escapeHtml(item.calendly_url)}">
+                    <input class="item-reserva" type="text" aria-label="Enlace de reserva propio" placeholder="Enlace de reserva propio (opcional)" value="${escapeHtml(item.reserva_url || item.calendly_url)}">
                 </div>
+                ${htmlDetalleServicio(item, item.tipo === 'servicio')}
             `;
 
             itemsContainer.appendChild(nuevoItem);
@@ -1006,7 +1125,11 @@
             }
 
             const catalogo = obtenerCatalogo();
-            
+            if (erroresDetalle.length > 0) {
+                mostrarError(erroresDetalle[0]);
+                return;
+            }
+
             // Validar
             if (!catalogo.items || catalogo.items.length === 0) {
                 mostrarError('Por favor, agrega al menos un item');

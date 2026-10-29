@@ -1,6 +1,7 @@
 import { json, verifySession } from '../_lib/auth.js';
 import { getContent } from '../_lib/defaults.js';
 import { invalidarImagen } from '../_lib/cache.js';
+import { ID_RESERVADOS } from '../_lib/validadores.js';
 
 const ALLOWED_TYPES = {
   'image/jpeg': 'jpg',
@@ -40,13 +41,16 @@ export const onRequestPost = async ({ request, env }) => {
     return json({ error: 'Archivo muy grande (máximo 5MB)' }, 400);
   }
 
-  const catalogo = await getContent(env, 'catalogo', request);
-  if (!catalogo || !Array.isArray(catalogo.items)) {
-    return json({ error: 'Catálogo no encontrado' }, 404);
-  }
+  // Los ids reservados (p. ej. la foto de «Sobre mí») no son items del catálogo
+  if (!ID_RESERVADOS.includes(id)) {
+    const catalogo = await getContent(env, 'catalogo', request);
+    if (!catalogo || !Array.isArray(catalogo.items)) {
+      return json({ error: 'Catálogo no encontrado' }, 404);
+    }
 
-  if (!catalogo.items.some(item => item.id === id)) {
-    return json({ error: `El ID '${id}' no existe en el catálogo. Guarda el catálogo con ese producto o servicio y vuelve a subir la foto.` }, 400);
+    if (!catalogo.items.some(item => item.id === id)) {
+      return json({ error: `El ID '${id}' no existe en el catálogo. Guarda el catálogo con ese producto o servicio y vuelve a subir la foto.` }, 400);
+    }
   }
 
   const key = `items/${id}.${ext}`;
