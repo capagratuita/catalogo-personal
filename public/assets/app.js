@@ -46,15 +46,11 @@ const FUENTES = {
   mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
 };
 
-// Aplica landing.tema (colores y fuente) sobre las variables CSS de styles.css.
+// Aplica landing.tema.fuente. Los colores no se tocan: la paleta de Capa Gratuita es fija (styles.css).
 function aplicarTema(tema) {
-  if (!tema) return;
-  const raiz = document.documentElement.style;
-  const hex = /^#[0-9a-f]{6}$/i;
-
-  if (hex.test(tema.color_primario)) raiz.setProperty('--primary', tema.color_primario);
-  if (hex.test(tema.color_secundario)) raiz.setProperty('--accent', tema.color_secundario);
-  if (FUENTES[tema.fuente]) raiz.setProperty('--font-body', FUENTES[tema.fuente]);
+  if (tema && FUENTES[tema.fuente]) {
+    document.documentElement.style.setProperty('--font-body', FUENTES[tema.fuente]);
+  }
 }
 
 // Rellena nombre, pie de página, redes y título con los datos de config.negocio.

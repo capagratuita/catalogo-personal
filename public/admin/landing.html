@@ -316,14 +316,6 @@
                 <div class="tema-section">
                     <h3>Tema</h3>
                     <div class="form-group">
-                        <label for="landing-tema-color_primario">Color Primario</label>
-                        <input type="color" id="landing-tema-color_primario" name="landing-tema-color_primario" value="var(--primary)">
-                    </div>
-                    <div class="form-group">
-                        <label for="landing-tema-color_secundario">Color Secundario</label>
-                        <input type="color" id="landing-tema-color_secundario" name="landing-tema-color_secundario" value="#FFD700">
-                    </div>
-                    <div class="form-group">
                         <label for="landing-tema-fuente">Fuente</label>
                         <select id="landing-tema-fuente" name="landing-tema-fuente">
                             <option value="serif">Serif</option>
@@ -401,8 +393,9 @@
             });
 
             const tema = {
-                color_primario: document.getElementById('landing-tema-color_primario').value,
-                color_secundario: document.getElementById('landing-tema-color_secundario').value,
+                // La paleta es fija (Capa Gratuita); el esquema aún exige estos campos
+                color_primario: '#12161c',
+                color_secundario: '#b6f23c',
                 fuente: document.getElementById('landing-tema-fuente').value,
                 estilo: document.getElementById('landing-tema-estilo').value
             };
@@ -500,8 +493,6 @@
             }
 
             if (landing.tema) {
-                document.getElementById('landing-tema-color_primario').value = landing.tema.color_primario || 'var(--primary)';
-                document.getElementById('landing-tema-color_secundario').value = landing.tema.color_secundario || '#FFD700';
                 document.getElementById('landing-tema-fuente').value = landing.tema.fuente || 'serif';
                 document.getElementById('landing-tema-estilo').value = landing.tema.estilo || 'rustico';
             }

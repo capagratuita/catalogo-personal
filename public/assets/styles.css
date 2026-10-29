@@ -200,6 +200,15 @@ nav .carrito-contador {
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
+.item-card .item-imagen {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--bg-alt);
+}
+
 .item-card h3 {
   padding: 1.5rem 1.5rem 0.5rem;
   color: var(--primary);

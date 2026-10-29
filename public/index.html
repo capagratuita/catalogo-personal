@@ -281,6 +281,7 @@
             }
 
             card.innerHTML = `
+                <img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="${escapeHtml(item.nombre)}" loading="lazy" width="400" height="300">
                 <h3>${escapeHtml(item.nombre)}</h3>
                 <p class="descripcion">${escapeHtml(item.descripcion)}</p>
                 ${priceHtml}
@@ -291,6 +292,12 @@
                     ${actionButton}
                 </div>
             `;
+
+            // Sin foto subida, /api/image responde 404: se muestra el placeholder (una sola vez)
+            const imagen = card.querySelector('.item-imagen');
+            imagen.addEventListener('error', () => {
+                imagen.src = '/assets/images/placeholder.png';
+            }, { once: true });
 
             const btnCarrito = card.querySelector('.btn-add-to-cart');
             if (btnCarrito) {
