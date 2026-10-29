@@ -393,6 +393,60 @@
             resize: vertical;
         }
 
+        .etiqueta-detalle {
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .variante-fila {
+            display: grid;
+            grid-template-columns: minmax(140px, 1fr) 110px 110px auto;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+
+        .variante-fila input {
+            padding: 0.45rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-var-quitar,
+        .btn-var-agregar {
+            background: white;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            min-height: 44px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-var-quitar {
+            width: 44px;
+            color: #b71c1c;
+            border-color: #b71c1c;
+        }
+
+        .btn-var-agregar {
+            padding: 0 0.9rem;
+        }
+
+        .btn-var-quitar:hover,
+        .btn-var-agregar:hover:not(:disabled) {
+            background: #f0f0f0;
+        }
+
+        .btn-var-agregar:disabled {
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .btn-var-quitar:focus-visible,
+        .btn-var-agregar:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
         .item-servicio-detalle .ayuda {
             font-size: 0.8rem;
             color: #555;
@@ -404,6 +458,14 @@
             .item-fila-secundaria,
             .item-servicio-detalle .item-fila {
                 grid-template-columns: 1fr;
+            }
+
+            .variante-fila {
+                grid-template-columns: 1fr 1fr auto;
+            }
+
+            .variante-fila .var-nombre {
+                grid-column: 1 / -1;
             }
 
             .item-row-edit .btn-remove-item {
@@ -655,21 +717,43 @@
 
         let erroresDetalle = [];
 
-        // Texto del admin -> datos. Una línea por opción: "Nombre | precio | minutos (opcional)"
-        function parsearVariantes(texto, idItem) {
+        const MAX_VARIANTES = 6;
+
+        // Opciones de precio del formulario -> datos. Las filas totalmente vacías se ignoran.
+        function leerVariantes(row, idItem) {
             const variantes = [];
-            texto.split('\n').map(linea => linea.trim()).filter(Boolean).forEach(linea => {
-                const [nombre, precio, minutos] = linea.split('|').map(parte => parte.trim());
-                const precioNum = Number(String(precio ?? '').replace(',', '.'));
-                const minutosNum = minutos ? Number(minutos) : null;
-                if (!nombre || precio === undefined || precio === '' || !Number.isFinite(precioNum) || precioNum < 0
-                    || (minutos && (!Number.isFinite(minutosNum) || minutosNum < 0))) {
-                    erroresDetalle.push(`Opción mal escrita en '${idItem}': "${linea}". Usa «Nombre | precio | minutos» (los minutos son opcionales).`);
-                    return;
-                }
-                variantes.push({ nombre, precio: precioNum, duracion_minutos: minutosNum });
+            row.querySelectorAll('.variante-fila').forEach((fila, i) => {
+                const nombre = fila.querySelector('.var-nombre').value.trim();
+                const precioTexto = fila.querySelector('.var-precio').value.trim().replace(',', '.');
+                const minutosTexto = fila.querySelector('.var-minutos').value.trim();
+                if (!nombre && !precioTexto && !minutosTexto) return;
+
+                const precio = Number(precioTexto);
+                const minutos = Number(minutosTexto);
+                const donde = `Opción ${i + 1} de '${idItem}'`;
+                if (!nombre) return erroresDetalle.push(`${donde}: falta el nombre.`);
+                if (!precioTexto || !Number.isFinite(precio) || precio < 0) return erroresDetalle.push(`${donde} («${nombre}»): el precio debe ser un número mayor o igual a 0.`);
+                if (minutosTexto && (!Number.isFinite(minutos) || minutos < 0)) return erroresDetalle.push(`${donde} («${nombre}»): los minutos deben ser un número mayor o igual a 0, o dejarse vacíos.`);
+                variantes.push({ nombre, precio, duracion_minutos: minutosTexto ? minutos : null });
             });
             return variantes;
+        }
+
+        function htmlVarianteFila(v = {}) {
+            return `
+                <div class="variante-fila">
+                    <input class="var-nombre" type="text" maxlength="60" placeholder="Nombre (ej. Sesión suelta)" aria-label="Nombre de la opción" value="${escapeHtml(v.nombre)}">
+                    <input class="var-precio" type="number" min="0" step="0.01" placeholder="Precio" aria-label="Precio de la opción" value="${v.precio ?? ''}">
+                    <input class="var-minutos" type="number" min="0" step="1" placeholder="Minutos" aria-label="Minutos de la opción (opcional)" value="${v.duracion_minutos ?? ''}">
+                    <button type="button" class="btn-var-quitar" aria-label="Quitar esta opción">×</button>
+                </div>`;
+        }
+
+        function actualizarBotonVariantes(detalle) {
+            const total = detalle.querySelectorAll('.variante-fila').length;
+            const boton = detalle.querySelector('.btn-var-agregar');
+            boton.disabled = total >= MAX_VARIANTES;
+            boton.textContent = total >= MAX_VARIANTES ? `Máximo ${MAX_VARIANTES} opciones` : '+ Añadir opción';
         }
 
         let detalleUid = 0;
@@ -678,10 +762,8 @@
             const uid = ++detalleUid;
             const modalidad = item.modalidad || '';
             const incluye = Array.isArray(item.incluye) ? item.incluye.join('\n') : '';
-            const variantes = Array.isArray(item.variantes)
-                ? item.variantes.map(v => `${v.nombre} | ${v.precio}${v.duracion_minutos ? ' | ' + v.duracion_minutos : ''}`).join('\n')
-                : '';
-            const abierto = modalidad || item.zona || incluye || variantes ? 'open' : '';
+            const variantes = Array.isArray(item.variantes) ? item.variantes : [];
+            const abierto = modalidad || item.zona || incluye || variantes.length ? 'open' : '';
             return `
                 <details class="item-servicio-detalle" ${abierto} ${visible ? '' : 'hidden'}>
                     <summary>Detalles del servicio (opcional)</summary>
@@ -703,10 +785,11 @@
                         </div>
                     </div>
                     <div class="item-fila">
-                        <label for="variantes-${uid}">Opciones de precio</label>
+                        <span class="etiqueta-detalle" id="var-titulo-${uid}">Opciones de precio</span>
                         <div>
-                            <textarea id="variantes-${uid}" class="item-variantes" placeholder="Sesión suelta | 30 | 60&#10;Pack de 4 | 100 | 240">${escapeHtml(variantes)}</textarea>
-                            <p class="ayuda">Una opción por línea: Nombre | precio | minutos (opcional). Máx. 6. Si las usas, la tarjeta muestra «Desde» el precio más bajo.</p>
+                            <div class="variantes-lista" role="group" aria-labelledby="var-titulo-${uid}">${variantes.map(htmlVarianteFila).join('')}</div>
+                            <button type="button" class="btn-var-agregar" ${variantes.length >= MAX_VARIANTES ? 'disabled' : ''}>${variantes.length >= MAX_VARIANTES ? `Máximo ${MAX_VARIANTES} opciones` : '+ Añadir opción'}</button>
+                            <p class="ayuda">Por ejemplo «Sesión suelta · 30 · 60 min» y «Pack de 4 · 100 · 240 min». Los minutos son opcionales. Si usas opciones, la tarjeta muestra «Desde» el precio más bajo.</p>
                         </div>
                     </div>
                 </details>`;
@@ -747,7 +830,7 @@
                     const modalidad = row.querySelector('.item-modalidad').value;
                     const zona = row.querySelector('.item-zona').value.trim();
                     const incluye = row.querySelector('.item-incluye').value.split('\n').map(l => l.trim()).filter(Boolean);
-                    const variantes = parsearVariantes(row.querySelector('.item-variantes').value, item.id);
+                    const variantes = leerVariantes(row, item.id);
                     if (modalidad) item.modalidad = modalidad;
                     if (zona) item.zona = zona;
                     if (incluye.length) item.incluye = incluye;
@@ -1201,6 +1284,25 @@
 
             // Actualizar preview cuando cambian los inputs
             document.getElementById('form-catalogo').addEventListener('input', function() {
+                actualizarPreviewItems();
+            });
+
+            document.getElementById('items-container').addEventListener('click', function(event) {
+                const agregar = event.target.closest('.btn-var-agregar');
+                const quitar = event.target.closest('.btn-var-quitar');
+                if (!agregar && !quitar) return;
+
+                const detalle = event.target.closest('.item-servicio-detalle');
+                const lista = detalle.querySelector('.variantes-lista');
+                if (agregar) {
+                    if (lista.children.length >= MAX_VARIANTES) return;
+                    lista.insertAdjacentHTML('beforeend', htmlVarianteFila());
+                    lista.lastElementChild.querySelector('.var-nombre').focus();
+                } else {
+                    quitar.closest('.variante-fila').remove();
+                    detalle.querySelector('.btn-var-agregar').focus();
+                }
+                actualizarBotonVariantes(detalle);
                 actualizarPreviewItems();
             });
 

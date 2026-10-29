@@ -65,7 +65,7 @@ Nunca pegues la contraseña en GitHub ni en ningún archivo del proyecto.
 Entra en `https://tu-proyecto.pages.dev/admin` e inicia sesión. En el menú del panel:
 
 1. **Identidad:** nombre, descripción corta, WhatsApp (con código de país), moneda, modo de negocio (*solo servicios*, *solo productos* o *mixto*), enlace de reserva si usas una agenda, y tus redes. Pulsa **Guardar**.
-2. **Catálogo:** crea tus categorías y tus servicios. Para cada uno puedes indicar precio, duración, modalidad, zona, qué incluye y opciones de precio (por ejemplo «Sesión suelta» y «Pack de 4»). Si el precio se acuerda con el cliente, marca **Precio a consultar**.
+2. **Catálogo:** crea tus categorías y tus servicios. Para cada uno puedes indicar precio, duración, modalidad, zona, qué incluye y opciones de precio (por ejemplo «Sesión suelta» y «Pack de 4»), que añades con el botón **+ Añadir opción**. Si el precio se acuerda con el cliente, marca **Precio a consultar**.
 3. **Fotos:** sube una foto por servicio. El panel las reduce solo para que carguen rápido y se vean bien al compartir por WhatsApp.
 4. **Landing:** el editor tiene una pestaña para la **Portada**, otra para **Apariencia y SEO** (color de acento, fuente) y una por cada sección. Con **+ Añadir sección** eliges el tipo: *Texto*, *Destacados*, *Galería*, *Sobre mí* (con tu foto, que subes en **Fotos**), *Testimonios* (solo opiniones reales, con permiso de quien las dio) o *Contacto*. En *Destacados* y *Galería* marcas los items con casillas. Cada sección se puede subir, bajar o eliminar, y nada se publica hasta pulsar **Guardar Landing**.
 5. **FAQ:** hasta 15 preguntas frecuentes.

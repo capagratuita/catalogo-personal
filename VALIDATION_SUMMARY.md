@@ -93,3 +93,9 @@
 - jsdom contra `npm run dev`: sin tocar nada, `obtenerLanding()` devuelve exactamente los datos guardados; pestañas con roles ARIA y flechas/Inicio/Fin; marcar items, renombrar (la pestaña se actualiza), añadir sección desde el selector de tipo (6 opciones), testimonios en tarjetas, subir, eliminar y guardar real (200). Item inexistente: fila en rojo y, al guardar, el error del servidor se muestra completo. Landing local restaurada.
 - Corregido de paso: `admin.putContent` solo mostraba «JSON inválido»; ahora muestra `detalle` (afecta a todos los formularios del admin).
 - Pendiente: revisión visual a 375px (pestañas con scroll horizontal) en navegador real.
+
+## 2026-10-29 — Editor de opciones de precio en Catálogo
+- Las opciones de precio pasan de un textarea con `|` a filas (nombre, precio, minutos opcional) con «+ Añadir opción» (máx. 6) y «Quitar».
+- jsdom contra `npm run dev`: carga las 2 opciones guardadas; la salida de `obtenerCatalogo()` es igual al original salvo `calendly_url` → `reserva_url` (migración esperada); fila vacía ignorada; opción nueva (`45.5`, 90 min) leída; precio negativo y nombre vacío dan error específico en español; el botón se deshabilita en 6 filas; quitar devuelve el foco al botón de añadir; un producto no lleva `variantes`; guardado real 200. Catálogo local restaurado.
+- jsdom descarta la coma decimal en `<input type=number>`, por eso la prueba usó punto; el código acepta también coma.
+- Pendiente: revisión visual a 375px en navegador real.
