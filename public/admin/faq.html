@@ -79,6 +79,36 @@
             display: flex;
             gap: 0.25rem;
         }
+
+        /* La respuesta crece con el texto: sin scroll interno */
+        .faq-item .faq-r {
+            display: block;
+            min-height: 5.5rem;
+            resize: none;
+            overflow: hidden;
+        }
+
+        .faq-agregar {
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .faq-item {
+                padding: 0.85rem 0.75rem;
+            }
+
+            .faq-item .btn-icono {
+                height: 44px;
+            }
+
+            .faq-item .form-group {
+                margin-bottom: 0.75rem;
+            }
+
+            .faq-agregar {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -103,13 +133,14 @@
             <form id="form-faq" novalidate>
                 <div class="faq-barra">
                     <h3>Preguntas<span class="faq-contador" id="faq-contador"></span></h3>
-                    <button type="button" class="btn btn-secondary" id="btn-agregar">+ Añadir pregunta</button>
                 </div>
 
                 <div id="faq-vacio" class="faq-vacio oculto">
                     Aún no hay preguntas. Pulsa «Añadir pregunta» para crear la primera.
                 </div>
                 <ol id="faq-lista" class="faq-lista"></ol>
+
+                <button type="button" class="btn btn-secondary faq-agregar" id="btn-agregar">+ Añadir pregunta</button>
 
                 <details class="avanzado" id="detalle-json">
                     <summary>Ver JSON</summary>
@@ -165,6 +196,11 @@
             document.getElementById('preview-content').textContent = JSON.stringify(obtenerFAQ(), null, 2);
         }
 
+        function ajustarAltura(texto) {
+            texto.style.height = 'auto';
+            texto.style.height = `${texto.scrollHeight}px`;
+        }
+
         // Renumera, activa/desactiva subir y bajar y actualiza el contador
         function actualizarLista() {
             const items = filas();
@@ -186,6 +222,7 @@
             document.getElementById('faq-vacio').classList.toggle('oculto', items.length > 0);
             document.getElementById('btn-agregar').disabled = items.length >= MAX_PREGUNTAS;
             actualizarJSON();
+            lista.querySelectorAll('.faq-r').forEach(ajustarAltura);
         }
 
         function crearFila(p = '', r = '') {
@@ -352,7 +389,9 @@
             document.getElementById('btn-agregar').addEventListener('click', () => { agregarFAQ(); marcarModificado(); });
             document.getElementById('form-faq').addEventListener('submit', guardarFAQ);
             lista.addEventListener('click', accionFila);
+            window.addEventListener('resize', () => lista.querySelectorAll('.faq-r').forEach(ajustarAltura));
             document.getElementById('form-faq').addEventListener('input', evento => {
+                if (evento.target.classList.contains('faq-r')) ajustarAltura(evento.target);
                 if (evento.target.classList.contains('invalido') && evento.target.value.trim()) {
                     evento.target.classList.remove('invalido');
                     evento.target.setAttribute('aria-invalid', 'false');
