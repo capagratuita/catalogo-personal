@@ -12,7 +12,7 @@
             <div class="logo">Panadería Artesanal El Molino</div>
             <ul class="nav-links">
                 <li><a href="/">Inicio</a></li>
-                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/#catalogo">Catálogo</a></li>
                 <li><a href="/faq">Preguntas Frecuentes</a></li>
                 <li><a href="/carrito">Carrito</a></li>
             </ul>
@@ -27,24 +27,27 @@
             <div class="container">
                 <h1>Bienvenidos a Panadería Artesanal El Molino</h1>
                 <p>Pan recién horneado todos los días y talleres para compartir nuestra pasión</p>
-                <a href="/catalogo" class="btn">Ver Catálogo</a>
+                <a href="/#catalogo" class="btn">Ver Catálogo</a>
             </div>
         </section>
 
-        <section class="catalogo">
+        <div id="catalogo">
+        <section class="catalogo" id="seccion-producto" data-tipo="producto" hidden>
             <div class="container">
-                <h2>Productos Destacados</h2>
-                <div class="categorias">
-                    <button class="categoria-btn activa" onclick="filtrarCategoria('todos')">Todos</button>
-                    <button class="categoria-btn" onclick="filtrarCategoria('pan')">Pan</button>
-                    <button class="categoria-btn" onclick="filtrarCategoria('pasteles')">Pasteles</button>
-                    <button class="categoria-btn" onclick="filtrarCategoria('servicios')">Servicios</button>
-                </div>
-                <div class="items-grid" id="items-grid">
-                    <!-- Items serán insertados aquí por JavaScript -->
-                </div>
+                <h2>Productos</h2>
+                <div class="categorias" id="filtros-producto" role="group" aria-label="Filtrar productos por categoría"></div>
+                <div class="items-grid" id="items-grid-producto"></div>
             </div>
         </section>
+
+        <section class="catalogo catalogo-servicios" id="seccion-servicio" data-tipo="servicio" hidden>
+            <div class="container">
+                <h2>Servicios</h2>
+                <div class="categorias" id="filtros-servicio" role="group" aria-label="Filtrar servicios por categoría"></div>
+                <div class="items-grid" id="items-grid-servicio"></div>
+            </div>
+        </section>
+        </div>
     </main>
 
     <footer>
@@ -55,7 +58,7 @@
             </div>
             <ul class="footer-links">
                 <li><a href="/">Inicio</a></li>
-                <li><a href="/catalogo">Catálogo</a></li>
+                <li><a href="/#catalogo">Catálogo</a></li>
                 <li><a href="/faq">Preguntas Frecuentes</a></li>
                 <li><a href="/carrito">Carrito</a></li>
             </ul>
@@ -70,8 +73,8 @@
     <script src="/assets/app.js"></script>
     <script>
         let carrito = [];
-        let categoriasOriginales = [];
-        let categoriaActual = 'todos';
+        const TIPOS = ['producto', 'servicio'];
+        const categoriaActual = { producto: 'todos', servicio: 'todos' };
 
         // Utilidades del frontend
         function actualizarContadorCarrito() {
@@ -108,8 +111,10 @@
 
             } catch (error) {
                 console.error('Error cargando datos:', error);
-                const itemsGrid = document.getElementById('items-grid');
-                if (itemsGrid) {
+                const seccion = document.getElementById('seccion-producto');
+                const itemsGrid = document.getElementById('items-grid-producto');
+                if (seccion && itemsGrid) {
+                    seccion.hidden = false;
                     itemsGrid.innerHTML = '<div class="error">Error cargando el catálogo. Por favor, intente nuevamente.</div>';
                 }
             }
@@ -142,7 +147,7 @@
                 if (subtitulo && hero.subtitulo) subtitulo.textContent = hero.subtitulo;
                 if (cta) {
                     if (hero.cta_texto) cta.textContent = hero.cta_texto;
-                    if (hero.cta_enlace) cta.setAttribute('href', hero.cta_enlace);
+                    if (hero.cta_enlace) cta.setAttribute('href', hero.cta_enlace === '/catalogo' ? '/#catalogo' : hero.cta_enlace);
                 }
 
                 if (esUrlFondoValida(hero.imagen_fondo_url)) {
@@ -167,48 +172,80 @@
             }
         }
 
+        function tiposVisibles(config) {
+            const modo = config.negocio.modo_negocio;
+            if (modo === 'solo-productos') return ['producto'];
+            if (modo === 'solo-servicios') return ['servicio'];
+            return TIPOS;
+        }
+
+        // Categorías del tipo: las declaradas en el catálogo (formato tipado o
+        // array plano legacy) más las que realmente usan los items.
+        function categoriasDeTipo(catalogo, tipo) {
+            const declaradas = Array.isArray(catalogo.categorias)
+                ? catalogo.categorias
+                : (catalogo.categorias && catalogo.categorias[tipo]) || [];
+            const usadas = catalogo.items
+                .filter(item => item.tipo === tipo && item.categoria)
+                .map(item => item.categoria);
+            const enUso = new Set(usadas);
+            return [...new Set([...declaradas, ...usadas])].filter(c => enUso.has(c));
+        }
+
+        function etiquetaCategoria(categoria) {
+            return categoria.charAt(0).toUpperCase() + categoria.slice(1);
+        }
+
+        function renderizarFiltros(tipo, categorias) {
+            const contenedor = document.getElementById('filtros-' + tipo);
+            contenedor.innerHTML = '';
+            // Con una sola categoría (o ninguna) filtrar no aporta nada
+            if (categorias.length < 2) return;
+
+            ['todos', ...categorias].forEach(categoria => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'categoria-btn' + (categoria === categoriaActual[tipo] ? ' activa' : '');
+                btn.textContent = categoria === 'todos' ? 'Todos' : etiquetaCategoria(categoria);
+                btn.setAttribute('aria-pressed', categoria === categoriaActual[tipo]);
+                btn.addEventListener('click', () => filtrarCategoria(tipo, categoria));
+                contenedor.appendChild(btn);
+            });
+        }
+
+        function renderizarSeccion(tipo) {
+            const { catalogo, config } = window.paginaActual;
+            const seccion = document.getElementById('seccion-' + tipo);
+            const grid = document.getElementById('items-grid-' + tipo);
+            const delTipo = catalogo.items.filter(item => item.tipo === tipo);
+
+            const visible = tiposVisibles(config).includes(tipo) && delTipo.length > 0;
+            seccion.hidden = !visible;
+            if (!visible) return;
+
+            const categorias = categoriasDeTipo(catalogo, tipo);
+            if (!categorias.includes(categoriaActual[tipo])) categoriaActual[tipo] = 'todos';
+            renderizarFiltros(tipo, categorias);
+
+            const items = delTipo
+                .filter(item => categoriaActual[tipo] === 'todos' || item.categoria === categoriaActual[tipo])
+                // Destacados primero, conservando el orden del catálogo
+                .sort((a, b) => Number(!!b.destacado) - Number(!!a.destacado));
+
+            grid.innerHTML = '';
+            items.forEach(item => grid.appendChild(crearItemCard(item, config, catalogo)));
+        }
+
         function renderizarCatalogo() {
             const data = window.paginaActual;
             if (!data || !data.catalogo || !data.config) return;
+            TIPOS.forEach(renderizarSeccion);
+        }
 
-            let items = data.catalogo.items;
-            
-            // Filtrar por categoría
-            if (categoriaActual !== 'todos') {
-                items = items.filter(item => item.categoria === categoriaActual);
-            }
-
-            // Guardar categorías originales para filtrado
-            if (!categoriasOriginales.length) {
-                categoriasOriginales = [...new Set(items.map(item => item.tipo))];
-            }
-
-            // Renderizar solo productos si el modo del negocio es solo-servicios
-            if (data.config.negocio.modo_negocio === 'solo-servicios') {
-                items = items.filter(item => item.tipo === 'servicio');
-            }
-
-            // Renderizar solo servicios si el modo del negocio es solo-productos
-            if (data.config.negocio.modo_negocio === 'solo-productos') {
-                items = items.filter(item => item.tipo === 'producto');
-            }
-
-            const itemsGrid = document.getElementById('items-grid');
-            if (!itemsGrid) return;
-
-            itemsGrid.innerHTML = '';
-
-            // Renderizar items destacados primero
-            const itemsDestacados = items.filter(item => item.destacado);
-            const itemsNoDestacados = items.filter(item => !item.destacado);
-
-            itemsDestacados.forEach(item => {
-                itemsGrid.appendChild(crearItemCard(item, data.config, data.catalogo));
-            });
-
-            itemsNoDestacados.forEach(item => {
-                itemsGrid.appendChild(crearItemCard(item, data.config, data.catalogo));
-            });
+        function escapeHtml(texto) {
+            const div = document.createElement('div');
+            div.textContent = texto == null ? '' : texto;
+            return div.innerHTML;
         }
 
         function crearItemCard(item, config, catalogo) {
@@ -240,20 +277,26 @@
             let actionButton = '';
             const mostrarCarrito = !calendlyUrl && (item.tipo === 'servicio' || config.negocio.modo_negocio !== 'solo-servicios');
             if (mostrarCarrito) {
-                actionButton = `<button class="btn-add-to-cart" onclick="agregarAlCarrito('${item.id}', '${item.nombre}', ${item.precio}, '${config.negocio.moneda}')">Añadir al Carrito</button>`;
+                actionButton = '<button type="button" class="btn-add-to-cart">Añadir al Carrito</button>';
             }
 
             card.innerHTML = `
-                <h3>${item.nombre}</h3>
-                <p class="descripcion">${item.descripcion}</p>
+                <h3>${escapeHtml(item.nombre)}</h3>
+                <p class="descripcion">${escapeHtml(item.descripcion)}</p>
                 ${priceHtml}
                 ${durationHtml}
                 <div class="item-actions">
-                    <a href="/producto?id=${item.id}" class="btn-ver">Ver Detalles</a>
+                    <a href="/producto?id=${encodeURIComponent(item.id)}" class="btn-ver">Ver Detalles</a>
                     ${calendlyHtml}
                     ${actionButton}
                 </div>
             `;
+
+            const btnCarrito = card.querySelector('.btn-add-to-cart');
+            if (btnCarrito) {
+                btnCarrito.addEventListener('click', () =>
+                    agregarAlCarrito(item.id, item.nombre, item.precio, config.negocio.moneda));
+            }
 
             return card;
         }
@@ -268,16 +311,9 @@
             window.location.href = '/carrito';
         }
 
-        function filtrarCategoria(categoria) {
-            categoriaActual = categoria;
-
-            // Actualizar botones activos
-            document.querySelectorAll('.categoria-btn').forEach(btn => {
-                btn.classList.remove('activa');
-            });
-            event.target.classList.add('activa');
-
-            renderizarCatalogo();
+        function filtrarCategoria(tipo, categoria) {
+            categoriaActual[tipo] = categoria;
+            renderizarSeccion(tipo);
         }
 
         function mostrarNotificacion(mensaje) {

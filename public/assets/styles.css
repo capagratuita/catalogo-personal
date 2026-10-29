@@ -57,6 +57,8 @@ nav .nav-links {
 }
 
 nav .nav-links a {
+  display: inline-block;
+  padding: 0.75rem 0.25rem;
   text-decoration: none;
   color: #555;
   font-weight: 500;
@@ -128,6 +130,11 @@ nav .carrito-contador {
   background: #f9f9f9;
 }
 
+.catalogo-servicios {
+  background: white;
+  border-top: 1px solid #e0e0e0;
+}
+
 .catalogo h2 {
   text-align: center;
   margin-bottom: 2rem;
@@ -144,6 +151,7 @@ nav .carrito-contador {
 
 .categoria-btn {
   padding: 0.5rem 1.5rem;
+  min-height: 44px;
   background: white;
   border: 2px solid #8B4513;
   border-radius: 50px;
@@ -222,7 +230,10 @@ nav .carrito-contador {
   cursor: pointer;
   font-size: 0.8rem;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   text-align: center;
   transition: all 0.3s;
 }
@@ -637,11 +648,14 @@ footer {
 
   footer .footer-links {
     display: flex;
-    gap: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
     list-style: none;
   }
 
   footer .footer-links a {
+    display: inline-block;
+    padding: 0.75rem 0.25rem;
     color: white;
     text-decoration: none;
     opacity: 0.9;
@@ -658,6 +672,11 @@ footer {
   }
 
   footer .redes-sociales a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
     color: white;
     font-size: 1.5rem;
     opacity: 0.9;
@@ -690,10 +709,6 @@ footer {
 
   /* Mobile responsive */
   @media (max-width: 768px) {
-    .nav-links {
-      display: none;
-    }
-
     .hero {
       padding: 3rem 0;
     }
