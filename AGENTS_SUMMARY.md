@@ -10,7 +10,7 @@
 - `package.json` usa `wrangler pages dev public --ip 0.0.0.0 --port 8788`.
 - `wrangler.toml` tiene el bloque `[ai]` comentado. Sin ese binding, `/api/chat` devuelve 503. Para probar chat: descomenta `[ai]`/`binding = "AI"` y ejecuta `npx wrangler login`.
 - KV local en `.wrangler/state`: las keys `config`, `catalogo`, `landing` y `faq` están sembradas.
-- R2 local: existe `items/pan-integral.png` (placeholder de prueba subido con `/api/upload`).
+- Imágenes en KV local `IMAGES` (antes R2, que exige método de pago): las 5 fotos existentes migradas.
 - `.dev.vars` contiene `ADMIN_PASSWORD`; no imprimir el valor ni commitearlo.
 - Auth implementada con cookie HMAC-SHA256 en `functions/_lib/auth.js`; middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
 - Frontend conectado: públicas cargan `/assets/app.js`; admin carga `../assets/admin.js`; CSS de admin corregido; placeholder en `public/assets/images/placeholder.png`.
@@ -69,7 +69,7 @@ Resultados esperados: `200` en config/login/session/PUT/upload/image/logout; tra
 ## Checklist pendiente
 
 - [x] Servidor local y acceso por LAN.
-- [x] KV sembrado y R2 local con una imagen de prueba.
+- [x] KV sembrado y KV `IMAGES` local con las fotos.
 - [x] Login, session, PUT, upload, image y logout probados con curl.
 - [x] Probar el admin en navegador: login, guardar identidad/catálogo/landing/FAQ y subir una foto real.
 - [x] Probar ficha, carrito, checkout por WhatsApp y enlaces de Calendly.
@@ -84,11 +84,11 @@ Resultados esperados: `200` en config/login/session/PUT/upload/image/logout; tra
 - `AGENTS_SUMMARY.md`: esta memoria de sesión.
 - `VALIDATION_SUMMARY.md`: log de pruebas ejecutadas.
 - `package.json`: script `dev` con `--ip 0.0.0.0 --port 8788`.
-- `wrangler.toml`: bindings KV/R2 y bloque `[ai]` comentado.
+- `wrangler.toml`: bindings KV (contenido) e IMAGES (fotos, también KV) y bloque `[ai]` comentado.
 - `functions/_lib/auth.js`: cookie HMAC y verificación de sesión.
 - `functions/_middleware.js`: protección de admin y escrituras.
 - `functions/api/content.js`: validadores y KV.
-- `functions/api/upload.js`: subida R2.
+- `functions/api/upload.js`: subida al KV `IMAGES`.
 - `functions/api/image.js`: lectura pública de imágenes.
 - `public/assets/app.js` y `public/assets/admin.js`: utilidades de frontend.
 - `config/*.example.json`: seeds de KV.

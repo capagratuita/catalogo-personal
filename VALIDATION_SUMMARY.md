@@ -47,7 +47,7 @@
 ## Estado local
 
 - KV local: `config`, `catalogo`, `landing` y `faq` sembradas en `.wrangler/state`.
-- R2 local: `items/pan-integral.png` subido durante las pruebas.
+- Imágenes (migradas de R2 a KV `IMAGES` el 2026-10-28): 5 fotos servidas por `/api/image`; subida autenticada y 401 sin sesión verificados.
 - `wrangler.toml`: `[ai]` comentado; `/api/chat` responde 503.
 - `ADMIN_PASSWORD` vive en `.dev.vars`; no se imprime ni se versiona.
 

@@ -8,12 +8,12 @@ El flujo local de contenido, admin e imágenes **ya funciona** sin Cloudflare lo
 - `wrangler.toml` trae el bloque `[ai]` comentado; sin ese binding, `/api/chat` devuelve 503 con un mensaje accionable.
 - Auth implementada con cookie HMAC-SHA256 (`functions/_lib/auth.js`): `/api/login`, `/api/logout`, `/api/session`; el middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
 - `functions/api/upload.js` usa `env.IMAGES.put`, valida tipo/tamaño/item, borra extensiones viejas y no contiene credenciales ni SDK de AWS.
-- `functions/api/image.js` sirve R2 por `id` o `url=items/...`; `producto.html` y `fotos.html` ya lo usan.
+- `functions/api/image.js` sirve las fotos desde el KV `IMAGES` por `id` o `url=items/...`; `producto.html` y `fotos.html` ya lo usan.
 - `functions/api/content.js` exporta validadores, acepta nullables y refuerza slug único, categoría existente, descripción ≤200, enums, booleanos y categorías de agendamiento existentes.
 - Las públicas cargan `/assets/app.js`; las admin cargan `../assets/admin.js` y usan `await window.admin.isAuthenticated()`. El CSS de admin apunta a `../assets/styles.css`.
 - Existe `public/assets/images/placeholder.png`; ficha y carrito usan `config.negocio.moneda` y `formatPrecio`.
 - Verificado con `npm run dev` + curl: GET de las 4 keys, login correcto/incorrecto, session, PUT autenticado, upload, image, logout, redirección de admin y acceso por IP LAN. En navegador: guardado de identidad/catálogo/landing/FAQ, subida y preview de fotos, ficha, contador del carrito y checkout por WhatsApp.
-- Estado local persistido en `.wrangler/state`: las 4 keys KV están sembradas y existe `items/pan-integral.png` en R2 local.
+- Estado local persistido en `.wrangler/state`: las 4 keys KV están sembradas y las 5 fotos existentes están en el KV local `IMAGES` (`items/{id}.{ext}`).
 - Pendiente: probar en navegador los checkboxes de `categorias_agendamiento`; revisar 375px; no hay UI de chat en las páginas públicas; `README.md` sigue desactualizado; los `validate-phase*.sh` son greps no fiables; no hay `.git`, `test`, `lint` ni `typecheck`. La memoria de trabajo está en `AGENTS_SUMMARY.md` y el log de pruebas en `VALIDATION_SUMMARY.md`.
 
 ## 2. Contexto y stack (cerrado)
@@ -25,7 +25,7 @@ Template para que una persona sin terminal haga fork y despliegue su propia inst
 | Frontend | Cloudflare Pages (estáticos) | Landing, catálogo, ficha, carrito, FAQ, admin |
 | API | Pages Functions | Endpoints `/api/*` |
 | Contenido | Workers KV | Keys exactas: `config`, `catalogo`, `landing`, `faq` |
-| Imágenes | R2 | Convención `items/{id}.{ext}` |
+| Imágenes | Workers KV (namespace separado, binding `IMAGES`) | Convención `items/{id}.{ext}`; R2 descartado porque exige método de pago |
 | Chat | Workers AI (binding `AI`) | RAG ligero con catálogo + FAQ |
 | Auth admin | `ADMIN_PASSWORD` | Protege `/admin/*` y escrituras en `/api/*` |
 | Citas | Calendly | Enlace global + override opcional por servicio |
@@ -37,11 +37,11 @@ Bindings:
 | Binding | Local | Producción |
 |---|---|---|
 | `env.KV` | KV local automático | Namespace KV real |
-| `env.IMAGES` | R2 local automático | Bucket R2 real |
+| `env.IMAGES` | KV local automático | Segundo namespace KV real (`catalogo-fotos-kv`) |
 | `env.AI` | Comentado por defecto; si se activa, es **remoto** y requiere `npx wrangler login` | Binding AI |
 | `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado) | Secret del dashboard |
 
-En producción, reemplaza `id = "placeholder"` por el ID real del namespace KV y `bucket_name = "catalogo-fotos"` por el bucket real en `wrangler.toml`. Para habilitar el chat, descomenta el bloque `[ai]` y su `binding = "AI"`; en local requiere `npx wrangler login`. No agregues `main`, `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
+En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace KV (`KV` para contenido, `IMAGES` para fotos) en `wrangler.toml`. Para habilitar el chat, descomenta el bloque `[ai]` y su `binding = "AI"`; en local requiere `npx wrangler login`. No agregues `main`, `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
 
 ## 3. Reglas duras (violarlas es un bug)
 
@@ -49,7 +49,7 @@ En producción, reemplaza `id = "placeholder"` por el ID real del namespace KV y
 2. **Sin tokens de API ni secretos en el repo.** La única credencial es `ADMIN_PASSWORD` vía `env.ADMIN_PASSWORD`; local en `.dev.vars`, producción como Secret del dashboard. `upload.js` ya usa el binding `env.IMAGES` y no contiene credenciales.
 3. **Sin commits automáticos.** El contenido vive en KV, no en el repo.
 4. **Toda escritura de contenido pasa por `PUT /api/content`.** El cliente nunca hace `KV.put`.
-5. **R2 solo desde `/api/upload`.** El cliente nunca sube directo a R2. Usa el binding `env.IMAGES` (`put/get/delete`), no el SDK de AWS.
+5. **Las fotos solo se escriben desde `/api/upload`.** El cliente nunca escribe directo en el KV de imágenes. Usa el binding `env.IMAGES` (`put/getWithMetadata/delete`), no SDKs externos.
 6. **Frontend vanilla**: HTML + CSS + JS. Sin React, Vue, Svelte, Alpine, HTMX ni frameworks CSS.
 7. **Solo `wrangler` como devDependency.** No agregues `@aws-sdk/*` ni librerías de runtime; usa APIs nativas de Cloudflare/Web.
 8. **Valida el JSON antes de `KV.put`** y devuelve `400` con detalle en español.
@@ -83,7 +83,7 @@ npx wrangler kv key get --binding=KV --local config
 ```
 
 - Los `config/*.example.json` no se cargan solos; hay que sembrarlos y volver a sembrar tras editarlos.
-- No hay `npm test` ni `npm run lint`. Los `validate-phase*.sh` son greps estáticos: `validate-phase0.sh` tiene falsos negativos (por ejemplo, la comprobación del bucket R2) y patrones frágiles como `[[ai]]`; `test-all-phases.sh` usa rutas absolutas `/home/devops/...`. No los uses como prueba de que algo funciona.
+- No hay `npm test` ni `npm run lint`. Los `validate-phase*.sh` son greps estáticos: `validate-phase0.sh` tiene falsos negativos (por ejemplo, la comprobación del bucket R2, que ya no se usa) y patrones frágiles como `[[ai]]`; `test-all-phases.sh` usa rutas absolutas `/home/devops/...`. No los uses como prueba de que algo funciona.
 - Verificación real ya ejecutada: `npm run dev` compila; `GET /api/content?key=config|catalogo|landing|faq` devuelve 200; `POST /api/login` setea cookie; `/api/session` con cookie devuelve 200; `PUT /api/content` autenticado devuelve 200; `POST /api/upload` devuelve 200; `GET /api/image?id=pan-integral` devuelve la imagen; `POST /api/logout` invalida la sesión; `/admin/identidad` sin cookie redirige a `/admin/index.html`.
 
 ## 5. Estructura real y entrypoints
@@ -129,7 +129,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 | `POST /api/logout` | cookie | 200 `{ok:true}`; borra la cookie. |
 | `GET /api/session` | cookie | 200 `{authenticated:true}`; 401 si no hay sesión válida. |
 | `POST /api/upload` | cookie `admin_session` | `multipart/form-data` con `id` y `file`; ≤5 MB; JPEG/PNG/WebP; item debe existir; guarda `items/{id}.{ext}` y borra extensiones viejas. |
-| `GET /api/image?id=...` o `?url=items/...` | pública | 200 imagen R2; 404 si no existe o el id es inválido. |
+| `GET /api/image?id=...` o `?url=items/...` | pública | 200 imagen desde KV; 404 si no existe o el id es inválido. |
 | `POST /api/chat` | pública | Body `{question}`; 200 `{answer}`; 400 pregunta vacía; 429 límite; 503 si falta el binding `AI`. |
 
 - Cookie esperada: `admin_session=<token>; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`.
@@ -147,20 +147,20 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 - `producto.html` y `carrito.html` usan `config.negocio.moneda`/`formatPrecio`; si agregas precios nuevos, no hardcodees `PEN` ni `S/.`.
 - `modo_negocio` controla visibilidad del carrito: con `solo-servicios`, los productos no se muestran en el carrito. Un servicio con `categoria` incluida en `categorias_agendamiento` y URL de Calendly propia o global muestra solo “Reservar Cita” (sin carrito). Un servicio no agendable, o agendable sin URL, muestra “Añadir al Carrito”. Los productos nunca muestran Calendly. `requiereAgendamiento(item, catalogo)` en `app.js` centraliza la regla.
 
-## 9. Imágenes/R2
+## 9. Imágenes (KV `IMAGES`)
 
 - La convención es `items/{id}.{ext}` y el item debe existir en `catalogo`.
-- Usa el binding: `await env.IMAGES.put(key, body, { httpMetadata: { contentType: file.type } })`. No uses `S3Client` ni credenciales.
+- Usa el binding: `await env.IMAGES.put(key, body, { metadata: { contentType: file.type } })` y lee con `getWithMetadata(key, { type: 'arrayBuffer' })`. Límites del KV gratuito: 1 GB, 1.000 escrituras/día, 100.000 lecturas/día, 25 MiB por valor (el tope de subida es 5 MB). Una foto nueva puede tardar hasta ~60 s en verse en otros puntos de la red (consistencia eventual).
 - `GET /api/image?id={id}` busca `items/{id}.jpg|jpeg|png|webp`; `GET /api/image?url=items/{id}.{ext}` sirve una key exacta. La ruta es pública y cachea 1 hora.
 - Al subir una imagen se borran las otras extensiones del mismo `id` para evitar servir una foto vieja.
 - No hay campo `imagen_url` en el catálogo: la URL se construye desde `id`. `fotos.html` muestra la URL resultante, pero no la guarda; la ficha usa `/api/image?id=...`.
-- Si expones R2 directamente, usa un subdominio `pub-<hash>.r2.dev` o un dominio custom válido; las URLs `https://r2.dev/items/...` y `https://<bucket>.r2.dev/...` no son válidas.
+- Las fotos no tienen URL pública directa: se sirven siempre por `/api/image`. `landing.hero.imagen_fondo_url` con URLs `r2.dev` se ignora.
 
 ## 10. Reparación y roadmap
 
 **Reparación completada:**
 
-1. `upload.js` usa `env.IMAGES.put`, sin SDK ni credenciales.
+1. `upload.js` usa `env.IMAGES.put` (KV), sin SDK ni credenciales.
 2. Auth HMAC en `_lib/auth.js`; middleware protege admin y escrituras.
 3. `app.js`/`admin.js` conectados; CSS de admin y placeholder corregidos.
 4. Validadores nullables y refuerzos del catálogo implementados.
@@ -180,7 +180,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 ## 11. Criterios de aceptación
 
-- Un fork limpio arranca en local con `npm run dev`; para desplegar, configura KV/R2 y autentica Wrangler.
+- Un fork limpio arranca en local con `npm run dev`; para desplegar, configura los dos namespaces KV y autentica Wrangler.
 - No hay tokens ni credenciales en el repo.
 - Flujo local: login -> editar config/catálogo/landing/faq -> subir foto -> ver en ficha -> carrito -> WhatsApp -> Calendly. El chat requiere descomentar `[ai]` y `npx wrangler login`.
 - 375px y desktop; errores en español con mensaje accionable.
@@ -197,7 +197,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 ## 13. Continuar pruebas en otra sesión
 
 - La memoria de trabajo está en `AGENTS_SUMMARY.md` y el log de pruebas en `VALIDATION_SUMMARY.md`.
-- Estado de partida: `npm run dev` escucha en `0.0.0.0:8788`; LAN `http://192.168.11.104:8788` (la IP puede cambiar; usa `hostname -I`). Las 4 keys KV están sembradas y R2 local tiene `items/pan-integral.png`.
+- Estado de partida: `npm run dev` escucha en `0.0.0.0:8788`; LAN `http://192.168.11.104:8788` (la IP puede cambiar; usa `hostname -I`). Las 4 keys KV están sembradas y el KV local `IMAGES` tiene las 5 fotos.
 - Para retomar: `cd /home/devops/proyectos/personal-ecommerce`, libera el puerto con `lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill`, ejecuta `npm run dev` y abre `http://localhost:8788` o la IP LAN.
 - Si `.wrangler/state` se borra, vuelve a sembrar KV con los comandos de la sección 4.
 - Pruebas pendientes: checkboxes de `categorias_agendamiento` (servicio agendable oculta carrito), 375px/escritorio, decidir UI de chat y actualizar `README.md`.

@@ -23,12 +23,12 @@ export const onRequestGet = async ({ request, env }) => {
   const candidates = key.includes('.') ? [key] : EXTENSIONS.map(ext => `items/${key}.${ext}`);
 
   for (const candidate of candidates) {
-    const object = await env.IMAGES.get(candidate);
-    if (!object) continue;
+    const { value, metadata } = await env.IMAGES.getWithMetadata(candidate, { type: 'arrayBuffer' });
+    if (!value) continue;
 
-    return new Response(object.body, {
+    return new Response(value, {
       headers: {
-        'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
+        'Content-Type': metadata?.contentType || 'application/octet-stream',
         'Cache-Control': 'public, max-age=3600',
       },
     });

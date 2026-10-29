@@ -51,7 +51,7 @@ export const onRequestPost = async ({ request, env }) => {
   const body = await file.arrayBuffer();
 
   await env.IMAGES.put(key, body, {
-    httpMetadata: { contentType: file.type },
+    metadata: { contentType: file.type },
   });
 
   for (const otherExt of Object.values(ALLOWED_TYPES)) {
