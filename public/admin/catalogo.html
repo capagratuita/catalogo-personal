@@ -504,7 +504,7 @@
 
         .variante-fila {
             display: grid;
-            grid-template-columns: minmax(140px, 1fr) 110px 110px auto;
+            grid-template-columns: minmax(140px, 1fr) 140px 130px auto;
             gap: 0.5rem;
             margin-bottom: 0.5rem;
             align-items: center;
@@ -513,6 +513,21 @@
         .variante-fila input {
             padding: 0.45rem;
             font-size: 0.9rem;
+        }
+
+        .variante-fila .precio-wrap input {
+            min-width: 0;
+            width: 100%;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .item-servicio-detalle .item-incluye {
+            min-height: 150px;
+        }
+
+        .variante-fila .moneda {
+            height: auto;
         }
 
         .btn-var-quitar,
@@ -907,8 +922,14 @@
             return `
                 <div class="variante-fila">
                     <input class="var-nombre" type="text" maxlength="60" placeholder="Nombre (ej. Sesión suelta)" aria-label="Nombre de la opción" value="${escapeHtml(v.nombre)}">
-                    <input class="var-precio" type="number" min="0" step="0.01" placeholder="Precio" aria-label="Precio de la opción" value="${v.precio ?? ''}">
-                    <input class="var-minutos" type="number" min="0" step="1" placeholder="Minutos" aria-label="Minutos de la opción (opcional)" value="${v.duracion_minutos ?? ''}">
+                    <span class="precio-wrap var-precio-wrap">
+                        <input class="var-precio" type="number" min="0" step="0.01" placeholder="Precio" aria-label="Precio de la opción" value="${v.precio ?? ''}">
+                        <span class="moneda" aria-label="Moneda">${escapeHtml(monedaActual)}</span>
+                    </span>
+                    <span class="precio-wrap var-precio-wrap">
+                        <input class="var-minutos" type="number" min="0" step="1" placeholder="Duración" aria-label="Minutos de la opción (opcional)" value="${v.duracion_minutos ?? ''}">
+                        <span class="moneda" aria-hidden="true">min</span>
+                    </span>
                     <button type="button" class="btn-var-quitar" aria-label="Quitar esta opción">×</button>
                 </div>`;
         }
@@ -948,7 +969,7 @@
                     <div class="item-fila">
                         <label for="incluye-${uid}">Qué incluye</label>
                         <div>
-                            <textarea id="incluye-${uid}" class="item-incluye" placeholder="Una línea por cada cosa que incluye (máx. 8)">${escapeHtml(incluye)}</textarea>
+                            <textarea id="incluye-${uid}" class="item-incluye" rows="6" placeholder="Una línea por cada cosa que incluye (máx. 8)">${escapeHtml(incluye)}</textarea>
                         </div>
                     </div>
                     <div class="item-fila">
