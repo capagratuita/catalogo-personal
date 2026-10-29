@@ -161,7 +161,7 @@ function montarNavegacionAdmin() {
     enlace.textContent = nombre;
     if (archivo.replace(/\.html$/, '') === actual) {
       enlace.setAttribute('aria-current', 'page');
-      enlace.style.color = '#8B4513';
+      enlace.style.color = 'var(--primary)';
       enlace.style.fontWeight = '700';
     }
     item.appendChild(enlace);

@@ -136,6 +136,8 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 - Cookie esperada: `admin_session=<token>; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`.
 - Implementado en `functions/_lib/auth.js`: cookie firmada con HMAC-SHA256 usando `ADMIN_PASSWORD` como secreto; el middleware verifica `/admin/*` (excepto `/admin`, `/admin/` y `/admin/index.html`) y las escrituras. No hay sesiones en KV.
 - `window.admin.isAuthenticated()` es asíncrona; en las páginas admin debe usarse con `await`.
+- **Sitio recién desplegado:** `app.js` (`loadCatalogo/loadConfig/loadLanding/loadFAQ`, memoizadas) cae a `/api/defaults` cuando la key no existe en KV, así las páginas públicas muestran los ejemplos sin guardar nada. En cuanto el admin guarda una key, se usa la guardada.
+- **Paleta:** `styles.css` define la paleta de Capa Gratuita como variables (`--primary` #12161C, `--accent` #B6F23C, `--bg`, `--ink`, `--ok`…). `landing.tema` (`color_primario`, `color_secundario`, `fuente`) las sobrescribe en las páginas públicas vía `aplicarTema`; `estilo` aún no se aplica. El admin siempre usa la paleta por defecto. No hardcodees colores de marca: usa las variables.
 - **Primer arranque sin terminal:** si una key no existe en KV, `admin.getContent` cae a `/api/defaults` y muestra un aviso de datos de ejemplo; no se guarda nada hasta que el admin pulse Guardar (`PUT /api/content`). `admin/respaldo.html` exporta/importa las 4 keys en un solo JSON (las fotos no van incluidas; se suben desde `fotos.html`). `admin.js` inyecta la barra de navegación del admin. Pages sirve `/admin/identidad` sin `.html`.
 
 ## 8. Convenciones de frontend

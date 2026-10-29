@@ -25,7 +25,7 @@
         }
 
         .admin-header h2 {
-            color: #8B4513;
+            color: var(--primary);
             margin: 0;
         }
 
@@ -66,7 +66,7 @@
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #8B4513;
+            border-color: var(--primary);
         }
 
         .form-group textarea {
@@ -147,7 +147,7 @@
         }
 
         .tema-section h3 {
-            color: #8B4513;
+            color: var(--primary);
             margin-bottom: 1rem;
         }
 
@@ -159,7 +159,7 @@
         }
 
         .seo-section h3 {
-            color: #8B4513;
+            color: var(--primary);
             margin-bottom: 1rem;
         }
 
@@ -171,7 +171,7 @@
         }
 
         .preview-section h3 {
-            color: #8B4513;
+            color: var(--primary);
             margin-bottom: 1rem;
         }
 
@@ -187,7 +187,7 @@
         }
 
         .btn {
-            background: #8B4513;
+            background: var(--primary);
             color: white;
             border: none;
             padding: 0.8rem 1.5rem;
@@ -199,7 +199,7 @@
         }
 
         .btn:hover {
-            background: #6B3410;
+            background: var(--primary-hover);
         }
 
         .btn-secondary {
@@ -239,7 +239,7 @@
 
         .spinner {
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #8B4513;
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -317,7 +317,7 @@
                     <h3>Tema</h3>
                     <div class="form-group">
                         <label for="landing-tema-color_primario">Color Primario</label>
-                        <input type="color" id="landing-tema-color_primario" name="landing-tema-color_primario" value="#8B4513">
+                        <input type="color" id="landing-tema-color_primario" name="landing-tema-color_primario" value="var(--primary)">
                     </div>
                     <div class="form-group">
                         <label for="landing-tema-color_secundario">Color Secundario</label>
@@ -500,7 +500,7 @@
             }
 
             if (landing.tema) {
-                document.getElementById('landing-tema-color_primario').value = landing.tema.color_primario || '#8B4513';
+                document.getElementById('landing-tema-color_primario').value = landing.tema.color_primario || 'var(--primary)';
                 document.getElementById('landing-tema-color_secundario').value = landing.tema.color_secundario || '#FFD700';
                 document.getElementById('landing-tema-fuente').value = landing.tema.fuente || 'serif';
                 document.getElementById('landing-tema-estilo').value = landing.tema.estilo || 'rustico';

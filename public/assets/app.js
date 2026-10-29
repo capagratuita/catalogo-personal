@@ -14,21 +14,47 @@ async function fetchJSON(url) {
   }
 }
 
-async function loadCatalogo() {
-  return await fetchJSON('/api/content?key=catalogo');
-}
+const contenido = {};
 
-let configPromise = null;
-
-// La config se pide una sola vez por página; si falla, el siguiente intento vuelve a pedirla.
-function loadConfig() {
-  if (!configPromise) {
-    configPromise = fetchJSON('/api/content?key=config').catch(error => {
-      configPromise = null;
+// Cada key se pide una sola vez por página. Si aún no existe en KV (sitio recién
+// desplegado), se usan los datos de ejemplo de /api/defaults. Si falla, se reintenta.
+function loadContent(key) {
+  if (!contenido[key]) {
+    contenido[key] = fetchContent(key).catch(error => {
+      delete contenido[key];
       throw error;
     });
   }
-  return configPromise;
+  return contenido[key];
+}
+
+async function fetchContent(key) {
+  const response = await fetch(`/api/content?key=${key}`, { cache: 'no-store' });
+  if (response.status === 404) return await fetchJSON(`/api/defaults?key=${key}`);
+  if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+  return await response.json();
+}
+
+const loadCatalogo = () => loadContent('catalogo');
+const loadConfig = () => loadContent('config');
+const loadLanding = () => loadContent('landing');
+const loadFAQ = () => loadContent('faq');
+
+const FUENTES = {
+  sans: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  serif: "Georgia, 'Times New Roman', serif",
+  mono: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+};
+
+// Aplica landing.tema (colores y fuente) sobre las variables CSS de styles.css.
+function aplicarTema(tema) {
+  if (!tema) return;
+  const raiz = document.documentElement.style;
+  const hex = /^#[0-9a-f]{6}$/i;
+
+  if (hex.test(tema.color_primario)) raiz.setProperty('--primary', tema.color_primario);
+  if (hex.test(tema.color_secundario)) raiz.setProperty('--accent', tema.color_secundario);
+  if (FUENTES[tema.fuente]) raiz.setProperty('--font-body', FUENTES[tema.fuente]);
 }
 
 // Rellena nombre, pie de página, redes y título con los datos de config.negocio.
@@ -64,15 +90,8 @@ function aplicarMarca(config) {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadConfig().then(aplicarMarca).catch(() => {});
+  loadLanding().then(landing => aplicarTema(landing.tema)).catch(() => {});
 });
-
-async function loadLanding() {
-  return await fetchJSON('/api/content?key=landing');
-}
-
-async function loadFAQ() {
-  return await fetchJSON('/api/content?key=faq');
-}
 
 function renderItem(item, config, catalogo) {
   const isService = item.tipo === 'servicio';
@@ -183,6 +202,7 @@ window.app = {
   loadCatalogo,
   loadConfig,
   aplicarMarca,
+  aplicarTema,
   loadLanding,
   loadFAQ,
   renderItem,
