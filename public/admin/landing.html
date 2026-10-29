@@ -77,93 +77,249 @@
             resize: vertical;
         }
 
-        .secciones-container {
+        .tabs-barra {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.5rem;
+            overflow-x: auto;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .tab,
+        .tab-agregar {
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            padding: 0.7rem 1rem;
+            min-height: 44px;
+            font-size: 0.95rem;
+            color: #555;
+            cursor: pointer;
+            white-space: nowrap;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tab:hover,
+        .tab-agregar:hover {
+            color: var(--primary);
+            background: #f5f5f5;
+        }
+
+        .tab[aria-selected="true"] {
+            color: var(--primary);
+            font-weight: 700;
+            border-bottom-color: var(--primary);
+        }
+
+        .tab:focus-visible,
+        .tab-agregar:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: -2px;
+        }
+
+        .tab-agregar {
+            color: #0B6B3F;
+            font-weight: 600;
+        }
+
+        .tab-tipo {
+            font-size: 0.75rem;
+            color: #666;
+            margin-left: 0.4rem;
+            font-weight: 400;
+        }
+
+        .tab-panel h3 {
+            color: var(--primary);
             margin-bottom: 1rem;
+        }
+
+        .ayuda {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 0.3rem;
+        }
+
+        .elegir-tipo {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .elegir-tipo-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .tipo-opcion {
+            text-align: left;
+            background: white;
             border: 1px solid #ddd;
             border-radius: 5px;
-            max-height: 400px;
+            padding: 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .tipo-opcion strong {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .tipo-opcion:hover {
+            border-color: var(--primary);
+        }
+
+        .tipo-opcion:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .seccion-acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-mini {
+            background: white;
+            color: #333;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            padding: 0.5rem 0.9rem;
+            min-height: 44px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-mini:hover:not(:disabled) {
+            background: #f0f0f0;
+        }
+
+        .btn-mini:disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .btn-mini:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .btn-peligro {
+            color: #b71c1c;
+            border-color: #b71c1c;
+            margin-left: auto;
+        }
+
+        .aviso-vacio {
+            background: #fff8e1;
+            color: #6d4c00;
+            border-left: 4px solid #f9a825;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0 5px 5px 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .items-lista {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 0.5rem 0.75rem;
+            max-height: 320px;
             overflow-y: auto;
         }
 
-        .seccion-row {
-            display: grid;
-            grid-template-columns: 130px 150px 1fr 120px auto;
-            gap: 1rem;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-            align-items: center;
+        .items-lista legend {
+            font-weight: bold;
+            color: #555;
+            padding: 0 0.4rem;
         }
 
-        .seccion-row:last-child {
+        .items-lista label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 0.25rem;
+            min-height: 44px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .items-lista label:last-child {
             border-bottom: none;
         }
 
-        .seccion-row.header {
-            background: #f5f5f5;
+        .items-lista input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .items-lista small {
+            color: #666;
+        }
+
+        .item-fantasma {
+            color: #b71c1c;
+        }
+
+        .testimonio-editor {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #fafafa;
+        }
+
+        .testimonio-editor-cabecera {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
             font-weight: bold;
-            position: sticky;
-            top: 0;
+            color: #555;
         }
 
-        .seccion-row input,
-        .seccion-row textarea,
-        .seccion-row select {
-            padding: 0.5rem;
-            font-size: 0.9rem;
+        .testimonio-campos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
         }
 
-        .btn-add-seccion {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
+        .contador {
+            font-size: 0.8rem;
+            color: #666;
+            text-align: right;
         }
 
-        .btn-add-seccion:hover {
-            background: #45a049;
-        }
+        @media (max-width: 640px) {
+            .admin-panel {
+                padding: 1rem;
+            }
 
-        .btn-remove-seccion {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 0.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-        }
+            .testimonio-campos {
+                grid-template-columns: 1fr;
+            }
 
-        .btn-remove-seccion:hover {
-            background: #d32f2f;
-        }
-
-        .tema-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-
-        .tema-section h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .seo-section {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #f9f9f9;
-            border-radius: 5px;
-        }
-
-        .seo-section h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
+            .btn-peligro {
+                margin-left: 0;
+            }
         }
 
         .preview-section {
@@ -278,8 +434,19 @@
             <div id="mensaje-exito" class="oculto"></div>
 
             <form id="form-landing">
-                <div class="hero-section">
-                    <h3>Hero Section</h3>
+                <div class="tabs-barra">
+                    <div class="tabs" role="tablist" aria-label="Partes de la landing" id="tabs"></div>
+                    <button type="button" class="tab-agregar" id="btn-agregar-seccion" aria-expanded="false" aria-controls="elegir-tipo">+ Añadir sección</button>
+                </div>
+
+                <div class="elegir-tipo" id="elegir-tipo" hidden>
+                    <strong id="elegir-tipo-titulo">¿Qué tipo de sección quieres añadir?</strong>
+                    <div class="elegir-tipo-lista" id="elegir-tipo-lista" role="group" aria-labelledby="elegir-tipo-titulo"></div>
+                </div>
+
+                <div class="tab-panel" id="panel-portada" role="tabpanel" aria-labelledby="tab-portada">
+                    <h3>Portada</h3>
+                    <p class="ayuda">Lo primero que ve tu cliente al entrar.</p>
                     <div class="form-group">
                         <label for="landing-hero-titulo">Título</label>
                         <input type="text" id="landing-hero-titulo" name="landing-hero-titulo" required>
@@ -289,11 +456,11 @@
                         <textarea id="landing-hero-subtitulo" name="landing-hero-subtitulo" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="landing-hero-cta_texto">Texto del CTA</label>
+                        <label for="landing-hero-cta_texto">Texto del botón</label>
                         <input type="text" id="landing-hero-cta_texto" name="landing-hero-cta_texto" required>
                     </div>
                     <div class="form-group">
-                        <label for="landing-hero-cta_enlace">Enlace del CTA</label>
+                        <label for="landing-hero-cta_enlace">Adónde lleva el botón</label>
                         <select id="landing-hero-cta_enlace" name="landing-hero-cta_enlace" required>
                             <option value="/#seccion-servicio">Servicios</option>
                             <option value="/#seccion-producto">Productos</option>
@@ -302,27 +469,18 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="landing-hero-imagen_fondo_url">URL de Imagen de Fondo (opcional)</label>
+                        <label for="landing-hero-imagen_fondo_url">URL de imagen de fondo (opcional)</label>
                         <input type="url" id="landing-hero-imagen_fondo_url" name="landing-hero-imagen_fondo_url" placeholder="https://ejemplo.com/imagen.jpg">
                     </div>
                 </div>
 
-                <div class="secciones-container">
-                    <h3>Secciones</h3>
-                    <div id="secciones-preview">
-                        <div class="seccion-row header">
-                            <span>Tipo</span>
-                            <span>Título</span>
-                            <span>Contenido</span>
-                            <span>Items IDs</span>
-                            <span>Acciones</span>
-                        </div>
+                <div class="tab-panel" id="panel-apariencia" role="tabpanel" aria-labelledby="tab-apariencia" hidden>
+                    <h3>Apariencia</h3>
+                    <div class="form-group">
+                        <label for="landing-tema-acento">Color de acento (botones)</label>
+                        <input type="color" id="landing-tema-acento" name="landing-tema-acento" value="#b6f23c" aria-describedby="acento-aviso">
+                        <p id="acento-aviso" class="ayuda" role="status"></p>
                     </div>
-                    <button type="button" class="btn-add-seccion" onclick="agregarSeccion()">+ Agregar Sección</button>
-                </div>
-
-                <div class="tema-section">
-                    <h3>Tema</h3>
                     <div class="form-group">
                         <label for="landing-tema-fuente">Fuente</label>
                         <select id="landing-tema-fuente" name="landing-tema-fuente">
@@ -330,11 +488,6 @@
                             <option value="sans">Sans</option>
                             <option value="mono">Mono</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="landing-tema-acento">Color de acento (botones)</label>
-                        <input type="color" id="landing-tema-acento" name="landing-tema-acento" value="#b6f23c" aria-describedby="acento-aviso">
-                        <p id="acento-aviso" role="status"></p>
                     </div>
                     <div class="form-group">
                         <label for="landing-tema-estilo">Estilo</label>
@@ -345,10 +498,9 @@
                             <option value="elegante">Elegante</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="seo-section">
                     <h3>SEO</h3>
+                    <p class="ayuda">Lo que aparece en Google y al compartir el enlace.</p>
                     <div class="form-group">
                         <label for="landing-seo-titulo">Título</label>
                         <input type="text" id="landing-seo-titulo" name="landing-seo-titulo" required>
@@ -359,8 +511,12 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn">Guardar Landing</button>
-                <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Previsualizar JSON</button>
+                <div class="tab-panel" id="panel-seccion" role="tabpanel" hidden></div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn">Guardar Landing</button>
+                    <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Previsualizar JSON</button>
+                </div>
 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
@@ -379,6 +535,43 @@
     <script>
         let landingActual = null;
 
+        const TIPOS = {
+            texto: { nombre: 'Texto', ayuda: 'Un título y uno o más párrafos. Ideal para explicar cómo trabajas.' },
+            destacados: { nombre: 'Destacados', ayuda: 'Tarjetas de los servicios o productos que quieres resaltar.' },
+            galeria: { nombre: 'Galería', ayuda: 'Las fotos de tus items en una cuadrícula.' },
+            'sobre-mi': { nombre: 'Sobre mí', ayuda: 'Tu presentación, con tu foto.' },
+            testimonios: { nombre: 'Testimonios', ayuda: 'Opiniones de tus clientes. Solo reales y con su permiso.' },
+            contacto: { nombre: 'Contacto', ayuda: 'Un texto y los botones de WhatsApp y correo.' }
+        };
+        const MAX_TESTIMONIOS = 8;
+        const MAX_CONTENIDO = 2000;
+
+        // Estado de las secciones (el DOM solo muestra la sección activa)
+        let secciones = [];
+        let catalogoItems = [];
+        let activa = 'portada';
+        let uidSiguiente = 0;
+        let modificado = false;
+
+        function escapeHtml(valor) {
+            return String(valor ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function marcarModificado() {
+            modificado = true;
+        }
+
+        function crearSeccion(tipo, datos = {}) {
+            return {
+                uid: 's' + (++uidSiguiente),
+                tipo: tipo,
+                titulo: datos.titulo || '',
+                contenido: datos.contenido || '',
+                items_ids: Array.isArray(datos.items_ids) ? [...datos.items_ids] : [],
+                testimonios: Array.isArray(datos.testimonios) ? datos.testimonios.map(t => ({ texto: t.texto || '', autor: t.autor || '', detalle: t.detalle || '' })) : []
+            };
+        }
+
         function obtenerLanding() {
             const hero = {
                 titulo: document.getElementById('landing-hero-titulo').value,
@@ -388,25 +581,23 @@
                 imagen_fondo_url: document.getElementById('landing-hero-imagen_fondo_url').value || null
             };
 
-            const secciones = [];
-            const seccionesRows = document.querySelectorAll('#secciones-preview .seccion-row:not(.header)');
-
-            seccionesRows.forEach(row => {
-                const tipo = row.querySelector('.seccion-tipo').value;
-                const contenido = row.querySelector('.seccion-contenido').value;
+            const salida = secciones.map(s => {
                 const seccion = {
-                    tipo: tipo,
-                    titulo: row.querySelector('.seccion-titulo').value,
-                    contenido: contenido,
-                    items_ids: row.querySelector('.seccion-items').value.split(',').map(id => id.trim()).filter(id => id)
+                    tipo: s.tipo,
+                    titulo: s.titulo,
+                    contenido: s.tipo === 'testimonios' ? '' : s.contenido,
+                    items_ids: s.tipo === 'destacados' || s.tipo === 'galeria' ? s.items_ids : []
                 };
-
-                if (tipo === 'testimonios') {
-                    seccion.contenido = '';
-                    seccion.testimonios = parsearTestimonios(contenido);
+                if (s.tipo === 'testimonios') {
+                    seccion.testimonios = s.testimonios
+                        .filter(t => t.texto.trim() || t.autor.trim())
+                        .map(t => {
+                            const testimonio = { texto: t.texto.trim(), autor: t.autor.trim() };
+                            if (t.detalle.trim()) testimonio.detalle = t.detalle.trim();
+                            return testimonio;
+                        });
                 }
-
-                secciones.push(seccion);
+                return seccion;
             });
 
             const tema = {
@@ -420,75 +611,309 @@
                 descripcion: document.getElementById('landing-seo-descripcion').value
             };
 
-            return {
-                hero: hero,
-                secciones: secciones,
-                tema: tema,
-                seo: seo
-            };
+            return { hero: hero, secciones: salida, tema: tema, seo: seo };
         }
 
-        const TIPOS_SECCION = [
-            ['texto', 'Texto'],
-            ['destacados', 'Destacados'],
-            ['galeria', 'Galería'],
-            ['contacto', 'Contacto'],
-            ['sobre-mi', 'Sobre mí'],
-            ['testimonios', 'Testimonios']
-        ];
+        // ---------- Pestañas ----------
 
-        const AYUDA_CONTENIDO = {
-            texto: 'Texto de la sección. Deja una línea en blanco para separar párrafos.',
-            destacados: 'Texto opcional. Los items se eligen en «IDs de items».',
-            galeria: 'Texto opcional. Los items se eligen en «IDs de items».',
-            contacto: 'Texto opcional. Los botones de WhatsApp y correo salen de Identidad.',
-            'sobre-mi': 'Preséntate: quién eres y qué haces. La foto se sube en Fotos («Sobre mí»).',
-            testimonios: 'Una opinión por línea: Texto | Autor | Detalle (opcional). Máx. 8.'
-        };
+        function claveDe(s) { return s.uid; }
+        function etiquetaDe(s) { return s.titulo.trim() || TIPOS[s.tipo].nombre; }
 
-        // Texto del admin -> testimonios. Una línea por opinión: "Texto | Autor | Detalle (opcional)"
-        function parsearTestimonios(texto) {
-            return texto.split('\n').map(linea => linea.trim()).filter(Boolean).map(linea => {
-                const [cita, autor, detalle] = linea.split('|').map(parte => parte.trim());
-                const testimonio = { texto: cita || '', autor: autor || '' };
-                if (detalle) testimonio.detalle = detalle;
-                return testimonio;
+        function renderPestanas() {
+            const tabs = document.getElementById('tabs');
+            const definiciones = [
+                { clave: 'portada', texto: 'Portada', panel: 'panel-portada' },
+                { clave: 'apariencia', texto: 'Apariencia y SEO', panel: 'panel-apariencia' },
+                ...secciones.map(s => ({ clave: claveDe(s), texto: etiquetaDe(s), tipo: TIPOS[s.tipo].nombre, panel: 'panel-seccion' }))
+            ];
+
+            tabs.replaceChildren();
+            definiciones.forEach(def => {
+                const boton = document.createElement('button');
+                boton.type = 'button';
+                boton.className = 'tab';
+                boton.id = 'tab-' + def.clave;
+                boton.dataset.clave = def.clave;
+                boton.setAttribute('role', 'tab');
+                boton.setAttribute('aria-selected', def.clave === activa ? 'true' : 'false');
+                boton.setAttribute('aria-controls', def.panel);
+                boton.tabIndex = def.clave === activa ? 0 : -1;
+                boton.textContent = def.texto;
+                if (def.tipo) {
+                    const tipo = document.createElement('span');
+                    tipo.className = 'tab-tipo';
+                    tipo.textContent = def.tipo;
+                    boton.appendChild(tipo);
+                }
+                boton.addEventListener('click', () => seleccionar(def.clave));
+                tabs.appendChild(boton);
             });
         }
 
-        function testimoniosATexto(lista) {
-            return (lista || []).map(t => [t.texto, t.autor, t.detalle].filter((v, i) => i < 2 || v).join(' | ')).join('\n');
+        function seleccionar(clave, { enfocar = false } = {}) {
+            activa = clave;
+            document.getElementById('elegir-tipo').hidden = true;
+            document.getElementById('btn-agregar-seccion').setAttribute('aria-expanded', 'false');
+            renderPestanas();
+
+            const seccion = secciones.find(s => claveDe(s) === clave);
+            document.getElementById('panel-portada').hidden = clave !== 'portada';
+            document.getElementById('panel-apariencia').hidden = clave !== 'apariencia';
+            const panel = document.getElementById('panel-seccion');
+            panel.hidden = !seccion;
+            if (seccion) {
+                panel.setAttribute('aria-labelledby', 'tab-' + clave);
+                renderSeccion(seccion);
+            }
+            if (enfocar) document.getElementById('tab-' + clave).focus();
         }
 
-        function escapeHtml(valor) {
-            return String(valor ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        // Flechas, Inicio y Fin para moverse entre pestañas (patrón WAI-ARIA)
+        document.addEventListener('keydown', evento => {
+            const tab = evento.target.closest && evento.target.closest('[role="tab"]');
+            if (!tab) return;
+            const claves = [...document.querySelectorAll('#tabs [role="tab"]')].map(t => t.dataset.clave);
+            const i = claves.indexOf(tab.dataset.clave);
+            let destino = null;
+            if (evento.key === 'ArrowRight') destino = claves[(i + 1) % claves.length];
+            else if (evento.key === 'ArrowLeft') destino = claves[(i - 1 + claves.length) % claves.length];
+            else if (evento.key === 'Home') destino = claves[0];
+            else if (evento.key === 'End') destino = claves[claves.length - 1];
+            if (destino) {
+                evento.preventDefault();
+                seleccionar(destino, { enfocar: true });
+            }
+        });
+
+        // ---------- Añadir sección ----------
+
+        function abrirElegirTipo() {
+            const caja = document.getElementById('elegir-tipo');
+            const abrir = caja.hidden;
+            caja.hidden = !abrir;
+            document.getElementById('btn-agregar-seccion').setAttribute('aria-expanded', String(abrir));
+            if (abrir) caja.querySelector('button').focus();
         }
 
-        function crearFilaSeccion(seccion = {}) {
-            const row = document.createElement('div');
-            row.className = 'seccion-row';
-            const contenido = seccion.tipo === 'testimonios' ? testimoniosATexto(seccion.testimonios) : (seccion.contenido || '');
-            row.innerHTML = `
-                <select class="seccion-tipo" aria-label="Tipo de sección" required>
-                    <option value="">Seleccionar...</option>
-                    ${TIPOS_SECCION.map(([valor, etiqueta]) => `<option value="${valor}" ${seccion.tipo === valor ? 'selected' : ''}>${etiqueta}</option>`).join('')}
-                </select>
-                <input class="seccion-titulo" type="text" aria-label="Título de la sección" placeholder="Título" value="${escapeHtml(seccion.titulo)}" required>
-                <textarea class="seccion-contenido" aria-label="Contenido de la sección">${escapeHtml(contenido)}</textarea>
-                <input class="seccion-items" type="text" aria-label="IDs de items" placeholder="IDs de items (opcional, separados por comas)" value="${escapeHtml((seccion.items_ids || []).join(', '))}">
-                <button type="button" class="btn-remove-seccion" aria-label="Quitar sección" onclick="eliminarSeccion(this)">-</button>
+        function montarElegirTipo() {
+            const lista = document.getElementById('elegir-tipo-lista');
+            Object.entries(TIPOS).forEach(([valor, info]) => {
+                const boton = document.createElement('button');
+                boton.type = 'button';
+                boton.className = 'tipo-opcion';
+                boton.innerHTML = `<strong>${escapeHtml(info.nombre)}</strong>${escapeHtml(info.ayuda)}`;
+                boton.addEventListener('click', () => {
+                    const nueva = crearSeccion(valor, { titulo: info.nombre });
+                    secciones.push(nueva);
+                    marcarModificado();
+                    seleccionar(claveDe(nueva));
+                    document.getElementById('seccion-titulo').focus();
+                });
+                lista.appendChild(boton);
+            });
+            document.getElementById('btn-agregar-seccion').addEventListener('click', abrirElegirTipo);
+        }
+
+        // ---------- Panel de una sección ----------
+
+        function textoVacio(s) {
+            if (s.tipo === 'texto' || s.tipo === 'sobre-mi') return !s.contenido.trim();
+            if (s.tipo === 'destacados' || s.tipo === 'galeria') return s.items_ids.length === 0;
+            if (s.tipo === 'testimonios') return !s.testimonios.some(t => t.texto.trim() && t.autor.trim());
+            return false;
+        }
+
+        function actualizarAviso(s) {
+            const aviso = document.getElementById('seccion-aviso');
+            if (aviso) aviso.hidden = !textoVacio(s);
+        }
+
+        function camposSegunTipo(s) {
+            if (s.tipo === 'testimonios') return '<div id="testimonios-lista"></div>';
+
+            const textarea = (ayuda, etiqueta = 'Texto') => `
+                <div class="form-group">
+                    <label for="seccion-contenido">${etiqueta}</label>
+                    <textarea id="seccion-contenido" maxlength="${MAX_CONTENIDO}" rows="7" aria-describedby="seccion-contador">${escapeHtml(s.contenido)}</textarea>
+                    <p class="contador" id="seccion-contador">${s.contenido.length} / ${MAX_CONTENIDO}</p>
+                    <p class="ayuda">${ayuda}</p>
+                </div>`;
+
+            if (s.tipo === 'texto') return textarea('Deja una línea en blanco para separar párrafos. Los enlaces que empiecen por https:// se vuelven clicables.');
+            if (s.tipo === 'sobre-mi') return textarea('Cuenta quién eres y a qué te dedicas. Tu foto se sube en <a href="/admin/fotos">Fotos</a> (opción «Sobre mí»); si no hay foto, solo se muestra el texto.', 'Tu presentación');
+            if (s.tipo === 'contacto') return textarea('Los botones de WhatsApp y de correo salen de <a href="/admin/identidad">Identidad</a>. Aquí puedes añadir un mensaje o un enlace (por ejemplo, tu comunidad).', 'Mensaje (opcional)');
+
+            // destacados y galería: texto opcional + selector de items
+            return textarea('Opcional: una frase que se muestra antes de los items.', 'Texto introductorio (opcional)') + '<fieldset class="items-lista" id="items-lista"><legend>Items que se muestran</legend></fieldset>';
+        }
+
+        function renderSeccion(s) {
+            const panel = document.getElementById('panel-seccion');
+            const indice = secciones.indexOf(s);
+            panel.innerHTML = `
+                <h3>${escapeHtml(TIPOS[s.tipo].nombre)}</h3>
+                <p class="ayuda">${escapeHtml(TIPOS[s.tipo].ayuda)}</p>
+                <div class="seccion-acciones">
+                    <button type="button" class="btn-mini" id="mover-izq" ${indice === 0 ? 'disabled' : ''} aria-label="Mover la sección antes">← Subir</button>
+                    <button type="button" class="btn-mini" id="mover-der" ${indice === secciones.length - 1 ? 'disabled' : ''} aria-label="Mover la sección después">Bajar →</button>
+                    <button type="button" class="btn-mini btn-peligro" id="eliminar-seccion">Eliminar sección</button>
+                </div>
+                <div class="aviso-vacio" id="seccion-aviso" role="status" hidden>Esta sección no se mostrará en tu sitio hasta que tenga contenido.</div>
+                <div class="form-group">
+                    <label for="seccion-tipo">Tipo de sección</label>
+                    <select id="seccion-tipo">
+                        ${Object.entries(TIPOS).map(([v, info]) => `<option value="${v}" ${s.tipo === v ? 'selected' : ''}>${escapeHtml(info.nombre)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="seccion-titulo">Título de la sección</label>
+                    <input type="text" id="seccion-titulo" value="${escapeHtml(s.titulo)}">
+                </div>
+                ${camposSegunTipo(s)}
             `;
-            const tipo = row.querySelector('.seccion-tipo');
-            const area = row.querySelector('.seccion-contenido');
-            const ajustar = () => { area.placeholder = AYUDA_CONTENIDO[tipo.value] || 'Contenido (opcional según el tipo)'; };
-            tipo.addEventListener('change', ajustar);
-            ajustar();
-            return row;
+
+            panel.querySelector('#seccion-tipo').addEventListener('change', e => {
+                s.tipo = e.target.value;
+                marcarModificado();
+                renderPestanas();
+                renderSeccion(s);
+                document.getElementById('seccion-tipo').focus();
+            });
+            panel.querySelector('#seccion-titulo').addEventListener('input', e => {
+                s.titulo = e.target.value;
+                marcarModificado();
+                const tab = document.getElementById('tab-' + claveDe(s));
+                if (tab) tab.firstChild.textContent = etiquetaDe(s);
+            });
+            panel.querySelector('#mover-izq').addEventListener('click', () => mover(s, -1));
+            panel.querySelector('#mover-der').addEventListener('click', () => mover(s, 1));
+            panel.querySelector('#eliminar-seccion').addEventListener('click', () => eliminar(s));
+
+            const contenido = panel.querySelector('#seccion-contenido');
+            if (contenido) {
+                contenido.addEventListener('input', e => {
+                    s.contenido = e.target.value;
+                    panel.querySelector('#seccion-contador').textContent = `${s.contenido.length} / ${MAX_CONTENIDO}`;
+                    marcarModificado();
+                    actualizarAviso(s);
+                });
+            }
+
+            if (s.tipo === 'destacados' || s.tipo === 'galeria') renderItems(s);
+            if (s.tipo === 'testimonios') renderTestimonios(s);
+            actualizarAviso(s);
         }
 
-        function agregarSeccion() {
-            document.getElementById('secciones-preview').appendChild(crearFilaSeccion());
+        function mover(s, delta) {
+            const i = secciones.indexOf(s);
+            const j = i + delta;
+            if (j < 0 || j >= secciones.length) return;
+            [secciones[i], secciones[j]] = [secciones[j], secciones[i]];
+            marcarModificado();
+            seleccionar(claveDe(s));
+            document.getElementById(delta < 0 ? 'mover-izq' : 'mover-der').focus();
         }
+
+        function eliminar(s) {
+            if (!confirm(`¿Eliminar la sección «${etiquetaDe(s)}»? Esta acción se aplica al guardar.`)) return;
+            secciones = secciones.filter(x => x !== s);
+            marcarModificado();
+            seleccionar('portada', { enfocar: true });
+        }
+
+        // ---------- Items (destacados y galería) ----------
+
+        function renderItems(s) {
+            const lista = document.getElementById('items-lista');
+            const conocidos = new Set(catalogoItems.map(item => item.id));
+            const fantasmas = s.items_ids.filter(id => !conocidos.has(id));
+
+            if (catalogoItems.length === 0 && fantasmas.length === 0) {
+                lista.insertAdjacentHTML('beforeend', '<p class="ayuda">Aún no hay items en el catálogo. Crea tus servicios en <a href="/admin/catalogo">Catálogo</a> y vuelve aquí.</p>');
+                return;
+            }
+
+            const filas = [
+                ...fantasmas.map(id => ({ id, nombre: id, detalle: 'ya no existe en el catálogo: desmárcalo para poder guardar', fantasma: true })),
+                ...catalogoItems.map(item => ({ id: item.id, nombre: item.nombre, detalle: item.tipo === 'servicio' ? 'Servicio' : 'Producto' }))
+            ];
+
+            lista.insertAdjacentHTML('beforeend', filas.map(f => `
+                <label class="${f.fantasma ? 'item-fantasma' : ''}">
+                    <input type="checkbox" value="${escapeHtml(f.id)}" ${s.items_ids.includes(f.id) ? 'checked' : ''}>
+                    <span>${escapeHtml(f.nombre)} <small>· ${escapeHtml(f.detalle)}</small></span>
+                </label>`).join('') + '<p class="ayuda">Aparecen en el orden en que los marcas.</p>');
+
+            lista.addEventListener('change', e => {
+                const id = e.target.value;
+                s.items_ids = e.target.checked
+                    ? [...s.items_ids.filter(x => x !== id), id]
+                    : s.items_ids.filter(x => x !== id);
+                marcarModificado();
+                actualizarAviso(s);
+            });
+        }
+
+        // ---------- Testimonios ----------
+
+        function renderTestimonios(s) {
+            const lista = document.getElementById('testimonios-lista');
+            lista.replaceChildren();
+
+            s.testimonios.forEach((t, i) => {
+                const caja = document.createElement('div');
+                caja.className = 'testimonio-editor';
+                caja.innerHTML = `
+                    <div class="testimonio-editor-cabecera">
+                        <span>Testimonio ${i + 1}</span>
+                        <button type="button" class="btn-mini btn-peligro" aria-label="Quitar el testimonio ${i + 1}">Quitar</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="t-texto-${i}">Lo que dijo</label>
+                        <textarea id="t-texto-${i}" maxlength="300" rows="3">${escapeHtml(t.texto)}</textarea>
+                    </div>
+                    <div class="testimonio-campos">
+                        <div class="form-group">
+                            <label for="t-autor-${i}">Nombre</label>
+                            <input type="text" id="t-autor-${i}" maxlength="60" value="${escapeHtml(t.autor)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="t-detalle-${i}">Detalle (opcional)</label>
+                            <input type="text" id="t-detalle-${i}" maxlength="80" placeholder="Ej. Clienta desde 2024" value="${escapeHtml(t.detalle)}">
+                        </div>
+                    </div>`;
+                caja.querySelector(`#t-texto-${i}`).addEventListener('input', e => { t.texto = e.target.value; marcarModificado(); actualizarAviso(s); });
+                caja.querySelector(`#t-autor-${i}`).addEventListener('input', e => { t.autor = e.target.value; marcarModificado(); actualizarAviso(s); });
+                caja.querySelector(`#t-detalle-${i}`).addEventListener('input', e => { t.detalle = e.target.value; marcarModificado(); });
+                caja.querySelector('.btn-peligro').addEventListener('click', () => {
+                    s.testimonios.splice(i, 1);
+                    marcarModificado();
+                    renderTestimonios(s);
+                    actualizarAviso(s);
+                });
+                lista.appendChild(caja);
+            });
+
+            const agregar = document.createElement('button');
+            agregar.type = 'button';
+            agregar.className = 'btn-mini';
+            agregar.textContent = '+ Añadir testimonio';
+            agregar.disabled = s.testimonios.length >= MAX_TESTIMONIOS;
+            agregar.addEventListener('click', () => {
+                s.testimonios.push({ texto: '', autor: '', detalle: '' });
+                marcarModificado();
+                renderTestimonios(s);
+                document.getElementById(`t-texto-${s.testimonios.length - 1}`).focus();
+            });
+            lista.appendChild(agregar);
+
+            const nota = document.createElement('p');
+            nota.className = 'ayuda';
+            nota.textContent = `Máximo ${MAX_TESTIMONIOS}. Publica solo opiniones reales, con permiso de quien las dio.`;
+            lista.appendChild(nota);
+        }
+
+        // ---------- Contraste del acento ----------
 
         const ACENTO_POR_DEFECTO = '#b6f23c';
 
@@ -513,32 +938,25 @@
             aviso.style.color = cumple ? '#0B6B3F' : '#b71c1c';
         }
 
-        function eliminarSeccion(button) {
-            const row = button.closest('.seccion-row');
-            row.remove();
-        }
+        // ---------- Carga ----------
 
         async function cargarLanding() {
             try {
-                const landing = await window.admin.getContent('landing');
+                const [landing, catalogo] = await Promise.all([
+                    window.admin.getContent('landing'),
+                    window.admin.getContent('catalogo').catch(() => null)
+                ]);
                 landingActual = landing;
-
-                if (landing) {
-                    rellenarFormulario(landing);
-                } else {
-                    // Si no hay landing, agregar una sección vacía
-                    agregarSeccion();
-                }
+                catalogoItems = (catalogo && Array.isArray(catalogo.items)) ? catalogo.items : [];
+                if (landing) rellenarFormulario(landing);
             } catch (error) {
                 console.error('Error cargando landing:', error);
-                // Si no hay landing, agregar una sección vacía
-                agregarSeccion();
+                mostrarError('No se pudo cargar la landing. Recarga la página e inténtalo de nuevo.');
             }
+            seleccionar('portada');
         }
 
         function rellenarFormulario(landing) {
-            if (!landing) return;
-
             if (landing.hero) {
                 document.getElementById('landing-hero-titulo').value = landing.hero.titulo || '';
                 document.getElementById('landing-hero-subtitulo').value = landing.hero.subtitulo || '';
@@ -547,12 +965,9 @@
                 document.getElementById('landing-hero-imagen_fondo_url').value = landing.hero.imagen_fondo_url || '';
             }
 
-            if (landing.secciones && landing.secciones.length > 0) {
-                const previewContainer = document.getElementById('secciones-preview');
-                previewContainer.innerHTML = '';
-
-                landing.secciones.forEach(seccion => previewContainer.appendChild(crearFilaSeccion(seccion)));
-            }
+            secciones = (landing.secciones || [])
+                .filter(seccion => TIPOS[seccion.tipo])
+                .map(seccion => crearSeccion(seccion.tipo, seccion));
 
             if (landing.tema) {
                 document.getElementById('landing-tema-fuente').value = landing.tema.fuente || 'serif';
@@ -572,8 +987,7 @@
             const previewContent = document.getElementById('preview-content');
 
             if (previewSection.style.display === 'none') {
-                const landing = obtenerLanding();
-                previewContent.textContent = JSON.stringify(landing, null, 2);
+                previewContent.textContent = JSON.stringify(obtenerLanding(), null, 2);
                 previewSection.style.display = 'block';
             } else {
                 previewSection.style.display = 'none';
@@ -613,6 +1027,7 @@
             try {
                 await window.admin.putContent('landing', landing);
                 landingActual = landing;
+                modificado = false;
 
                 mostrarExito('Landing guardada exitosamente');
             } catch (error) {
@@ -662,6 +1077,15 @@
 
             document.getElementById('form-landing').addEventListener('submit', guardarLanding);
             document.getElementById('landing-tema-acento').addEventListener('input', avisarContraste);
+            // Portada, apariencia y SEO también cuentan como cambios sin guardar
+            document.getElementById('form-landing').addEventListener('input', marcarModificado);
+            montarElegirTipo();
+            window.addEventListener('beforeunload', evento => {
+                if (modificado) {
+                    evento.preventDefault();
+                    evento.returnValue = '';
+                }
+            });
             avisarContraste();
         });
     </script>

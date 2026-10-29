@@ -16,7 +16,8 @@ Marca cada punto a mano en un sitio recién desplegado (o en `npm run dev`). Pru
 - [ ] Catálogo: crear una categoría de servicio, un servicio con precio fijo, otro «Precio a consultar», otro con opciones de precio y detalles (modalidad, zona, qué incluye).
 - [ ] Catálogo: marcar una categoría como *con reserva* y poner un enlace de reserva.
 - [ ] Fotos: subir una foto de más de 1 MB; se reduce y aparece en la tarjeta y en la ficha.
-- [ ] Landing: añadir *Sobre mí* (con foto desde Fotos), *Testimonios* y *Contacto*; cambiar el color de acento; un acento muy oscuro se rechaza.
+- [ ] Landing: añadir *Sobre mí* (con foto desde Fotos), *Testimonios* y *Contacto* desde **+ Añadir sección**; marcar items en *Destacados*; subir/bajar y eliminar una sección; cambiar el color de acento (uno muy oscuro se rechaza con un mensaje claro).
+- [ ] Landing: las pestañas se pueden recorrer con las flechas del teclado, y al salir con cambios sin guardar el navegador avisa.
 - [ ] FAQ: añadir una pregunta y verla en `/faq`.
 - [ ] Respaldo: exportar, borrar una pregunta, importar el respaldo y comprobar que vuelve.
 

@@ -84,8 +84,9 @@ async function putContent(key, data) {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Error guardando contenido');
+    const error = await response.json().catch(() => ({}));
+    // El servidor explica qué corregir en `detalle`; `error` es solo la categoría
+    throw new Error(error.detalle || error.error || 'Error guardando contenido');
   }
 
   // Ya hay datos guardados: el aviso de ejemplo deja de ser cierto

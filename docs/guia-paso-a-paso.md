@@ -67,7 +67,7 @@ Entra en `https://tu-proyecto.pages.dev/admin` e inicia sesión. En el menú del
 1. **Identidad:** nombre, descripción corta, WhatsApp (con código de país), moneda, modo de negocio (*solo servicios*, *solo productos* o *mixto*), enlace de reserva si usas una agenda, y tus redes. Pulsa **Guardar**.
 2. **Catálogo:** crea tus categorías y tus servicios. Para cada uno puedes indicar precio, duración, modalidad, zona, qué incluye y opciones de precio (por ejemplo «Sesión suelta» y «Pack de 4»). Si el precio se acuerda con el cliente, marca **Precio a consultar**.
 3. **Fotos:** sube una foto por servicio. El panel las reduce solo para que carguen rápido y se vean bien al compartir por WhatsApp.
-4. **Landing:** escribe el título principal, y añade las secciones que quieras: *Sobre mí* (con tu foto, que subes en **Fotos**), *Testimonios* (solo opiniones reales, con permiso de quien las dio), *Contacto*, etc. Elige tu color de acento.
+4. **Landing:** el editor tiene una pestaña para la **Portada**, otra para **Apariencia y SEO** (color de acento, fuente) y una por cada sección. Con **+ Añadir sección** eliges el tipo: *Texto*, *Destacados*, *Galería*, *Sobre mí* (con tu foto, que subes en **Fotos**), *Testimonios* (solo opiniones reales, con permiso de quien las dio) o *Contacto*. En *Destacados* y *Galería* marcas los items con casillas. Cada sección se puede subir, bajar o eliminar, y nada se publica hasta pulsar **Guardar Landing**.
 5. **FAQ:** hasta 15 preguntas frecuentes.
 6. **Respaldo:** descarga una copia de todo tu contenido y guárdala. Hazlo antes de cambios grandes.
 
@@ -99,7 +99,7 @@ Tu fork no se actualiza solo. Cuando quieras las mejoras nuevas:
 | «Contraseña incorrecta» y luego «Demasiados intentos» | Espera 15 minutos. Tras 5 fallos seguidos el acceso se bloquea temporalmente. |
 | Subo una foto y no cambia | Los cambios pueden tardar hasta 1 minuto en verse. Recarga con Ctrl+F5. |
 | Guardo y sale un error en rojo | Léelo: indica qué campo corregir (por ejemplo, un enlace que debe empezar por `https://`). |
-| Al guardar la Landing sale un error sobre items | Una sección «Destacados» o «Galería» usa un item que ya no existe en el catálogo. Quita ese ID de la sección. |
+| Al guardar la Landing sale un error sobre items | Una sección «Destacados» o «Galería» usa un item que ya no existe en el catálogo. En esa sección aparece marcado en rojo: desmárcalo. |
 | El sitio muestra datos de otra persona | No guardaste esa sección todavía. Entra al panel y pulsa **Guardar**. |
 
 ## Límites de la capa gratuita (referencia)

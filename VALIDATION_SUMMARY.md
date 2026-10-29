@@ -88,3 +88,8 @@
 - Login real: 5 fallos -> 401; el 6.º y un intento con contraseña correcta -> 429 con `Retry-After`; tras borrar `intentos:127.0.0.1` del KV local el login correcto devuelve 200. En local la IP es `127.0.0.1`.
 - No probado en runtime: el `aviso` de contraseña corta (la local tiene 20 caracteres; solo revisado por lectura).
 - Eliminados `validate-phase*.sh` y `test-all-phases.sh`. `package.json` gana `"type": "module"` y `"test"`.
+
+## 2026-10-29 — Editor de Landing por pestañas
+- jsdom contra `npm run dev`: sin tocar nada, `obtenerLanding()` devuelve exactamente los datos guardados; pestañas con roles ARIA y flechas/Inicio/Fin; marcar items, renombrar (la pestaña se actualiza), añadir sección desde el selector de tipo (6 opciones), testimonios en tarjetas, subir, eliminar y guardar real (200). Item inexistente: fila en rojo y, al guardar, el error del servidor se muestra completo. Landing local restaurada.
+- Corregido de paso: `admin.putContent` solo mostraba «JSON inválido»; ahora muestra `detalle` (afecta a todos los formularios del admin).
+- Pendiente: revisión visual a 375px (pestañas con scroll horizontal) en navegador real.
