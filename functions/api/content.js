@@ -51,7 +51,7 @@ export function validateConfig(data) {
       nombre: 'string',
       descripcion_corta: 'string',
       whatsapp: 'string',
-      email: 'string',
+      email: ['string', 'null'],
       moneda: 'string',
       modo_negocio: 'string',
       calendly_url: ['string', 'null'],

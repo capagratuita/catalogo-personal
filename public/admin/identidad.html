@@ -200,8 +200,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="negocio-email">Email</label>
-                    <input type="email" id="negocio-email" name="negocio-email" required>
+                    <label for="negocio-email">Email (opcional)</label>
+                    <input type="email" id="negocio-email" name="negocio-email">
                 </div>
 
                 <div class="form-group">
@@ -303,7 +303,7 @@
                 nombre: document.getElementById('negocio-nombre').value,
                 descripcion_corta: document.getElementById('negocio-descripcion_corta').value,
                 whatsapp: document.getElementById('negocio-whatsapp').value,
-                email: document.getElementById('negocio-email').value,
+                email: document.getElementById('negocio-email').value.trim() || null,
                 moneda: document.getElementById('negocio-moneda').value,
                 modo_negocio: document.getElementById('negocio-modo_negocio').value,
                 calendly_url: document.getElementById('negocio-calendly_url').value || null,
