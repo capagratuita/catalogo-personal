@@ -36,6 +36,8 @@
             margin-bottom: 1.5rem;
         }
 
+        .tabs-barra[hidden] { display: none; }
+
         .tabs {
             display: flex;
             gap: 0.25rem;
@@ -58,17 +60,45 @@
             text-overflow: ellipsis;
         }
 
-        .tabs-separador {
-            align-self: center;
-            margin: 0 0.5rem 0 0.75rem;
-            padding-left: 0.9rem;
-            border-left: 2px solid #ccc;
-            font-size: 0.75rem;
+        .nivel1 {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            margin-bottom: 1rem;
+            background: #eef0f2;
+            border-radius: 10px;
+        }
+
+        .tab-nivel1 {
+            flex: 1 1 0;
+            min-height: 44px;
+            padding: 0.5rem 0.4rem;
+            border: none;
+            border-radius: 8px;
+            background: none;
+            font-size: 0.95rem;
+            color: #444;
+            cursor: pointer;
+        }
+
+        .tab-nivel1:hover { background: #e2e5e8; }
+
+        .tab-nivel1[aria-selected="true"] {
+            background: #fff;
+            color: var(--primary);
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #666;
-            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-nivel1:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
+        }
+
+        .sin-secciones {
+            text-align: center;
+            padding: 1.5rem 0;
+            color: #555;
         }
 
         .tab:hover,
@@ -304,8 +334,10 @@
             <div id="mensaje-exito" class="oculto"></div>
 
             <form id="form-landing">
-                <div class="tabs-barra">
-                    <div class="tabs" role="tablist" aria-label="Partes de la landing" id="tabs"></div>
+                <div class="nivel1" role="tablist" aria-label="Partes de la portada" id="tabs-nivel1"></div>
+
+                <div class="tabs-barra" id="barra-secciones" hidden>
+                    <div class="tabs" role="tablist" aria-label="Secciones" id="tabs"></div>
                     <button type="button" class="tab-agregar" id="btn-agregar-seccion" aria-expanded="false" aria-controls="elegir-tipo">+ Añadir sección</button>
                 </div>
 
@@ -383,6 +415,9 @@
                 </div>
 
                 <div class="tab-panel" id="panel-seccion" role="tabpanel" hidden></div>
+                <div class="tab-panel sin-secciones" id="panel-sin-secciones" hidden>
+                    <p>Aún no tienes secciones. Añade textos, destacados, galería, testimonios…</p>
+                </div>
 
                 <div class="acciones-formulario">
                     <button type="submit" class="btn">Guardar Portada</button>
@@ -492,71 +527,95 @@
         function claveDe(s) { return s.uid; }
         function etiquetaDe(s) { return s.titulo.trim() || TIPOS[s.tipo].nombre; }
 
-        function crearSeparadorSecciones() {
-            const separador = document.createElement('span');
-            separador.className = 'tabs-separador';
-            separador.setAttribute('role', 'presentation');
-            separador.textContent = 'Secciones';
-            return separador;
-        }
+        const NIVEL1 = [
+            { clave: 'portada', texto: 'Portada', panel: 'panel-portada' },
+            { clave: 'apariencia', texto: 'Apariencia y SEO', panel: 'panel-apariencia' },
+            { clave: 'secciones', texto: 'Secciones', panel: 'panel-seccion' }
+        ];
+
+        function enSecciones() { return activa !== 'portada' && activa !== 'apariencia'; }
 
         function renderPestanas() {
-            const tabs = document.getElementById('tabs');
-            const definiciones = [
-                { clave: 'portada', texto: 'Portada', panel: 'panel-portada' },
-                { clave: 'apariencia', texto: 'Apariencia y SEO', panel: 'panel-apariencia' },
-                ...secciones.map(s => ({ clave: claveDe(s), texto: etiquetaDe(s), tipo: TIPOS[s.tipo].nombre, panel: 'panel-seccion' }))
-            ];
-
-            tabs.replaceChildren();
-            definiciones.forEach((def, i) => {
-                // Separador entre las pestañas fijas (Portada, Apariencia y SEO) y las secciones
-                if (i === 2) tabs.appendChild(crearSeparadorSecciones());
+            const grupo = enSecciones() ? 'secciones' : activa;
+            const nivel1 = document.getElementById('tabs-nivel1');
+            nivel1.replaceChildren();
+            NIVEL1.forEach(def => {
                 const boton = document.createElement('button');
                 boton.type = 'button';
-                boton.className = 'tab';
+                boton.className = 'tab-nivel1';
                 boton.id = 'tab-' + def.clave;
                 boton.dataset.clave = def.clave;
                 boton.setAttribute('role', 'tab');
-                boton.setAttribute('aria-selected', def.clave === activa ? 'true' : 'false');
+                boton.setAttribute('aria-selected', def.clave === grupo ? 'true' : 'false');
                 boton.setAttribute('aria-controls', def.panel);
-                boton.tabIndex = def.clave === activa ? 0 : -1;
+                boton.tabIndex = def.clave === grupo ? 0 : -1;
                 boton.textContent = def.texto;
-                if (def.tipo) {
-                    const tipo = document.createElement('span');
-                    tipo.className = 'tab-tipo';
-                    tipo.textContent = def.tipo;
-                    boton.appendChild(tipo);
-                }
+                if (def.clave === 'secciones' && secciones.length) boton.textContent += ' (' + secciones.length + ')';
                 boton.addEventListener('click', () => seleccionar(def.clave));
+                nivel1.appendChild(boton);
+            });
+
+            document.getElementById('barra-secciones').hidden = !enSecciones();
+            const tabs = document.getElementById('tabs');
+            tabs.replaceChildren();
+            secciones.forEach(s => {
+                const clave = claveDe(s);
+                const boton = document.createElement('button');
+                boton.type = 'button';
+                boton.className = 'tab';
+                boton.id = 'tab-' + clave;
+                boton.dataset.clave = clave;
+                boton.setAttribute('role', 'tab');
+                boton.setAttribute('aria-selected', clave === activa ? 'true' : 'false');
+                boton.setAttribute('aria-controls', 'panel-seccion');
+                boton.tabIndex = clave === activa ? 0 : -1;
+                boton.textContent = etiquetaDe(s);
+                const tipo = document.createElement('span');
+                tipo.className = 'tab-tipo';
+                tipo.textContent = TIPOS[s.tipo].nombre;
+                boton.appendChild(tipo);
+                boton.addEventListener('click', () => seleccionar(clave));
                 tabs.appendChild(boton);
             });
-            if (definiciones.length === 2) tabs.appendChild(crearSeparadorSecciones());
         }
 
+        let ultimaSeccion = null;
+
         function seleccionar(clave, { enfocar = false } = {}) {
+            // «Secciones» abre la última sección vista, o la primera
+            if (clave === 'secciones') {
+                const previa = secciones.find(s => claveDe(s) === ultimaSeccion) || secciones[0];
+                clave = previa ? claveDe(previa) : 'secciones';
+            }
             activa = clave;
             document.getElementById('elegir-tipo').hidden = true;
             document.getElementById('btn-agregar-seccion').setAttribute('aria-expanded', 'false');
-            renderPestanas();
 
             const seccion = secciones.find(s => claveDe(s) === clave);
+            if (seccion) ultimaSeccion = clave;
+            renderPestanas();
+
             document.getElementById('panel-portada').hidden = clave !== 'portada';
             document.getElementById('panel-apariencia').hidden = clave !== 'apariencia';
+            document.getElementById('panel-sin-secciones').hidden = !(enSecciones() && !seccion);
             const panel = document.getElementById('panel-seccion');
             panel.hidden = !seccion;
             if (seccion) {
                 panel.setAttribute('aria-labelledby', 'tab-' + clave);
                 renderSeccion(seccion);
             }
-            if (enfocar) document.getElementById('tab-' + clave).focus();
+            if (enfocar) {
+                const foco = document.getElementById('tab-' + (seccion || !enSecciones() ? clave : 'secciones'));
+                if (foco) foco.focus();
+            }
         }
 
         // Flechas, Inicio y Fin para moverse entre pestañas (patrón WAI-ARIA)
         document.addEventListener('keydown', evento => {
             const tab = evento.target.closest && evento.target.closest('[role="tab"]');
             if (!tab) return;
-            const claves = [...document.querySelectorAll('#tabs [role="tab"]')].map(t => t.dataset.clave);
+            const lista = tab.closest('[role="tablist"]');
+            const claves = [...lista.querySelectorAll('[role="tab"]')].map(t => t.dataset.clave);
             const i = claves.indexOf(tab.dataset.clave);
             let destino = null;
             if (evento.key === 'ArrowRight') destino = claves[(i + 1) % claves.length];
@@ -714,7 +773,7 @@
             if (!confirm(`¿Eliminar la sección «${etiquetaDe(s)}»? Esta acción se aplica al guardar.`)) return;
             secciones = secciones.filter(x => x !== s);
             marcarModificado();
-            seleccionar('portada', { enfocar: true });
+            seleccionar('secciones', { enfocar: true });
         }
 
         // ---------- Items (destacados y galería) ----------
