@@ -36,7 +36,42 @@
             margin-bottom: 1.5rem;
         }
 
-        .tabs-barra[hidden] { display: none; }
+        .secciones-cabecera {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .secciones-titulo {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #555;
+        }
+
+        .btn-agregar {
+            min-height: 44px;
+            padding: 0.5rem 1rem;
+            border: 2px solid #0B6B3F;
+            border-radius: 8px;
+            background: #fff;
+            color: #0B6B3F;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-agregar:hover,
+        .btn-agregar[aria-expanded="true"] { background: #0B6B3F; color: #fff; }
+
+        .btn-agregar:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
 
         .tabs {
             display: flex;
@@ -336,9 +371,14 @@
             <form id="form-landing">
                 <div class="nivel1" role="tablist" aria-label="Partes de la portada" id="tabs-nivel1"></div>
 
-                <div class="tabs-barra" id="barra-secciones" hidden>
+                <div id="barra-secciones" hidden>
+                <div class="secciones-cabecera">
+                    <span class="secciones-titulo">Secciones de tu página</span>
+                    <button type="button" class="btn-agregar" id="btn-agregar-seccion" aria-expanded="false" aria-controls="elegir-tipo">+ Añadir sección</button>
+                </div>
+                <div class="tabs-barra">
                     <div class="tabs" role="tablist" aria-label="Secciones" id="tabs"></div>
-                    <button type="button" class="tab-agregar" id="btn-agregar-seccion" aria-expanded="false" aria-controls="elegir-tipo">+ Añadir sección</button>
+                </div>
                 </div>
 
                 <div class="elegir-tipo" id="elegir-tipo" hidden>
@@ -674,7 +714,7 @@
         function camposSegunTipo(s) {
             if (s.tipo === 'testimonios') return '<div id="testimonios-lista"></div>';
 
-            const textarea = (ayuda, etiqueta = 'Texto') => `
+            const textarea = (ayuda, etiqueta = 'Mensaje') => `
                 <div class="form-group">
                     <label for="seccion-contenido">${etiqueta}</label>
                     <textarea id="seccion-contenido" maxlength="${MAX_CONTENIDO}" rows="7" aria-describedby="seccion-contador">${escapeHtml(s.contenido)}</textarea>
