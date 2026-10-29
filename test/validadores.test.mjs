@@ -88,6 +88,13 @@ test('landing: secciones, testimonios e items_ids', () => {
   validateLanding(con({ tipo: 'destacados', items_ids: ['fantasma'] })); // sin catálogo, no se comprueba
 });
 
+test('landing: posición de la sección respecto al catálogo', () => {
+  const con = posicion => { const l = copia(landing); l.secciones[0].posicion = posicion; return l; };
+  validateLanding(con('antes'), ids);
+  validateLanding(con('despues'), ids);
+  rechaza(() => validateLanding(con('arriba'), ids), /'antes' o 'despues'/);
+});
+
 test('faq: límites', () => {
   rechaza(() => validateFAQ({ preguntas: Array.from({ length: 16 }, () => ({ p: 'p', r: 'r' })), tono: '' }), /15/);
   rechaza(() => validateFAQ({ preguntas: [{ p: '', r: 'r' }], tono: '' }), /'p'/);

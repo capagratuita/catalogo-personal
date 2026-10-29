@@ -99,3 +99,8 @@
 - jsdom contra `npm run dev`: carga las 2 opciones guardadas; la salida de `obtenerCatalogo()` es igual al original salvo `calendly_url` → `reserva_url` (migración esperada); fila vacía ignorada; opción nueva (`45.5`, 90 min) leída; precio negativo y nombre vacío dan error específico en español; el botón se deshabilita en 6 filas; quitar devuelve el foco al botón de añadir; un producto no lleva `variantes`; guardado real 200. Catálogo local restaurado.
 - jsdom descarta la coma decimal en `<input type=number>`, por eso la prueba usó punto; el código acepta también coma.
 - Pendiente: revisión visual a 375px en navegador real.
+
+## 2026-10-29 — Posición de secciones y orden del menú del admin
+- `secciones[].posicion` (`antes|despues`): 18 pruebas Node pasan (nueva: valor inválido rechazado). Servidor: `posicion: 'arriba'` -> 400 en español; `antes` -> 200; la portada queda `hero > secciones-antes > catalogo > secciones-landing`. jsdom: el editor muestra el selector (defecto «Después del catálogo»), la ida y vuelta conserva `posicion` y la clave se omite cuando es `despues`. Landing local restaurada.
+- Menú del admin: General · Landing · Catálogo · Fotos · FAQ · Respaldo (la URL sigue siendo `/admin/identidad`).
+- Pendiente: revisión visual a 375px y en escritorio.

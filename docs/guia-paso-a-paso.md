@@ -62,12 +62,12 @@ Nunca pegues la contraseña en GitHub ni en ningún archivo del proyecto.
 
 ## Paso 6. Configura tu sitio
 
-Entra en `https://tu-proyecto.pages.dev/admin` e inicia sesión. En el menú del panel:
+Entra en `https://tu-proyecto.pages.dev/admin` e inicia sesión. En el menú del panel (General, Landing, Catálogo, Fotos, FAQ, Respaldo):
 
-1. **Identidad:** nombre, descripción corta, WhatsApp (con código de país), moneda, modo de negocio (*solo servicios*, *solo productos* o *mixto*), enlace de reserva si usas una agenda, y tus redes. Pulsa **Guardar**.
-2. **Catálogo:** crea tus categorías y tus servicios. Para cada uno puedes indicar precio, duración, modalidad, zona, qué incluye y opciones de precio (por ejemplo «Sesión suelta» y «Pack de 4»), que añades con el botón **+ Añadir opción**. Si el precio se acuerda con el cliente, marca **Precio a consultar**.
-3. **Fotos:** sube una foto por servicio. El panel las reduce solo para que carguen rápido y se vean bien al compartir por WhatsApp.
-4. **Landing:** el editor tiene una pestaña para la **Portada**, otra para **Apariencia y SEO** (color de acento, fuente) y una por cada sección. Con **+ Añadir sección** eliges el tipo: *Texto*, *Destacados*, *Galería*, *Sobre mí* (con tu foto, que subes en **Fotos**), *Testimonios* (solo opiniones reales, con permiso de quien las dio) o *Contacto*. En *Destacados* y *Galería* marcas los items con casillas. Cada sección se puede subir, bajar o eliminar, y nada se publica hasta pulsar **Guardar Landing**.
+1. **General:** nombre, descripción corta, WhatsApp (con código de país), moneda, modo de negocio (*solo servicios*, *solo productos* o *mixto*), enlace de reserva si usas una agenda, y tus redes. Pulsa **Guardar**.
+2. **Landing:** el editor tiene una pestaña para la **Portada**, otra para **Apariencia y SEO** (color de acento, fuente) y una por cada sección. Con **+ Añadir sección** eliges el tipo: *Texto*, *Destacados*, *Galería*, *Sobre mí* (con tu foto, que subes en **Fotos**), *Testimonios* (solo opiniones reales, con permiso de quien las dio) o *Contacto*. En *Destacados* y *Galería* marcas los items con casillas (si aún no creaste tu catálogo, vuelve a esta pestaña después del paso 3). Cada sección puede mostrarse justo bajo la portada o debajo del catálogo. Cada sección se puede subir, bajar o eliminar, y nada se publica hasta pulsar **Guardar Landing**.
+3. **Catálogo:** crea tus categorías y tus servicios. Para cada uno puedes indicar precio, duración, modalidad, zona, qué incluye y opciones de precio (por ejemplo «Sesión suelta» y «Pack de 4»), que añades con el botón **+ Añadir opción**. Si el precio se acuerda con el cliente, marca **Precio a consultar**.
+4. **Fotos:** sube una foto por servicio. El panel las reduce solo para que carguen rápido y se vean bien al compartir por WhatsApp.
 5. **FAQ:** hasta 15 preguntas frecuentes.
 6. **Respaldo:** descarga una copia de todo tu contenido y guárdala. Hazlo antes de cambios grandes.
 
@@ -81,7 +81,7 @@ Hasta que pulses **Guardar** en cada sección, el sitio muestra los datos de eje
 ## Paso 8 (opcional). Dominio propio y visitas
 
 - **Dominio propio:** en tu proyecto, **Custom domains → Set up a custom domain**.
-- **Visitas:** en Cloudflare, **Analytics & Logs → Web Analytics → Add a site**, copia el *token* y pégalo en **Admin → Identidad → Token de Cloudflare Web Analytics**. No usa cookies.
+- **Visitas:** en Cloudflare, **Analytics & Logs → Web Analytics → Add a site**, copia el *token* y pégalo en **Admin → General → Token de Cloudflare Web Analytics**. No usa cookies.
 
 ## Cómo traer mejoras del template
 

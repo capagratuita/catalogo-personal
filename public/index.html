@@ -31,6 +31,8 @@
             </div>
         </section>
 
+        <div id="secciones-antes"></div>
+
         <div id="catalogo">
         <section class="catalogo" id="seccion-producto" data-tipo="producto" hidden>
             <div class="container">
@@ -383,11 +385,14 @@
             },
         };
 
+        // Cada sección va antes (bajo la portada) o después del catálogo (por defecto), en el orden guardado
         function renderizarSecciones(landing, catalogo, config) {
-            const raiz = document.getElementById('secciones-landing');
-            if (!raiz) return;
-            raiz.replaceChildren();
+            const raices = { antes: document.getElementById('secciones-antes'), despues: document.getElementById('secciones-landing') };
+            if (!raices.antes || !raices.despues) return;
+            raices.antes.replaceChildren();
+            raices.despues.replaceChildren();
             ((landing && landing.secciones) || []).forEach(seccion => {
+                const raiz = raices[seccion.posicion === 'antes' ? 'antes' : 'despues'];
                 const construir = CONSTRUCTORES_SECCION[seccion.tipo];
                 if (!construir) return;
                 const seccionEl = crear('section', `landing-seccion landing-${seccion.tipo}`);

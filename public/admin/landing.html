@@ -568,6 +568,7 @@
                 titulo: datos.titulo || '',
                 contenido: datos.contenido || '',
                 items_ids: Array.isArray(datos.items_ids) ? [...datos.items_ids] : [],
+                posicion: datos.posicion === 'antes' ? 'antes' : 'despues',
                 testimonios: Array.isArray(datos.testimonios) ? datos.testimonios.map(t => ({ texto: t.texto || '', autor: t.autor || '', detalle: t.detalle || '' })) : []
             };
         }
@@ -588,6 +589,7 @@
                     contenido: s.tipo === 'testimonios' ? '' : s.contenido,
                     items_ids: s.tipo === 'destacados' || s.tipo === 'galeria' ? s.items_ids : []
                 };
+                if (s.posicion === 'antes') seccion.posicion = 'antes';
                 if (s.tipo === 'testimonios') {
                     seccion.testimonios = s.testimonios
                         .filter(t => t.texto.trim() || t.autor.trim())
@@ -741,7 +743,7 @@
 
             if (s.tipo === 'texto') return textarea('Deja una línea en blanco para separar párrafos. Los enlaces que empiecen por https:// se vuelven clicables.');
             if (s.tipo === 'sobre-mi') return textarea('Cuenta quién eres y a qué te dedicas. Tu foto se sube en <a href="/admin/fotos">Fotos</a> (opción «Sobre mí»); si no hay foto, solo se muestra el texto.', 'Tu presentación');
-            if (s.tipo === 'contacto') return textarea('Los botones de WhatsApp y de correo salen de <a href="/admin/identidad">Identidad</a>. Aquí puedes añadir un mensaje o un enlace (por ejemplo, tu comunidad).', 'Mensaje (opcional)');
+            if (s.tipo === 'contacto') return textarea('Los botones de WhatsApp y de correo salen de <a href="/admin/identidad">General</a>. Aquí puedes añadir un mensaje o un enlace (por ejemplo, tu comunidad).', 'Mensaje (opcional)');
 
             // destacados y galería: texto opcional + selector de items
             return textarea('Opcional: una frase que se muestra antes de los items.', 'Texto introductorio (opcional)') + '<fieldset class="items-lista" id="items-lista"><legend>Items que se muestran</legend></fieldset>';
@@ -769,6 +771,14 @@
                     <label for="seccion-titulo">Título de la sección</label>
                     <input type="text" id="seccion-titulo" value="${escapeHtml(s.titulo)}">
                 </div>
+                <div class="form-group">
+                    <label for="seccion-posicion">Dónde se muestra</label>
+                    <select id="seccion-posicion" aria-describedby="seccion-posicion-ayuda">
+                        <option value="despues" ${s.posicion === 'despues' ? 'selected' : ''}>Después del catálogo</option>
+                        <option value="antes" ${s.posicion === 'antes' ? 'selected' : ''}>Antes del catálogo (justo bajo la portada)</option>
+                    </select>
+                    <p class="ayuda" id="seccion-posicion-ayuda">Las secciones de cada grupo siguen el orden de las pestañas.</p>
+                </div>
                 ${camposSegunTipo(s)}
             `;
 
@@ -784,6 +794,10 @@
                 marcarModificado();
                 const tab = document.getElementById('tab-' + claveDe(s));
                 if (tab) tab.firstChild.textContent = etiquetaDe(s);
+            });
+            panel.querySelector('#seccion-posicion').addEventListener('change', e => {
+                s.posicion = e.target.value;
+                marcarModificado();
             });
             panel.querySelector('#mover-izq').addEventListener('click', () => mover(s, -1));
             panel.querySelector('#mover-der').addEventListener('click', () => mover(s, 1));

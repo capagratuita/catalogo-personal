@@ -311,6 +311,7 @@ export function validateCatalogo(data) {
 }
 
 const TIPOS_SECCION = ['texto', 'destacados', 'galeria', 'contacto', 'sobre-mi', 'testimonios'];
+const POSICIONES_SECCION = ['antes', 'despues']; // respecto al catálogo; por defecto 'despues'
 const MAX_TESTIMONIOS = 8;
 
 function validarTestimonios(seccion) {
@@ -382,6 +383,9 @@ export function validateLanding(data, idsCatalogo) {
     if (typeof seccion.titulo !== 'string') fail("Cada sección debe tener 'titulo' string");
     if (typeof seccion.contenido !== 'string') fail("Cada sección debe tener 'contenido' string");
     if (seccion.contenido.length > 2000) fail(`El contenido de la sección '${seccion.titulo}' debe tener máximo 2000 caracteres`);
+    if (seccion.posicion !== undefined && !POSICIONES_SECCION.includes(seccion.posicion)) {
+      fail(`La posición de la sección '${seccion.titulo}' debe ser 'antes' o 'despues' del catálogo`);
+    }
     validarTestimonios(seccion);
     if (!Array.isArray(seccion.items_ids) || !seccion.items_ids.every(id => typeof id === 'string')) {
       fail("Cada sección debe tener 'items_ids' como array de strings");

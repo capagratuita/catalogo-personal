@@ -5,6 +5,7 @@ Marca cada punto a mano en un sitio recién desplegado (o en `npm run dev`). Pru
 ## Acceso
 - [ ] `/admin` pide contraseña; una incorrecta muestra un error claro.
 - [ ] Tras 5 contraseñas incorrectas seguidas aparece «Demasiados intentos…».
+- [ ] El menú del panel sigue el orden General · Landing · Catálogo · Fotos · FAQ · Respaldo.
 - [ ] Con la correcta se entra; cerrar sesión devuelve al login; `/admin/identidad` sin sesión redirige al login.
 
 ## Primer arranque
@@ -12,11 +13,11 @@ Marca cada punto a mano en un sitio recién desplegado (o en `npm run dev`). Pru
 - [ ] Al pulsar Guardar en una sección, el sitio pasa a usar tus datos.
 
 ## Contenido
-- [ ] Identidad: guardar con un WhatsApp, una moneda y un correo; un enlace sin `https://` se rechaza con un mensaje claro.
+- [ ] General: guardar con un WhatsApp, una moneda y un correo; un enlace sin `https://` se rechaza con un mensaje claro.
 - [ ] Catálogo: crear una categoría de servicio, un servicio con precio fijo, otro «Precio a consultar», otro con opciones de precio y detalles (modalidad, zona, qué incluye).
 - [ ] Catálogo: marcar una categoría como *con reserva* y poner un enlace de reserva.
 - [ ] Fotos: subir una foto de más de 1 MB; se reduce y aparece en la tarjeta y en la ficha.
-- [ ] Landing: añadir *Sobre mí* (con foto desde Fotos), *Testimonios* y *Contacto* desde **+ Añadir sección**; marcar items en *Destacados*; subir/bajar y eliminar una sección; cambiar el color de acento (uno muy oscuro se rechaza con un mensaje claro).
+- [ ] Landing: añadir *Sobre mí* (con foto desde Fotos), *Testimonios* y *Contacto* desde **+ Añadir sección**; marcar items en *Destacados*; subir/bajar y eliminar una sección; poner una sección «Antes del catálogo» y comprobar que aparece justo bajo la portada; cambiar el color de acento (uno muy oscuro se rechaza con un mensaje claro).
 - [ ] Landing: las pestañas se pueden recorrer con las flechas del teclado, y al salir con cambios sin guardar el navegador avisa.
 - [ ] FAQ: añadir una pregunta y verla en `/faq`.
 - [ ] Respaldo: exportar, borrar una pregunta, importar el respaldo y comprobar que vuelve.

@@ -181,10 +181,10 @@ async function importarTodo(respaldo) {
 }
 
 const SECCIONES_ADMIN = [
-  ['identidad.html', 'Identidad'],
+  ['identidad.html', 'General'],
+  ['landing.html', 'Landing'],
   ['catalogo.html', 'Catálogo'],
   ['fotos.html', 'Fotos'],
-  ['landing.html', 'Landing'],
   ['faq.html', 'FAQ'],
   ['respaldo.html', 'Respaldo'],
 ];
