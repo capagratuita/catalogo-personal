@@ -191,14 +191,6 @@
             color: #999;
         }
 
-        .items-container {
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
         .item-row {
             display: grid;
             grid-template-columns: 100px 150px 1fr 120px 80px auto;
@@ -210,13 +202,6 @@
 
         .item-row:last-child {
             border-bottom: none;
-        }
-
-        .item-row.header {
-            background: #f5f5f5;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
         }
 
         .item-row input,
@@ -248,7 +233,7 @@
         }
 
         .item-fila-principal {
-            grid-template-columns: 140px minmax(140px, 1fr) 140px auto;
+            grid-template-columns: minmax(140px, 1fr) 140px auto;
             align-items: end;
         }
 
@@ -369,6 +354,15 @@
 
         .item-row-edit .btn-remove-item {
             justify-self: end;
+        }
+
+        .tabs-tipo {
+            margin-bottom: 1.25rem;
+        }
+
+        .tabs-tipo .categorias-tab {
+            flex: 1;
+            font-size: 1rem;
         }
 
         .item-foto {
@@ -524,9 +518,6 @@
                 grid-column: 1 / -1;
             }
 
-            .item-row-edit .btn-remove-item {
-                justify-self: start;
-            }
 
             .categorias-tab,
             .foto-boton,
@@ -552,7 +543,7 @@
             }
 
             .item-fila-principal > .btn-remove-item {
-                grid-column: 1 / -1;
+                justify-self: end;
             }
 
             /* Fila de categoría en dos columnas: Disponible | Destacado, ID | Duración */
@@ -652,14 +643,15 @@
             <div id="mensaje-exito" class="oculto"></div>
 
             <form id="form-catalogo">
+                <div class="categorias-tabs tabs-tipo" role="tablist" aria-label="Tipo de catálogo">
+                    <button type="button" class="categorias-tab activa" id="tab-producto" data-tipo="producto" role="tab" aria-selected="true" aria-controls="vista-tipo" onclick="cambiarTabCategorias('producto')">Productos</button>
+                    <button type="button" class="categorias-tab" id="tab-servicio" data-tipo="servicio" role="tab" aria-selected="false" aria-controls="vista-tipo" onclick="cambiarTabCategorias('servicio')">Servicios</button>
+                </div>
+
+                <div id="vista-tipo" role="tabpanel">
                 <div class="form-group">
                     <label>Categorías</label>
                     <div class="categorias-editor">
-                        <div class="categorias-tabs" role="tablist" aria-label="Tipo de categoría">
-                            <button type="button" class="categorias-tab activa" data-tipo="producto" role="tab" aria-selected="true" aria-controls="panel-categorias-producto" onclick="cambiarTabCategorias('producto')">Productos</button>
-                            <button type="button" class="categorias-tab" data-tipo="servicio" role="tab" aria-selected="false" aria-controls="panel-categorias-servicio" onclick="cambiarTabCategorias('servicio')">Servicios</button>
-                        </div>
-
                         <div class="categorias-panel" id="panel-categorias-producto" data-tipo="producto" role="tabpanel">
                             <div class="categorias-chips" id="categorias-chips-producto"></div>
                             <div class="categorias-add">
@@ -687,24 +679,15 @@
                     </div>
                 </div>
 
-                <div id="items-container">
-                    <!-- Items serán agregados aquí -->
-                </div>
-
-                <button type="button" class="btn-add-item" onclick="agregarItem()">+ Agregar Item</button>
-
-                <div class="form-group">
-                    <label>Validación del Catálogo</label>
-                    <div class="items-container" id="items-preview">
-                        <div class="item-row header">
-                            <span>ID</span>
-                            <span>Tipo</span>
-                            <span>Nombre</span>
-                            <span>Categoría</span>
-                            <span>Precio</span>
-                            <span>Acciones</span>
-                        </div>
+                <div class="form-group" role="group" aria-labelledby="items-titulo">
+                    <label id="items-titulo">Items</label>
+                    <div id="items-container">
+                        <!-- Items serán agregados aquí -->
                     </div>
+
+                    <p class="categorias-ayuda oculto" id="items-vacio"></p>
+                    <button type="button" class="btn-add-item" id="btn-agregar-item" onclick="agregarItem()">+ Agregar producto</button>
+                </div>
                 </div>
 
                 <div class="barra-guardar">
@@ -735,6 +718,8 @@
         let idsGuardados = new Set();
         // Moneda del negocio (solo lectura aquí; se cambia en General)
         let monedaActual = '';
+        // Pestaña global: separa productos y servicios (categorías e items)
+        let tipoActual = 'producto';
         // Ids reservados por el servidor (foto de «Sobre mí»); no valen para items
         const ID_RESERVADOS = ['sobre-mi'];
 
@@ -979,13 +964,13 @@
             };
         }
 
-        function agregarItem() {
+        function agregarItem(tipo = tipoActual) {
             const itemsContainer = document.getElementById('items-container');
             const nuevoItem = document.createElement('div');
             nuevoItem.className = 'item-row item-row-edit';
             nuevoItem.innerHTML = `
                 <div class="item-fila item-fila-principal">
-                    <label class="campo"><span>Tipo</span>
+                    <label class="campo" hidden><span>Tipo</span>
                         <select class="item-tipo" required>
                             <option value="">Seleccionar...</option>
                             <option value="producto">Producto</option>
@@ -1031,12 +1016,14 @@
                 ${htmlDetalleServicio({}, false)}
             `;
 
+            nuevoItem.querySelector('.item-tipo').value = tipo;
             itemsContainer.appendChild(nuevoItem);
             actualizarCotizar(nuevoItem);
             actualizarFoto(nuevoItem);
 
             // Actualizar las opciones de categoría con las existentes
             actualizarOpcionesCategoria();
+            filtrarItems();
 
             // Generar ID automático si está vacío
             const idInput = nuevoItem.querySelector('.item-id');
@@ -1044,12 +1031,14 @@
                 idInput.value = `item-${itemIdCounter++}`;
                 nuevoItem.dataset.idGenerico = idInput.value;
             }
+            nuevoItem.querySelector('.item-nombre').focus();
         }
 
         function eliminarItem(button) {
             const row = button.closest('.item-row');
             row.remove();
             renderizarOpcionesAgendamiento();
+            filtrarItems();
         }
 
         // Precio a consultar, duración, reserva y detalles solo aplican a servicios
@@ -1094,36 +1083,6 @@
             });
         }
 
-        function actualizarPreviewItems() {
-            const catalogo = obtenerCatalogo();
-            const previewContainer = document.getElementById('items-preview');
-
-            if (!catalogo.items || catalogo.items.length === 0) {
-                previewContainer.innerHTML = '<p>No hay items para mostrar</p>';
-                return;
-            }
-
-            let html = '<div class="item-row header">';
-            html += '<span>ID</span><span>Tipo</span><span>Nombre</span><span>Categoría</span><span>Precio</span><span>Acciones</span>';
-            html += '</div>';
-
-            catalogo.items.forEach(item => {
-                html += `<div class="item-row">`;
-                html += `<span>${item.id}</span>`;
-                html += `<span>${item.tipo}</span>`;
-                html += `<span>${item.nombre}</span>`;
-                html += `<span>${item.categoria}</span>`;
-                html += `<span>S/. ${item.precio}</span>`;
-                html += `<span>✓ ${item.disponible} | ${item.destacado ? '⭐' : ''}</span>`;
-                if (item.tipo === 'servicio') {
-                    html += `<span>${item.duracion_minutos} min</span>`;
-                }
-                html += `</div>`;
-            });
-
-            previewContainer.innerHTML = html;
-        }
-
         function renderizarCategorias() {
             ['producto', 'servicio'].forEach(tipo => {
                 const chips = document.getElementById(`categorias-chips-${tipo}`);
@@ -1150,15 +1109,39 @@
         }
 
         function cambiarTabCategorias(tipo) {
+            tipoActual = tipo;
             document.querySelectorAll('.categorias-tab').forEach(tab => {
                 const activa = tab.dataset.tipo === tipo;
                 tab.classList.toggle('activa', activa);
                 tab.setAttribute('aria-selected', activa ? 'true' : 'false');
             });
+            document.getElementById('vista-tipo').setAttribute('aria-labelledby', `tab-${tipo}`);
 
             document.querySelectorAll('.categorias-panel').forEach(panel => {
                 panel.classList.toggle('oculto', panel.dataset.tipo !== tipo);
             });
+            filtrarItems();
+        }
+
+        // Muestra solo los items del tipo de la pestaña y actualiza contadores y el botón de añadir
+        function filtrarItems() {
+            const cuentas = { producto: 0, servicio: 0 };
+            document.querySelectorAll('#items-container .item-row').forEach(row => {
+                const tipo = row.querySelector('.item-tipo').value;
+                if (tipo in cuentas) cuentas[tipo]++;
+                row.hidden = tipo !== tipoActual;
+            });
+
+            const nombres = { producto: 'Productos', servicio: 'Servicios' };
+            for (const tipo of Object.keys(cuentas)) {
+                document.getElementById(`tab-${tipo}`).textContent = `${nombres[tipo]} (${cuentas[tipo]})`;
+            }
+
+            const singular = tipoActual === 'servicio' ? 'servicio' : 'producto';
+            document.getElementById('btn-agregar-item').textContent = `+ Agregar ${singular}`;
+            const vacio = document.getElementById('items-vacio');
+            vacio.textContent = `Aún no tienes ${tipoActual === 'servicio' ? 'servicios' : 'productos'}.`;
+            vacio.classList.toggle('oculto', cuentas[tipoActual] > 0);
         }
 
         function renderizarOpcionesAgendamiento() {
@@ -1288,7 +1271,13 @@
                 }
 
                 renderizarCategorias();
-                actualizarPreviewItems();
+
+                // Pestaña inicial: la que tenga items; con el catálogo vacío, según el tipo de catálogo
+                const items = catalogo.items || [];
+                const hayProductos = items.some(i => i.tipo === 'producto');
+                const hayServicios = items.some(i => i.tipo === 'servicio');
+                const soloServicios = config && config.perfil && config.perfil.tipo_catalogo === 'solo-servicios';
+                cambiarTabCategorias(!hayProductos && (hayServicios || soloServicios) ? 'servicio' : 'producto');
             } catch (error) {
                 console.error('Error cargando catálogo:', error);
                 // Si no hay catálogo, agregar un item vacío
@@ -1308,7 +1297,7 @@
 
             nuevoItem.innerHTML = `
                 <div class="item-fila item-fila-principal">
-                    <label class="campo"><span>Tipo</span>
+                    <label class="campo" hidden><span>Tipo</span>
                         <select class="item-tipo" required>
                             <option value="">Seleccionar...</option>
                             <option value="producto" ${item.tipo === 'producto' ? 'selected' : ''}>Producto</option>
@@ -1411,7 +1400,6 @@
                 document.querySelectorAll('#items-container .item-row').forEach(row => actualizarFoto(row));
 
                 mostrarExito('Catálogo guardado exitosamente');
-                actualizarPreviewItems();
             } catch (error) {
                 console.error('Error guardando catálogo:', error);
                 mostrarError(error.message || 'Error guardando el catálogo. Por favor, intente nuevamente.');
@@ -1459,6 +1447,12 @@
 
             document.getElementById('form-catalogo').addEventListener('submit', guardarCatalogo);
 
+            // Un campo obligatorio vacío en la otra pestaña: se cambia a ella para poder enfocarlo
+            document.getElementById('form-catalogo').addEventListener('invalid', function(event) {
+                const fila = event.target.closest('.item-row');
+                if (fila && fila.hidden) cambiarTabCategorias(fila.querySelector('.item-tipo').value);
+            }, true);
+
             // Actualizar preview cuando cambian los inputs
             document.getElementById('form-catalogo').addEventListener('input', function(event) {
                 const fila = event.target.closest('.item-row');
@@ -1468,7 +1462,6 @@
                 } else if (event.target.matches('.item-nombre')) {
                     autogenerarId(fila);
                 }
-                actualizarPreviewItems();
             });
 
             document.getElementById('items-container').addEventListener('click', function(event) {
@@ -1492,7 +1485,6 @@
                     detalle.querySelector('.btn-var-agregar').focus();
                 }
                 actualizarBotonVariantes(detalle);
-                actualizarPreviewItems();
             });
 
             document.getElementById('items-container').addEventListener('change', function(event) {

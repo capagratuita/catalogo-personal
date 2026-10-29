@@ -150,7 +150,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 ## 8. Convenciones de frontend
 
 - Cada página es HTML completo. Las públicas cargan `/assets/app.js`; las admin cargan `../assets/admin.js` antes de su script inline.
-- El admin separa las categorías en pestañas Productos y Servicios; cada categoría nace con su tipo y los selectores de categoría de cada item se filtran por el tipo del item.
+- El admin de Catálogo tiene pestañas globales Productos / Servicios (con contador) que filtran a la vez las categorías y los items; cada item nace con el tipo de la pestaña activa (su campo Tipo va oculto), cada categoría nace con su tipo y los selectores de categoría de cada item se filtran por el tipo del item. Ya no existe la tabla «Validación del Catálogo».
 - `assets/app.js` expone `window.app`: `fetchJSON`, `loadCatalogo`, `loadConfig` (memoizada), `aplicarMarca`, `loadLanding`, `loadFAQ`, `renderItem`, `buildWhatsAppLink`, `formatPrecio`, `getCarrito`, `saveCarrito`, `addToCarrito`, `getCarritoTotal`, `getCarritoItemsCount`.
 - `assets/admin.js` expone `window.admin`: `login`, `isAuthenticated` (async), `getContent`, `putContent`, `exportarTodo`, `importarTodo`, `logout` (async). No expone `getToken`; la sesión viaja en cookie.
 - Carrito real en `localStorage` bajo `carrito`: `[{id, nombre, precio, moneda, cantidad}]` (no solo `{id,cantidad}`; la UI lee nombre/precio). El checkout arma el mensaje con nombre, cantidad, precio y total.
