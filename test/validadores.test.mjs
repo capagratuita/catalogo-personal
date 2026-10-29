@@ -125,3 +125,15 @@ test('normalizarConfig traduce los nombres anteriores (negocio/modo_negocio)', (
   const actual = { perfil: { nombre: 'X', tipo_catalogo: 'solo-servicios' } };
   assert.equal(normalizarConfig(actual), actual);
 });
+
+test('catálogo: galería de fotos (solo servicios)', () => {
+  validateCatalogo(conItem({ galeria: [{ n: 2, alt: 'Sala' }, { n: 1 }] }));
+  rechaza(() => validateCatalogo(conItem({ galeria: [{ n: 1 }] }, producto())), /solo los servicios/);
+  rechaza(() => validateCatalogo(conItem({ galeria: [{ n: 7 }] })), /de 1 a 6/);
+  rechaza(() => validateCatalogo(conItem({ galeria: [{ n: 1 }, { n: 1 }] })), /repite/);
+  rechaza(() => validateCatalogo(conItem({ galeria: [{ n: 1, alt: 'x'.repeat(101) }] })), /100 caracteres/);
+  rechaza(() => validateCatalogo(conItem({ galeria: [1, 2, 3, 4, 5, 6, 7].map(n => ({ n })) })), /máximo 6/);
+  const c = copia(catalogo);
+  c.items.push({ ...copia(c.items[servicio()]), id: `${c.items[servicio()].id}-g1` });
+  rechaza(() => validateCatalogo(c), /galería/);
+});

@@ -47,6 +47,10 @@ function validateObject(data, schema, prefix = '') {
 // Ids que no pueden usarse en el catálogo: se reservan para fotos de la landing (ver /api/upload).
 export const ID_RESERVADOS = ['sobre-mi'];
 
+// Las fotos extra de un servicio se guardan con el id «{id}-g{n}» (n de 1 a MAX_GALERIA).
+export const MAX_GALERIA = 6;
+export const ID_GALERIA = /^(.+)-g([1-6])$/;
+
 // Color de acento: se usa como fondo de botones con texto --ink (#12161C), así que ese par debe cumplir AA.
 const COLOR_TINTA = '#12161c';
 const CONTRASTE_MINIMO = 4.5;
@@ -200,7 +204,7 @@ const MAX_INCLUYE = 8;
 
 // Campos opcionales que solo tienen sentido en servicios: modalidad, zona, incluye y variantes.
 function validarDetalleServicio(item) {
-  const campos = ['modalidad', 'zona', 'incluye', 'variantes'].filter(campo => item[campo] !== undefined && item[campo] !== null);
+  const campos = ['modalidad', 'zona', 'incluye', 'variantes', 'galeria'].filter(campo => item[campo] !== undefined && item[campo] !== null);
   if (campos.length === 0) return;
   if (item.tipo !== 'servicio') {
     fail(`El item '${item.id}' es un producto: solo los servicios pueden tener ${campos.join(', ')}`);
@@ -219,6 +223,23 @@ function validarDetalleServicio(item) {
     }
     if (!item.incluye.every(linea => typeof linea === 'string' && linea.trim() && linea.length <= 100)) {
       fail(`Cada línea de 'incluye' del item '${item.id}' debe ser un texto no vacío de máximo 100 caracteres`);
+    }
+  }
+
+  if (item.galeria !== undefined && item.galeria !== null) {
+    if (!Array.isArray(item.galeria) || item.galeria.length > MAX_GALERIA) {
+      fail(`'galeria' del item '${item.id}' debe ser una lista de máximo ${MAX_GALERIA} fotos`);
+    }
+    const usados = new Set();
+    for (const foto of item.galeria) {
+      if (!isPlainObject(foto) || !Number.isInteger(foto.n) || foto.n < 1 || foto.n > MAX_GALERIA) {
+        fail(`Cada foto de la galería del item '${item.id}' debe tener un número 'n' entero de 1 a ${MAX_GALERIA}`);
+      }
+      if (usados.has(foto.n)) fail(`La galería del item '${item.id}' repite la foto ${foto.n}`);
+      usados.add(foto.n);
+      if (foto.alt !== undefined && foto.alt !== null && (typeof foto.alt !== 'string' || foto.alt.length > 100)) {
+        fail(`El texto alternativo de la foto ${foto.n} del item '${item.id}' debe ser de máximo 100 caracteres`);
+      }
     }
   }
 
@@ -269,6 +290,9 @@ export function validateCatalogo(data) {
 
     if (typeof item.id !== 'string' || !/^[a-z0-9-]+$/.test(item.id)) {
       fail(`El id del item '${item.id}' debe ser un slug en minúsculas, sin tildes ni espacios`);
+    }
+    if (ID_GALERIA.test(item.id) && data.items.some(otro => otro.id === item.id.replace(ID_GALERIA, '$1'))) {
+      fail(`El id '${item.id}' se confunde con una foto de la galería de '${item.id.replace(ID_GALERIA, '$1')}'; cámbialo`);
     }
     if (ID_RESERVADOS.includes(item.id)) {
       fail(`El id '${item.id}' está reservado para la landing; elige otro`);

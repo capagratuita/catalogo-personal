@@ -1,7 +1,7 @@
 import { json, verifySession } from '../_lib/auth.js';
 import { getContent } from '../_lib/defaults.js';
 import { invalidarImagen } from '../_lib/cache.js';
-import { ID_RESERVADOS } from '../_lib/validadores.js';
+import { ID_RESERVADOS, ID_GALERIA } from '../_lib/validadores.js';
 
 const ALLOWED_TYPES = {
   'image/jpeg': 'jpg',
@@ -48,7 +48,14 @@ export const onRequestPost = async ({ request, env }) => {
       return json({ error: 'Catálogo no encontrado' }, 404);
     }
 
-    if (!catalogo.items.some(item => item.id === id)) {
+    // «{id}-g{n}» es una foto extra de la galería: solo los servicios la tienen
+    const galeria = ID_GALERIA.exec(id);
+    const base = galeria && catalogo.items.find(item => item.id === galeria[1]);
+    if (base && !catalogo.items.some(item => item.id === id)) {
+      if (base.tipo !== 'servicio') {
+        return json({ error: `'${base.id}' es un producto: solo los servicios pueden tener galería de fotos.` }, 400);
+      }
+    } else if (!catalogo.items.some(item => item.id === id)) {
       return json({ error: `El ID '${id}' no existe en el catálogo. Guarda el catálogo con ese producto o servicio y vuelve a subir la foto.` }, 400);
     }
   }

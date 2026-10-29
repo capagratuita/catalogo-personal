@@ -551,6 +551,91 @@
             outline-offset: 2px;
         }
 
+        .galeria-lista {
+            list-style: none;
+            margin: 0 0 0.5rem;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .gal-foto {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 0.4rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .gal-foto img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border-radius: 5px;
+            background: #f4f4f4;
+        }
+
+        .gal-foto input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.35rem 0.5rem;
+            font-size: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .gal-acciones {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .gal-acciones button {
+            flex: 1;
+            min-height: 36px;
+            background: white;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .gal-acciones .btn-gal-quitar {
+            color: #b71c1c;
+            border-color: #b71c1c;
+        }
+
+        .gal-acciones button:disabled,
+        .btn-gal-agregar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .gal-acciones button:focus-visible,
+        .btn-gal-agregar:focus-visible,
+        .gal-foto input:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .btn-gal-agregar {
+            padding: 0 0.9rem;
+            min-height: 44px;
+            background: white;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .galeria-estado {
+            font-size: 0.8rem;
+            color: #555;
+            margin-top: 0.35rem;
+        }
+
         .item-servicio-detalle .ayuda {
             font-size: 0.8rem;
             color: #555;
@@ -796,6 +881,7 @@
         let erroresDetalle = [];
 
         const MAX_VARIANTES = 6;
+        const MAX_GALERIA = 6;
 
         // Opciones de precio del formulario -> datos. Las filas totalmente vacías se ignoran.
         function leerVariantes(row, idItem) {
@@ -841,7 +927,8 @@
             const modalidad = item.modalidad || '';
             const incluye = Array.isArray(item.incluye) ? item.incluye.join('\n') : '';
             const variantes = Array.isArray(item.variantes) ? item.variantes : [];
-            const abierto = modalidad || item.zona || incluye || variantes.length ? 'open' : '';
+            const galeria = Array.isArray(item.galeria) ? item.galeria : [];
+            const abierto = modalidad || item.zona || incluye || variantes.length || galeria.length ? 'open' : '';
             return `
                 <details class="item-servicio-detalle" ${abierto} ${visible ? '' : 'hidden'}>
                     <summary>Detalles del servicio (opcional)</summary>
@@ -872,7 +959,73 @@
                             <p class="ayuda">Por ejemplo «Sesión suelta · 30 · 60 min» y «Pack de 4 · 100 · 240 min». Los minutos son opcionales. Si usas opciones, la tarjeta muestra «Desde» el precio más bajo.</p>
                         </div>
                     </div>
+                    <div class="item-fila">
+                        <span class="etiqueta-detalle" id="gal-titulo-${uid}">Galería de fotos</span>
+                        <div>
+                            <ul class="galeria-lista" aria-labelledby="gal-titulo-${uid}">${galeria.map(f => htmlGaleriaFoto(item.id, f.n, f.alt)).join('')}</ul>
+                            <button type="button" class="btn-gal-agregar">+ Añadir foto</button>
+                            <input type="file" class="gal-archivo" accept="image/jpeg,image/png,image/webp" hidden>
+                            <p class="galeria-estado" role="status"></p>
+                            <p class="ayuda">Hasta ${MAX_GALERIA} fotos extra además de la principal. En la ficha se ven como un mosaico y se abren a pantalla completa. La subida es inmediata; el texto alternativo y el orden se guardan con «Guardar catálogo».</p>
+                        </div>
+                    </div>
                 </details>`;
+        }
+
+        function htmlGaleriaFoto(idItem, n, alt) {
+            return `
+                <li class="gal-foto" data-n="${n}">
+                    <img src="/api/image?id=${encodeURIComponent(`${idItem}-g${n}`)}&v=${Date.now()}" alt="">
+                    <input type="text" class="gal-alt" maxlength="100" placeholder="Descripción de la foto" aria-label="Descripción de la foto ${n}" value="${escapeHtml(alt)}">
+                    <div class="gal-acciones">
+                        <button type="button" class="btn-gal-mover" data-dir="-1" aria-label="Mover antes">◀</button>
+                        <button type="button" class="btn-gal-mover" data-dir="1" aria-label="Mover después">▶</button>
+                        <button type="button" class="btn-gal-quitar">Quitar</button>
+                    </div>
+                </li>`;
+        }
+
+        // Activa «Añadir» solo con el item guardado y menos de MAX_GALERIA fotos; ajusta los botones de orden
+        function actualizarGaleria(row) {
+            const lista = row.querySelector('.galeria-lista');
+            if (!lista) return;
+            const fotos = [...lista.children];
+            const guardado = idsGuardados.has(row.querySelector('.item-id').value.trim());
+            const boton = row.querySelector('.btn-gal-agregar');
+            const estado = row.querySelector('.galeria-estado');
+            boton.disabled = !guardado || fotos.length >= MAX_GALERIA;
+            boton.textContent = fotos.length >= MAX_GALERIA ? `Máximo ${MAX_GALERIA} fotos` : '+ Añadir foto';
+            if (!guardado && !estado.dataset.ocupado) estado.textContent = 'Guarda el catálogo para poder añadir fotos.';
+            else if (guardado && estado.textContent === 'Guarda el catálogo para poder añadir fotos.') estado.textContent = '';
+            fotos.forEach((foto, i) => {
+                foto.querySelector('.btn-gal-mover[data-dir="-1"]').disabled = i === 0;
+                foto.querySelector('.btn-gal-mover[data-dir="1"]').disabled = i === fotos.length - 1;
+            });
+        }
+
+        async function subirFotoGaleria(row, archivo) {
+            const lista = row.querySelector('.galeria-lista');
+            const id = row.querySelector('.item-id').value.trim();
+            const usados = new Set([...lista.children].map(f => Number(f.dataset.n)));
+            let n = 1;
+            while (usados.has(n)) n++;
+            if (n > MAX_GALERIA) return;
+
+            const boton = row.querySelector('.btn-gal-agregar');
+            const estado = row.querySelector('.galeria-estado');
+            boton.disabled = true;
+            estado.dataset.ocupado = '1';
+            estado.textContent = 'Subiendo…';
+            try {
+                await window.admin.subirFoto(`${id}-g${n}`, archivo);
+                lista.insertAdjacentHTML('beforeend', htmlGaleriaFoto(id, n, ''));
+                estado.textContent = 'Foto subida. Puede tardar hasta un minuto en verse en el sitio.';
+            } catch (error) {
+                estado.textContent = error.message || 'No se pudo subir la foto. Inténtalo de nuevo.';
+            } finally {
+                delete estado.dataset.ocupado;
+                actualizarGaleria(row);
+            }
         }
 
         function htmlCabeceraItem() {
@@ -902,6 +1055,7 @@
 
         // Habilita la foto solo si el item (con ese id) ya está guardado
         function actualizarFoto(row, forzar = false) {
+            actualizarGaleria(row);
             const id = row.querySelector('.item-id').value.trim();
             const guardado = idsGuardados.has(id);
             const boton = row.querySelector('.foto-boton');
@@ -1017,6 +1171,11 @@
                     if (modalidad) item.modalidad = modalidad;
                     if (zona) item.zona = zona;
                     if (incluye.length) item.incluye = incluye;
+                    const galeria = [...row.querySelectorAll('.galeria-lista .gal-foto')].map(foto => {
+                        const alt = foto.querySelector('.gal-alt').value.trim();
+                        return alt ? { n: Number(foto.dataset.n), alt } : { n: Number(foto.dataset.n) };
+                    });
+                    if (galeria.length) item.galeria = galeria;
                     if (variantes.length) {
                         item.variantes = variantes;
                         // El precio base es el más bajo de las opciones ("Desde X")
@@ -1571,6 +1730,26 @@
                     fotoBoton.closest('.item-row').querySelector('.foto-archivo').click();
                     return;
                 }
+                const galAgregar = event.target.closest('.btn-gal-agregar');
+                if (galAgregar) {
+                    galAgregar.closest('.item-row').querySelector('.gal-archivo').click();
+                    return;
+                }
+                const galMover = event.target.closest('.btn-gal-mover');
+                const galQuitar = event.target.closest('.btn-gal-quitar');
+                if (galMover || galQuitar) {
+                    const foto = event.target.closest('.gal-foto');
+                    const fila = foto.closest('.item-row');
+                    if (galQuitar) {
+                        foto.remove();
+                    } else if (galMover.dataset.dir === '-1') {
+                        foto.previousElementSibling?.before(foto);
+                    } else {
+                        foto.nextElementSibling?.after(foto);
+                    }
+                    actualizarGaleria(fila);
+                    return;
+                }
                 const mover = event.target.closest('.btn-mover');
                 if (mover) {
                     moverItem(mover.closest('.item-row'), parseInt(mover.dataset.dir, 10));
@@ -1599,6 +1778,12 @@
                     const fila = event.target.closest('.item-row');
                     delete fila.dataset.idManual;
                     autogenerarId(fila);
+                    return;
+                }
+                if (event.target.matches('.gal-archivo')) {
+                    const archivo = event.target.files[0];
+                    event.target.value = '';
+                    if (archivo) subirFotoGaleria(event.target.closest('.item-row'), archivo);
                     return;
                 }
                 if (event.target.matches('.foto-archivo')) {
