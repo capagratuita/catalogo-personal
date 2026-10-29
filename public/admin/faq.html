@@ -182,7 +182,7 @@
                 fila.querySelector('[data-accion="bajar"]').setAttribute('aria-label', `Bajar la pregunta ${n}`);
             });
 
-            document.getElementById('faq-contador').textContent = `${items.length} de ${MAX_PREGUNTAS}`;
+            document.getElementById('faq-contador').textContent = ` ${items.length} de ${MAX_PREGUNTAS} (máximo)`;
             document.getElementById('faq-vacio').classList.toggle('oculto', items.length > 0);
             document.getElementById('btn-agregar').disabled = items.length >= MAX_PREGUNTAS;
             actualizarJSON();
