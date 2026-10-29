@@ -5,7 +5,7 @@ export const onRequestGet = paginaPublica({
   meta: ({ config, landing }, { origen }) => {
     const perfil = config.perfil;
     const logo = urlImagenValida(perfil.logo_url);
-    const redes = [perfil.redes?.instagram, perfil.redes?.facebook].filter(Boolean);
+    const redes = [perfil.redes?.instagram, perfil.redes?.facebook, perfil.redes?.tiktok, perfil.redes?.youtube].filter(Boolean);
 
     return {
       titulo: landing.seo?.titulo || perfil.nombre,

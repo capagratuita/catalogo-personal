@@ -92,6 +92,8 @@ function aplicarMarca(config) {
   const enlaces = {
     instagram: perfil.redes && perfil.redes.instagram,
     facebook: perfil.redes && perfil.redes.facebook,
+    tiktok: perfil.redes && perfil.redes.tiktok,
+    youtube: perfil.redes && perfil.redes.youtube,
     whatsapp: tieneWhatsApp(config) ? buildWhatsAppLink(config, '') : null,
   };
   document.querySelectorAll('[data-red]').forEach(el => {

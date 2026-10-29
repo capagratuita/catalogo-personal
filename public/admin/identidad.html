@@ -259,8 +259,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="perfil-tono_chat">Tono del Chat (guía para el chat de FAQ)</label>
-                    <textarea id="perfil-tono_chat" name="perfil-tono_chat" required></textarea>
+                    <label for="perfil-redes-tiktok">TikTok (opcional)</label>
+                    <input type="url" id="perfil-redes-tiktok" name="perfil-redes-tiktok" placeholder="https://tiktok.com/@tu-usuario">
+                </div>
+
+                <div class="form-group">
+                    <label for="perfil-redes-youtube">YouTube (opcional)</label>
+                    <input type="url" id="perfil-redes-youtube" name="perfil-redes-youtube" placeholder="https://youtube.com/@tu-canal">
                 </div>
 
                 <button type="submit" class="btn">Guardar Configuración</button>
@@ -311,7 +316,8 @@
             document.getElementById('perfil-logo_url').value = perfil.logo_url || '';
             document.getElementById('perfil-redes-instagram').value = perfil.redes?.instagram || '';
             document.getElementById('perfil-redes-facebook').value = perfil.redes?.facebook || '';
-            document.getElementById('perfil-tono_chat').value = perfil.tono_chat || '';
+            document.getElementById('perfil-redes-tiktok').value = perfil.redes?.tiktok || '';
+            document.getElementById('perfil-redes-youtube').value = perfil.redes?.youtube || '';
         }
 
         function obtenerFormulario() {
@@ -327,9 +333,12 @@
                 logo_url: document.getElementById('perfil-logo_url').value || null,
                 redes: {
                     instagram: document.getElementById('perfil-redes-instagram').value || null,
-                    facebook: document.getElementById('perfil-redes-facebook').value || null
+                    facebook: document.getElementById('perfil-redes-facebook').value || null,
+                    tiktok: document.getElementById('perfil-redes-tiktok').value || null,
+                    youtube: document.getElementById('perfil-redes-youtube').value || null
                 },
-                tono_chat: document.getElementById('perfil-tono_chat').value
+                // Ya no se edita aquí, pero el validador lo exige y el chat opcional lo usa: se conserva.
+                tono_chat: configActual?.perfil?.tono_chat || ''
             };
 
             const resultado = { perfil: perfil };

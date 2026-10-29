@@ -150,6 +150,12 @@ export function validateConfig(data) {
   validarUrl(data.perfil.logo_url, 'perfil.logo_url', { relativa: true });
   validarUrl(data.perfil.redes.instagram, 'perfil.redes.instagram');
   validarUrl(data.perfil.redes.facebook, 'perfil.redes.facebook');
+  // TikTok y YouTube son opcionales: los datos guardados antes no los traen.
+  for (const red of ['tiktok', 'youtube']) {
+    const valor = data.perfil.redes[red];
+    if (valor !== undefined) validateType(valor, ['string', 'null'], `perfil.redes.${red}`);
+    validarUrl(valor, `perfil.redes.${red}`);
+  }
 
   return data;
 }

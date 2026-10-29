@@ -31,6 +31,9 @@ test('config: email, URLs y analítica', () => {
   rechaza(() => validateConfig(con({ reserva_url: 'cal.com/x' })), /https:\/\//);
   rechaza(() => validateConfig(con({ logo_url: 'javascript:alert(1)' })), /URL/);
   rechaza(() => validateConfig(con({ redes: { instagram: 'instagram.com/x', facebook: null } })), /instagram/);
+  rechaza(() => validateConfig(con({ redes: { instagram: null, facebook: null, tiktok: 'tiktok.com/x' } })), /tiktok/);
+  validateConfig(con({ redes: { instagram: null, facebook: null, youtube: 'https://youtube.com/@x' } }));
+  validateConfig(con({ redes: { instagram: null, facebook: null } }));
   validateConfig(con({ logo_url: '/assets/images/logo.png' }));
   validateConfig(con({ reserva_url: 'https://cal.com/yo/30min' }));
 
