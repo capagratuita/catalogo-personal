@@ -143,6 +143,20 @@ async function optimizarImagen(archivo) {
   }
 }
 
+// Optimiza y sube la foto de un item (o del id reservado «sobre-mi») a POST /api/upload.
+async function subirFoto(id, archivo) {
+  const optimizada = await optimizarImagen(archivo);
+  const datos = new FormData();
+  datos.append('id', id);
+  datos.append('file', optimizada);
+  const respuesta = await fetch('/api/upload', { method: 'POST', body: datos });
+  if (!respuesta.ok) {
+    const error = await respuesta.json().catch(() => ({}));
+    throw new Error(error.detalle || error.error || 'No se pudo subir la foto');
+  }
+  return respuesta.json();
+}
+
 // Respaldo: un solo JSON con las 4 keys. Las escrituras pasan por PUT /api/content.
 async function exportarTodo() {
   const respaldo = { version: 1, exportado: new Date().toISOString() };
@@ -184,7 +198,6 @@ const SECCIONES_ADMIN = [
   ['identidad.html', 'General'],
   ['landing.html', 'Portada'],
   ['catalogo.html', 'Catálogo'],
-  ['fotos.html', 'Fotos'],
   ['faq.html', 'FAQ'],
   ['respaldo.html', 'Respaldo'],
 ];
@@ -244,6 +257,7 @@ window.admin = {
   getContent,
   putContent,
   optimizarImagen,
+  subirFoto,
   exportarTodo,
   importarTodo,
   logout

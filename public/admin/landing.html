@@ -864,15 +864,7 @@
                 subir.disabled = true;
                 subir.textContent = 'Subiendo…';
                 try {
-                    const optimizada = await window.admin.optimizarImagen(original);
-                    const datos = new FormData();
-                    datos.append('id', 'sobre-mi');
-                    datos.append('file', optimizada);
-                    const respuesta = await fetch('/api/upload', { method: 'POST', body: datos });
-                    if (!respuesta.ok) {
-                        const error = await respuesta.json().catch(() => ({}));
-                        throw new Error(error.detalle || error.error || 'No se pudo subir la foto');
-                    }
+                    await window.admin.subirFoto('sobre-mi', original);
                     mostrar('/api/image?id=sobre-mi&v=' + Date.now());
                     archivo.value = '';
                     estado.textContent = 'Foto subida. Puede tardar hasta un minuto en verse en el sitio.';

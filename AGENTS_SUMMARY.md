@@ -35,6 +35,9 @@
 - **Campo «Tu nombre» en `sobre-mi`** (`secciones[].nombre`, ≤60, solo ese tipo; validador, editor y 3 pruebas nuevas): se muestra como firma y de él salen las iniciales sin foto. Antes las iniciales salían de `perfil.nombre` (nombre del negocio) y no coincidían con la persona; sin nombre y sin foto ahora solo se ve el texto. Probado en Chromium: con nombre → «LP» + firma; vacío → sin círculo.
 - **Datos de prueba:** el KV local `landing` tiene una portada ficticia con los 6 tipos (Mensaje con `posicion: antes`, Destacados, Galería, Sobre mí, Testimonios con 3 opiniones inventadas, Contacto) sobre el catálogo de panadería. Solo está en `.wrangler/state`; `landing.example.json` sigue sin testimonios a propósito. Pasa `validateLanding`.
 
+## Fotos dentro de Catálogo (2026-10-29)
+- Se eliminó `admin/fotos.html`; cada fila de Catálogo tiene miniatura y «Subir foto» (`admin.subirFoto`, compartido con la foto de «Sobre mí»). El botón solo se activa si el `id` ya está guardado. `/admin/fotos` redirige a Catálogo (`public/_redirects`). Cada campo de la fila lleva una etiqueta sutil (`label.campo > span`); las filas de opciones de precio siguen solo con placeholder.
+
 ## Estado y pendientes
 
 - Todo está commiteado en `main`.

@@ -246,15 +246,15 @@
 
         .item-fila-principal {
             grid-template-columns: 110px 140px minmax(160px, 1fr) 110px auto;
-            align-items: center;
+            align-items: end;
         }
 
         .item-fila-secundaria {
             grid-template-columns: minmax(150px, 1fr) auto auto auto 110px;
-            align-items: center;
+            align-items: end;
         }
 
-        .item-fila-secundaria > input:last-child {
+        .item-fila-secundaria > .campo:last-child {
             grid-column: 1 / -1;
         }
 
@@ -282,15 +282,83 @@
             width: auto;
         }
 
-        .item-row-edit input,
-        .item-row-edit select {
+        /* Etiqueta sutil sobre cada campo; todos los controles con la misma altura para que alineen */
+        .item-row-edit .campo {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.15rem;
+            white-space: normal;
+        }
+
+        .item-row-edit .campo > span {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #6b6b6b;
+            line-height: 1.2;
+        }
+
+        .item-row-edit .campo input,
+        .item-row-edit .campo select {
             width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            height: 2.5rem;
+            box-sizing: border-box;
+            padding: 0 0.6rem;
+            font-size: 0.9rem;
+        }
+
+        .item-row-edit .item-fila-secundaria > label:not(.campo) {
+            min-height: 2.5rem;
+        }
+
+        .item-row-edit .item-fila-principal .btn-remove-item {
+            height: 2.5rem;
         }
 
         .item-row-edit .btn-remove-item {
             justify-self: end;
+        }
+
+        .item-foto {
+            grid-template-columns: 72px 1fr;
+            align-items: center;
+        }
+
+        .foto-vista,
+        .foto-vacia {
+            width: 72px;
+            height: 72px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            object-fit: cover;
+            background: #f4f4f4;
+        }
+
+        .foto-vacia {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #555;
+        }
+
+        .foto-boton {
+            padding: 0.4rem 0.9rem;
+            border: 1px solid #999;
+            border-radius: 5px;
+            background: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .foto-boton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .foto-estado {
+            margin-top: 0.35rem;
+            font-size: 0.8rem;
+            color: #555;
         }
 
         .item-servicio-detalle {
@@ -404,6 +472,11 @@
 
             .item-row-edit .btn-remove-item {
                 justify-self: start;
+            }
+
+            /* En una sola columna el hueco de «Precio a consultar» (productos) sobra */
+            .item-row-edit .item-cotizar[style*="hidden"] {
+                display: none;
             }
         }
 
@@ -546,6 +619,8 @@
         let itemIdCounter = 1;
         let categoriasPorTipo = { producto: [], servicio: [] };
         let categoriasAgendamiento = [];
+        // Ids ya guardados en el catálogo: /api/upload solo acepta fotos de items que existen
+        let idsGuardados = new Set();
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, caracter => ({
@@ -610,7 +685,7 @@
                 <details class="item-servicio-detalle" ${abierto} ${visible ? '' : 'hidden'}>
                     <summary>Detalles del servicio (opcional)</summary>
                     <div class="item-fila">
-                        <label>Modalidad
+                        <label class="campo"><span>Modalidad</span>
                             <select class="item-modalidad">
                                 <option value="">Sin indicar</option>
                                 <option value="online" ${modalidad === 'online' ? 'selected' : ''}>Online</option>
@@ -618,7 +693,9 @@
                                 <option value="ambas" ${modalidad === 'ambas' ? 'selected' : ''}>Online o presencial</option>
                             </select>
                         </label>
-                        <input class="item-zona" type="text" maxlength="80" placeholder="Zona de atención (ej. Lima y alrededores)" aria-label="Zona de atención" value="${escapeHtml(item.zona)}">
+                        <label class="campo"><span>Zona de atención</span>
+                            <input class="item-zona" type="text" maxlength="80" placeholder="Ej. Lima y alrededores" value="${escapeHtml(item.zona)}">
+                        </label>
                     </div>
                     <div class="item-fila">
                         <label for="incluye-${uid}">Qué incluye</label>
@@ -635,6 +712,66 @@
                         </div>
                     </div>
                 </details>`;
+        }
+
+        function htmlFotoItem() {
+            return `
+                <div class="item-fila item-foto">
+                    <img class="foto-vista" alt="Foto del item" hidden>
+                    <div class="foto-vacia">Sin foto</div>
+                    <div>
+                        <button type="button" class="foto-boton">Subir foto</button>
+                        <input type="file" class="foto-archivo" accept="image/jpeg,image/png,image/webp" hidden>
+                        <p class="foto-estado" role="status"></p>
+                    </div>
+                </div>`;
+        }
+
+        // Habilita la foto solo si el item (con ese id) ya está guardado
+        function actualizarFoto(row, forzar = false) {
+            const id = row.querySelector('.item-id').value.trim();
+            const guardado = idsGuardados.has(id);
+            const boton = row.querySelector('.foto-boton');
+            const estado = row.querySelector('.foto-estado');
+            const vista = row.querySelector('.foto-vista');
+            const vacia = row.querySelector('.foto-vacia');
+
+            boton.disabled = !guardado;
+            if (!guardado) {
+                row.dataset.fotoId = '';
+                vista.hidden = true;
+                vacia.hidden = false;
+                if (!estado.dataset.ocupado) estado.textContent = 'Guarda el catálogo para poder añadir la foto.';
+                return;
+            }
+            if (estado.textContent === 'Guarda el catálogo para poder añadir la foto.') estado.textContent = '';
+            if (row.dataset.fotoId === id && !forzar) return;
+
+            row.dataset.fotoId = id;
+            vista.onload = () => { vista.hidden = false; vacia.hidden = true; };
+            vista.onerror = () => { vista.hidden = true; vacia.hidden = false; };
+            vista.src = `/api/image?id=${encodeURIComponent(id)}&v=${Date.now()}`;
+        }
+
+        async function subirFotoItem(row, archivo) {
+            const id = row.querySelector('.item-id').value.trim();
+            const boton = row.querySelector('.foto-boton');
+            const estado = row.querySelector('.foto-estado');
+            boton.disabled = true;
+            boton.textContent = 'Subiendo…';
+            estado.dataset.ocupado = '1';
+            estado.textContent = '';
+            try {
+                await window.admin.subirFoto(id, archivo);
+                estado.textContent = 'Foto subida. Puede tardar hasta un minuto en verse en el sitio.';
+                actualizarFoto(row, true);
+            } catch (error) {
+                estado.textContent = error.message || 'No se pudo subir la foto. Inténtalo de nuevo.';
+            } finally {
+                delete estado.dataset.ocupado;
+                boton.textContent = 'Cambiar foto';
+                boton.disabled = !idsGuardados.has(row.querySelector('.item-id').value.trim());
+            }
         }
 
         function obtenerCatalogo() {
@@ -701,34 +838,52 @@
             nuevoItem.className = 'item-row item-row-edit';
             nuevoItem.innerHTML = `
                 <div class="item-fila item-fila-principal">
-                    <input class="item-id" type="text" placeholder="id-unico" required>
-                    <select class="item-tipo" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="producto">Producto</option>
-                        <option value="servicio">Servicio</option>
-                    </select>
-                    <input class="item-nombre" type="text" placeholder="Nombre del item" required>
-                    <input class="item-precio" type="number" placeholder="Precio" step="0.01" required>
+                    <label class="campo"><span>ID</span>
+                        <input class="item-id" type="text" placeholder="id-unico" required>
+                    </label>
+                    <label class="campo"><span>Tipo</span>
+                        <select class="item-tipo" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="producto">Producto</option>
+                            <option value="servicio">Servicio</option>
+                        </select>
+                    </label>
+                    <label class="campo"><span>Nombre</span>
+                        <input class="item-nombre" type="text" placeholder="Nombre del producto o servicio" required>
+                    </label>
+                    <label class="campo"><span>Precio</span>
+                        <input class="item-precio" type="number" placeholder="Precio" step="0.01" required>
+                    </label>
                     <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">×</button>
                 </div>
+                ${htmlFotoItem()}
                 <div class="item-fila">
-                    <textarea class="item-desc" placeholder="Descripción (máx. 200 caracteres)" maxlength="200" required></textarea>
+                    <label class="campo"><span>Descripción</span>
+                        <textarea class="item-desc" placeholder="Máx. 200 caracteres" maxlength="200" required></textarea>
+                    </label>
                 </div>
                 <div class="item-fila item-fila-secundaria">
-                    <select class="categoria-select item-categoria">
-                        <option value="">Seleccionar categoría (opcional)</option>
-                    </select>
+                    <label class="campo"><span>Categoría</span>
+                        <select class="categoria-select item-categoria">
+                            <option value="">Sin categoría</option>
+                        </select>
+                    </label>
                     <label class="item-disponible"><input type="checkbox" checked> Disponible</label>
                     <label class="item-destacado"><input type="checkbox"> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox"> Precio a consultar</label>
-                    <input class="item-duracion" type="number" placeholder="Minutos" value="0">
-                    <input class="item-reserva" type="text" aria-label="Enlace de reserva propio" placeholder="Enlace de reserva propio (opcional)">
+                    <label class="campo"><span>Duración (min)</span>
+                        <input class="item-duracion" type="number" placeholder="Minutos" value="0">
+                    </label>
+                    <label class="campo"><span>Enlace de reserva propio</span>
+                        <input class="item-reserva" type="text" placeholder="Opcional: https://…">
+                    </label>
                 </div>
                 ${htmlDetalleServicio({}, false)}
             `;
 
             itemsContainer.appendChild(nuevoItem);
             actualizarCotizar(nuevoItem);
+            actualizarFoto(nuevoItem);
 
             // Actualizar las opciones de categoría con las existentes
             actualizarOpcionesCategoria();
@@ -954,6 +1109,7 @@
             try {
                 const catalogo = await window.admin.getContent('catalogo');
                 catalogoActual = catalogo;
+                idsGuardados = new Set((catalogo.items || []).map(i => i.id));
                 categoriasPorTipo = normalizarCategorias(catalogo);
 
                 const servicios = new Set(categoriasPorTipo.servicio);
@@ -997,35 +1153,53 @@
 
             nuevoItem.innerHTML = `
                 <div class="item-fila item-fila-principal">
-                    <input class="item-id" type="text" placeholder="id-unico" value="${escapeHtml(item.id)}" required>
-                    <select class="item-tipo" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="producto" ${item.tipo === 'producto' ? 'selected' : ''}>Producto</option>
-                        <option value="servicio" ${item.tipo === 'servicio' ? 'selected' : ''}>Servicio</option>
-                    </select>
-                    <input class="item-nombre" type="text" placeholder="Nombre del item" value="${escapeHtml(item.nombre)}" required>
-                    <input class="item-precio" type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
+                    <label class="campo"><span>ID</span>
+                        <input class="item-id" type="text" placeholder="id-unico" value="${escapeHtml(item.id)}" required>
+                    </label>
+                    <label class="campo"><span>Tipo</span>
+                        <select class="item-tipo" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="producto" ${item.tipo === 'producto' ? 'selected' : ''}>Producto</option>
+                            <option value="servicio" ${item.tipo === 'servicio' ? 'selected' : ''}>Servicio</option>
+                        </select>
+                    </label>
+                    <label class="campo"><span>Nombre</span>
+                        <input class="item-nombre" type="text" placeholder="Nombre del producto o servicio" value="${escapeHtml(item.nombre)}" required>
+                    </label>
+                    <label class="campo"><span>Precio</span>
+                        <input class="item-precio" type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
+                    </label>
                     <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">×</button>
                 </div>
+                ${htmlFotoItem()}
                 <div class="item-fila">
-                    <textarea class="item-desc" placeholder="Descripción (máx. 200 caracteres)" maxlength="200" required>${escapeHtml(item.descripcion)}</textarea>
+                    <label class="campo"><span>Descripción</span>
+                        <textarea class="item-desc" placeholder="Máx. 200 caracteres" maxlength="200" required>${escapeHtml(item.descripcion)}</textarea>
+                    </label>
                 </div>
                 <div class="item-fila item-fila-secundaria">
-                    <select class="categoria-select item-categoria">
-                        <option value="">Seleccionar categoría (opcional)</option>
-                        ${categorias.map(cat => `<option value="${escapeHtml(cat)}" ${item.categoria === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`).join('')}
-                    </select>
+                    <label class="campo"><span>Categoría</span>
+                        <select class="categoria-select item-categoria">
+                            <option value="">Sin categoría</option>
+                            ${categorias.map(cat => `<option value="${escapeHtml(cat)}" ${item.categoria === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`).join('')}
+                        </select>
+                    </label>
                     <label class="item-disponible"><input type="checkbox" ${item.disponible !== false ? 'checked' : ''}> Disponible</label>
                     <label class="item-destacado"><input type="checkbox" ${item.destacado ? 'checked' : ''}> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox" ${item.precio_a_consultar ? 'checked' : ''}> Precio a consultar</label>
-                    <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
-                    <input class="item-reserva" type="text" aria-label="Enlace de reserva propio" placeholder="Enlace de reserva propio (opcional)" value="${escapeHtml(item.reserva_url || item.calendly_url)}">
+                    <label class="campo"><span>Duración (min)</span>
+                        <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
+                    </label>
+                    <label class="campo"><span>Enlace de reserva propio</span>
+                        <input class="item-reserva" type="text" placeholder="Opcional: https://…" value="${escapeHtml(item.reserva_url || item.calendly_url)}">
+                    </label>
                 </div>
                 ${htmlDetalleServicio(item, item.tipo === 'servicio')}
             `;
 
             itemsContainer.appendChild(nuevoItem);
             actualizarCotizar(nuevoItem);
+            actualizarFoto(nuevoItem);
         }
 
         function previsualizarCatalogo() {
@@ -1074,6 +1248,8 @@
             try {
                 await window.admin.putContent('catalogo', catalogo);
                 catalogoActual = catalogo;
+                idsGuardados = new Set(catalogo.items.map(i => i.id));
+                document.querySelectorAll('#items-container .item-row').forEach(row => actualizarFoto(row));
 
                 mostrarExito('Catálogo guardado exitosamente');
                 actualizarPreviewItems();
@@ -1125,11 +1301,17 @@
             document.getElementById('form-catalogo').addEventListener('submit', guardarCatalogo);
 
             // Actualizar preview cuando cambian los inputs
-            document.getElementById('form-catalogo').addEventListener('input', function() {
+            document.getElementById('form-catalogo').addEventListener('input', function(event) {
+                if (event.target.matches('.item-id')) actualizarFoto(event.target.closest('.item-row'));
                 actualizarPreviewItems();
             });
 
             document.getElementById('items-container').addEventListener('click', function(event) {
+                const fotoBoton = event.target.closest('.foto-boton');
+                if (fotoBoton) {
+                    fotoBoton.closest('.item-row').querySelector('.foto-archivo').click();
+                    return;
+                }
                 const agregar = event.target.closest('.btn-var-agregar');
                 const quitar = event.target.closest('.btn-var-quitar');
                 if (!agregar && !quitar) return;
@@ -1149,6 +1331,12 @@
             });
 
             document.getElementById('items-container').addEventListener('change', function(event) {
+                if (event.target.matches('.foto-archivo')) {
+                    const archivo = event.target.files[0];
+                    event.target.value = '';
+                    if (archivo) subirFotoItem(event.target.closest('.item-row'), archivo);
+                    return;
+                }
                 if (event.target.matches('.item-tipo')) {
                     actualizarOpcionesCategoria();
                     actualizarCotizar(event.target.closest('.item-row'));

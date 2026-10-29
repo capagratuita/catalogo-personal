@@ -137,3 +137,9 @@
 - `npm test`: 21 pruebas pasan (nuevas: `normalizarConfig` traduce `negocio`/`modo_negocio`; `redes.tiktok` inválida se rechaza; `tiktok`/`youtube` válidos o ausentes se aceptan).
 - `npm run dev` contra el KV local, que aún guarda el formato antiguo (`negocio`): `GET /api/content?key=config` devuelve `perfil` ya normalizado y `GET /` responde con el título correcto del sitio.
 - No verificado: `PUT /api/content` con el formato nuevo y con un respaldo antiguo contra el servidor (solo cubierto por pruebas unitarias); el admin General (campos nuevos de TikTok/YouTube, selector «Tipo de catálogo», guardado conservando `tono_chat`), el pie con los enlaces nuevos y el resto de textos cambiados no se vieron en un navegador.
+
+## 2026-10-29 — Foto de cada item dentro de Catálogo (se elimina admin/fotos)
+- `npm test`: 21 pruebas pasan. Chromium (Playwright) contra `npm run dev` a 375px: en un item guardado «Subir foto» sube y muestra la miniatura; en un item nuevo sin guardar el botón está desactivado con «Guarda el catálogo para poder añadir la foto.»; sin desbordes horizontales.
+- `/admin/fotos` con cookie responde con la página de Catálogo en local. No verificado: la regla `public/_redirects` (301) en un despliegue real de Pages.
+- No verificado: renombrar el `id` de un item ya guardado (el botón se desactiva hasta guardar; la foto antigua queda huérfana, como antes) ni el flujo completo en navegador real fuera de este script.
+- La prueba subió una foto roja de prueba a `pan-integral` en el KV local `IMAGES`.
