@@ -36,7 +36,7 @@
 - **Datos de prueba:** el KV local `landing` tiene una portada ficticia con los 6 tipos (Mensaje con `posicion: antes`, Destacados, Galería, Sobre mí, Testimonios con 3 opiniones inventadas, Contacto) sobre el catálogo de panadería. Solo está en `.wrangler/state`; `landing.example.json` sigue sin testimonios a propósito. Pasa `validateLanding`.
 
 ## Fotos dentro de Catálogo (2026-10-29)
-- Se eliminó `admin/fotos.html`; cada fila de Catálogo tiene miniatura y «Subir foto» (`admin.subirFoto`, compartido con la foto de «Sobre mí»). El botón solo se activa si el `id` ya está guardado. `/admin/fotos` redirige a Catálogo (`public/_redirects`). Cada campo de la fila lleva una etiqueta sutil (`label.campo > span`); las filas de opciones de precio siguen solo con placeholder.
+- Se eliminó `admin/fotos.html`; cada fila de Catálogo tiene miniatura y «Subir foto» (`admin.subirFoto`, compartido con la foto de «Sobre mí»). El botón solo se activa si el `id` ya está guardado. `/admin/fotos` redirige a Catálogo (`public/_redirects`). Cada campo de la fila lleva una etiqueta sutil (`label.campo > span`); las filas de opciones de precio siguen solo con placeholder. El ID está en la fila de Categoría y se autogenera del nombre (slug; `item-N` si no hay nombre) solo en items sin guardar y sin edición manual; vaciarlo lo regenera. Los campos que no aplican al tipo (duración, reserva, «Precio a consultar», detalles) se ocultan, no se deshabilitan; al lado del precio se muestra la moneda de General (solo lectura).
 
 ## Estado y pendientes
 

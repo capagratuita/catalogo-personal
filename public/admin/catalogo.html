@@ -245,17 +245,31 @@
         }
 
         .item-fila-principal {
-            grid-template-columns: 110px 140px minmax(160px, 1fr) 110px auto;
+            grid-template-columns: 140px minmax(140px, 1fr) 140px auto;
             align-items: end;
         }
 
         .item-fila-secundaria {
-            grid-template-columns: minmax(150px, 1fr) auto auto auto 110px;
-            align-items: end;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .item-fila-secundaria > .campo:first-child {
+            flex: 1 1 150px;
+        }
+
+        .item-fila-secundaria > .campo:has(.item-id) {
+            flex: 1 1 150px;
+        }
+
+        .item-fila-secundaria > .campo:has(.item-duracion) {
+            flex: 0 0 110px;
         }
 
         .item-fila-secundaria > .campo:last-child {
-            grid-column: 1 / -1;
+            flex: 1 1 100%;
         }
 
         .item-row-edit .item-desc {
@@ -282,6 +296,13 @@
             width: auto;
         }
 
+        .item-row-edit input,
+        .item-row-edit select {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
         /* Etiqueta sutil sobre cada campo; todos los controles con la misma altura para que alineen */
         .item-row-edit .campo {
             flex-direction: column;
@@ -304,6 +325,35 @@
             box-sizing: border-box;
             padding: 0 0.6rem;
             font-size: 0.9rem;
+        }
+
+        .precio-wrap {
+            display: flex;
+        }
+
+        .item-row-edit .precio-wrap input {
+            min-width: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .moneda {
+            display: flex;
+            align-items: center;
+            height: 2.5rem;
+            box-sizing: border-box;
+            padding: 0 0.55rem;
+            border: 1px solid #ddd;
+            border-left: 0;
+            border-radius: 0 5px 5px 0;
+            background: #f2f2f2;
+            color: #555;
+            font-size: 0.8rem;
+        }
+
+        /* Los campos que no aplican al tipo del item se ocultan (y mantienen su valor) */
+        .item-row-edit [hidden] {
+            display: none !important;
         }
 
         .item-row-edit .item-fila-secundaria > label:not(.campo) {
@@ -459,6 +509,7 @@
             .item-fila-principal,
             .item-fila-secundaria,
             .item-servicio-detalle .item-fila {
+                display: grid;
                 grid-template-columns: 1fr;
             }
 
@@ -474,10 +525,6 @@
                 justify-self: start;
             }
 
-            /* En una sola columna el hueco de «Precio a consultar» (productos) sobra */
-            .item-row-edit .item-cotizar[style*="hidden"] {
-                display: none;
-            }
         }
 
         .btn-add-item {
@@ -498,17 +545,23 @@
         .btn-remove-item {
             background: white;
             color: #b71c1c;
-            border: 1px solid var(--line);
-            padding: 0.5rem;
+            border: 1px solid #b71c1c;
+            padding: 0 0.9rem;
             border-radius: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            width: 36px;
             height: 36px;
         }
 
         .btn-remove-item:hover {
-            background: #ffebee;
-            border-color: #d32f2f;
+            background: #b71c1c;
+            color: white;
+        }
+
+        .btn-remove-item:focus-visible {
+            outline: 2px solid #b71c1c;
+            outline-offset: 2px;
         }
 
         .categoria-section {
@@ -621,6 +674,10 @@
         let categoriasAgendamiento = [];
         // Ids ya guardados en el catálogo: /api/upload solo acepta fotos de items que existen
         let idsGuardados = new Set();
+        // Moneda del negocio (solo lectura aquí; se cambia en General)
+        let monedaActual = '';
+        // Ids reservados por el servidor (foto de «Sobre mí»); no valen para items
+        const ID_RESERVADOS = ['sobre-mi'];
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, caracter => ({
@@ -774,6 +831,37 @@
             }
         }
 
+        // «Pan integral» → «pan-integral»; los ids son slugs sin tildes (ver validador)
+        function slugDe(texto) {
+            return String(texto || '')
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60)
+                .replace(/-+$/, '');
+        }
+
+        // El id sigue al nombre mientras el item no esté guardado y no se haya editado a mano
+        // (cambiar el id de un item guardado dejaría huérfanas su foto y sus referencias)
+        function autogenerarId(row) {
+            const idInput = row.querySelector('.item-id');
+            if (row.dataset.idManual) return;
+
+            const otros = new Set([...document.querySelectorAll('#items-container .item-row')]
+                .filter(r => r !== row)
+                .map(r => r.querySelector('.item-id').value.trim()));
+            const base = slugDe(row.querySelector('.item-nombre').value);
+            row.dataset.idGenerico ||= `item-${itemIdCounter++}`;
+            let id = row.dataset.idGenerico;
+            if (base && !ID_RESERVADOS.includes(base)) {
+                id = base;
+                for (let n = 2; otros.has(id) || idsGuardados.has(id); n++) id = `${base}-${n}`;
+            }
+            idInput.value = id;
+            actualizarFoto(row);
+        }
+
         function obtenerCatalogo() {
             erroresDetalle = [];
             const categorias = {
@@ -838,9 +926,6 @@
             nuevoItem.className = 'item-row item-row-edit';
             nuevoItem.innerHTML = `
                 <div class="item-fila item-fila-principal">
-                    <label class="campo"><span>ID</span>
-                        <input class="item-id" type="text" placeholder="id-unico" required>
-                    </label>
                     <label class="campo"><span>Tipo</span>
                         <select class="item-tipo" required>
                             <option value="">Seleccionar...</option>
@@ -852,9 +937,12 @@
                         <input class="item-nombre" type="text" placeholder="Nombre del producto o servicio" required>
                     </label>
                     <label class="campo"><span>Precio</span>
-                        <input class="item-precio" type="number" placeholder="Precio" step="0.01" required>
+                        <span class="precio-wrap">
+                            <input class="item-precio" type="number" placeholder="Precio" step="0.01" required>
+                            <span class="moneda" aria-label="Moneda">${escapeHtml(monedaActual)}</span>
+                        </span>
                     </label>
-                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">×</button>
+                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">Eliminar</button>
                 </div>
                 ${htmlFotoItem()}
                 <div class="item-fila">
@@ -867,6 +955,9 @@
                         <select class="categoria-select item-categoria">
                             <option value="">Sin categoría</option>
                         </select>
+                    </label>
+                    <label class="campo"><span>ID (automático)</span>
+                        <input class="item-id" type="text" placeholder="id-unico" required>
                     </label>
                     <label class="item-disponible"><input type="checkbox" checked> Disponible</label>
                     <label class="item-destacado"><input type="checkbox"> Destacado</label>
@@ -892,6 +983,7 @@
             const idInput = nuevoItem.querySelector('.item-id');
             if (!idInput.value) {
                 idInput.value = `item-${itemIdCounter++}`;
+                nuevoItem.dataset.idGenerico = idInput.value;
             }
         }
 
@@ -901,14 +993,16 @@
             renderizarOpcionesAgendamiento();
         }
 
-        // "Precio a consultar" solo aplica a servicios
+        // Precio a consultar, duración, reserva y detalles solo aplican a servicios
         function actualizarCotizar(row) {
             const label = row.querySelector('.item-cotizar');
             const check = label.querySelector('input');
             const esServicio = row.querySelector('.item-tipo').value === 'servicio';
-            label.style.visibility = esServicio ? 'visible' : 'hidden';
-            check.disabled = !esServicio;
+            label.hidden = !esServicio;
             if (!esServicio) check.checked = false;
+            // Duración, enlace de reserva y detalles solo existen en servicios
+            row.querySelector('.item-duracion').closest('.campo').hidden = !esServicio;
+            row.querySelector('.item-reserva').closest('.campo').hidden = !esServicio;
             row.querySelector('.item-servicio-detalle').hidden = !esServicio;
         }
 
@@ -1107,6 +1201,8 @@
 
         async function cargarCatalogo() {
             try {
+                const config = await window.admin.getContent('config').catch(() => null);
+                monedaActual = (config && config.perfil && config.perfil.moneda) || '';
                 const catalogo = await window.admin.getContent('catalogo');
                 catalogoActual = catalogo;
                 idsGuardados = new Set((catalogo.items || []).map(i => i.id));
@@ -1153,9 +1249,6 @@
 
             nuevoItem.innerHTML = `
                 <div class="item-fila item-fila-principal">
-                    <label class="campo"><span>ID</span>
-                        <input class="item-id" type="text" placeholder="id-unico" value="${escapeHtml(item.id)}" required>
-                    </label>
                     <label class="campo"><span>Tipo</span>
                         <select class="item-tipo" required>
                             <option value="">Seleccionar...</option>
@@ -1167,9 +1260,12 @@
                         <input class="item-nombre" type="text" placeholder="Nombre del producto o servicio" value="${escapeHtml(item.nombre)}" required>
                     </label>
                     <label class="campo"><span>Precio</span>
-                        <input class="item-precio" type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
+                        <span class="precio-wrap">
+                            <input class="item-precio" type="number" placeholder="Precio" step="0.01" value="${item.precio || 0}" required>
+                            <span class="moneda" aria-label="Moneda">${escapeHtml(monedaActual)}</span>
+                        </span>
                     </label>
-                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">×</button>
+                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">Eliminar</button>
                 </div>
                 ${htmlFotoItem()}
                 <div class="item-fila">
@@ -1184,6 +1280,9 @@
                             ${categorias.map(cat => `<option value="${escapeHtml(cat)}" ${item.categoria === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`).join('')}
                         </select>
                     </label>
+                    <label class="campo"><span>ID (automático)</span>
+                        <input class="item-id" type="text" placeholder="id-unico" value="${escapeHtml(item.id)}" required>
+                    </label>
                     <label class="item-disponible"><input type="checkbox" ${item.disponible !== false ? 'checked' : ''}> Disponible</label>
                     <label class="item-destacado"><input type="checkbox" ${item.destacado ? 'checked' : ''}> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox" ${item.precio_a_consultar ? 'checked' : ''}> Precio a consultar</label>
@@ -1197,6 +1296,7 @@
                 ${htmlDetalleServicio(item, item.tipo === 'servicio')}
             `;
 
+            nuevoItem.dataset.idManual = '1';
             itemsContainer.appendChild(nuevoItem);
             actualizarCotizar(nuevoItem);
             actualizarFoto(nuevoItem);
@@ -1302,7 +1402,13 @@
 
             // Actualizar preview cuando cambian los inputs
             document.getElementById('form-catalogo').addEventListener('input', function(event) {
-                if (event.target.matches('.item-id')) actualizarFoto(event.target.closest('.item-row'));
+                const fila = event.target.closest('.item-row');
+                if (event.target.matches('.item-id')) {
+                    fila.dataset.idManual = '1';
+                    actualizarFoto(fila);
+                } else if (event.target.matches('.item-nombre')) {
+                    autogenerarId(fila);
+                }
                 actualizarPreviewItems();
             });
 
@@ -1331,6 +1437,13 @@
             });
 
             document.getElementById('items-container').addEventListener('change', function(event) {
+                // Si se deja el id vacío, vuelve a generarse solo
+                if (event.target.matches('.item-id') && !event.target.value.trim()) {
+                    const fila = event.target.closest('.item-row');
+                    delete fila.dataset.idManual;
+                    autogenerarId(fila);
+                    return;
+                }
                 if (event.target.matches('.foto-archivo')) {
                     const archivo = event.target.files[0];
                     event.target.value = '';
