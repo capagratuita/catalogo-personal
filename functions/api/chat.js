@@ -18,9 +18,9 @@ export const onRequestPost = async ({ request, env }) => {
       });
     }
     
-    const catalogo = await getContent(env, 'catalogo');
-    const faq = await getContent(env, 'faq');
-    const config = await getContent(env, 'config');
+    const catalogo = await getContent(env, 'catalogo', request);
+    const faq = await getContent(env, 'faq', request);
+    const config = await getContent(env, 'config', request);
     
     if (!config || !config.negocio) {
       return new Response(JSON.stringify({ error: 'Config no encontrada' }), {

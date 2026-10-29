@@ -1,5 +1,6 @@
 import { json, verifySession } from '../_lib/auth.js';
 import { getContent } from '../_lib/defaults.js';
+import { invalidarImagen } from '../_lib/cache.js';
 
 const ALLOWED_TYPES = {
   'image/jpeg': 'jpg',
@@ -39,7 +40,7 @@ export const onRequestPost = async ({ request, env }) => {
     return json({ error: 'Archivo muy grande (máximo 5MB)' }, 400);
   }
 
-  const catalogo = await getContent(env, 'catalogo');
+  const catalogo = await getContent(env, 'catalogo', request);
   if (!catalogo || !Array.isArray(catalogo.items)) {
     return json({ error: 'Catálogo no encontrado' }, 404);
   }
@@ -60,6 +61,8 @@ export const onRequestPost = async ({ request, env }) => {
       await env.IMAGES.delete(`items/${id}.${otherExt}`);
     }
   }
+
+  await invalidarImagen(request, id);
 
   return json({ ok: true, url: `/api/image?id=${encodeURIComponent(id)}`, key });
 };

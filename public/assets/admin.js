@@ -41,7 +41,7 @@ const CONTENT_KEYS = ['config', 'catalogo', 'landing', 'faq'];
 // Devuelve el contenido guardado. Si la key aún no existe (primer arranque),
 // devuelve los datos de ejemplo y avisa de que todavía no están guardados.
 async function getContent(key) {
-  const response = await fetch(`/api/content?key=${key}`);
+  const response = await fetch(`/api/content?key=${key}`, { cache: 'no-store' });
 
   if (response.status === 404) {
     const ejemplo = await fetch(`/api/defaults?key=${key}`);
@@ -105,7 +105,7 @@ async function exportarTodo() {
   const respaldo = { version: 1, exportado: new Date().toISOString() };
 
   for (const key of CONTENT_KEYS) {
-    const response = await fetch(`/api/content?key=${key}`);
+    const response = await fetch(`/api/content?key=${key}`, { cache: 'no-store' });
     if (response.ok) respaldo[key] = await response.json();
   }
 

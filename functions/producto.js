@@ -1,0 +1,55 @@
+import { paginaPublica, existeFoto, urlImagenValida } from './_lib/paginas.js';
+
+export const onRequestGet = paginaPublica({
+  claves: ['config', 'catalogo', 'landing'],
+  meta: async ({ config, catalogo }, { request, env, origen }) => {
+    const negocio = config.negocio;
+    const id = new URL(request.url).searchParams.get('id');
+    const item = catalogo.items.find(i => i.id === id);
+
+    if (!item) {
+      return { titulo: `Producto no encontrado - ${negocio.nombre}`, noindex: true, status: 404 };
+    }
+
+    const ruta = `/producto?id=${encodeURIComponent(item.id)}`;
+    const imagen = (await existeFoto(env, item.id))
+      ? `${origen}/api/image?id=${encodeURIComponent(item.id)}`
+      : urlImagenValida(negocio.logo_url);
+    const esServicio = item.tipo === 'servicio';
+    const aConsultar = esServicio && item.precio_a_consultar === true;
+
+    let oferta;
+    if (aConsultar) {
+      // «Desde X»: precio base orientativo; con 0 no hay precio que publicar
+      if (item.precio > 0) oferta = { '@type': 'AggregateOffer', priceCurrency: negocio.moneda, lowPrice: item.precio };
+    } else {
+      oferta = {
+        '@type': 'Offer',
+        priceCurrency: negocio.moneda,
+        price: item.precio,
+        availability: item.disponible ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        url: origen + ruta,
+      };
+    }
+
+    return {
+      titulo: `${item.nombre} - ${negocio.nombre}`,
+      descripcion: item.descripcion,
+      ruta,
+      imagen,
+      tipo: esServicio ? 'website' : 'product',
+      extra: !esServicio ? [['product:price:amount', String(item.precio)], ['product:price:currency', negocio.moneda]] : [],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': esServicio ? 'Service' : 'Product',
+        name: item.nombre,
+        description: item.descripcion,
+        ...(imagen && { image: imagen }),
+        ...(esServicio
+          ? { provider: { '@type': 'Organization', name: negocio.nombre, url: origen + '/' } }
+          : { sku: item.id }),
+        ...(oferta && { offers: oferta }),
+      },
+    };
+  },
+});

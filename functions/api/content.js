@@ -1,4 +1,5 @@
 import { json, verifySession } from '../_lib/auth.js';
+import { leerKVCacheado, invalidarContenido } from '../_lib/cache.js';
 
 const CONTENT_KEYS = ['config', 'catalogo', 'landing', 'faq'];
 
@@ -274,11 +275,12 @@ export const onRequestGet = async ({ request, env }) => {
   }
 
   try {
-    const data = await env.KV.get(key, { type: 'json' });
+    const data = await leerKVCacheado(env, request, key);
     if (!data) {
       return json({ error: 'Contenido no encontrado' }, 404);
     }
-    return json(data);
+    // El navegador puede reutilizarlo 60 s; el admin pide con cache: 'no-store'
+    return json(data, 200, { 'Cache-Control': 'public, max-age=60' });
   } catch {
     return json({ error: 'Error obteniendo contenido' }, 500);
   }
@@ -306,6 +308,7 @@ export const onRequestPut = async ({ request, env }) => {
   try {
     validators[key](body);
     await env.KV.put(key, JSON.stringify(body));
+    await invalidarContenido(request, key);
     return json({ ok: true, updated_at: new Date().toISOString() });
   } catch (error) {
     return json({ error: 'JSON inválido', detalle: error.message }, 400);

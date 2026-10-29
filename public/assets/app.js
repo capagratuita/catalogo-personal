@@ -16,11 +16,23 @@ async function fetchJSON(url) {
 
 const contenido = {};
 
+// Las páginas públicas llegan con los datos del sitio dentro del HTML (<script id="sitio-datos">),
+// inyectados por functions/_lib/paginas.js: así no hace falta pedirlos a /api/content.
+function datosEmbebidos() {
+  try {
+    const el = document.getElementById('sitio-datos');
+    return el ? JSON.parse(el.textContent) : {};
+  } catch {
+    return {};
+  }
+}
+
 // Cada key se pide una sola vez por página. Si aún no existe en KV (sitio recién
 // desplegado), se usan los datos de ejemplo de /api/defaults. Si falla, se reintenta.
 function loadContent(key) {
   if (!contenido[key]) {
-    contenido[key] = fetchContent(key).catch(error => {
+    const embebido = datosEmbebidos()[key];
+    contenido[key] = (embebido !== undefined ? Promise.resolve(embebido) : fetchContent(key)).catch(error => {
       delete contenido[key];
       throw error;
     });
@@ -29,7 +41,7 @@ function loadContent(key) {
 }
 
 async function fetchContent(key) {
-  const response = await fetch(`/api/content?key=${key}`, { cache: 'no-store' });
+  const response = await fetch(`/api/content?key=${key}`);
   if (response.status === 404) return await fetchJSON(`/api/defaults?key=${key}`);
   if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
   return await response.json();
