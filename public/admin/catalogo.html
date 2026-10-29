@@ -233,7 +233,7 @@
         }
 
         .item-fila-principal {
-            grid-template-columns: minmax(140px, 1fr) 140px auto;
+            grid-template-columns: minmax(140px, 1fr) 140px;
             align-items: end;
         }
 
@@ -348,13 +348,6 @@
             min-height: 2.5rem;
         }
 
-        .item-row-edit .item-fila-principal .btn-remove-item {
-            height: 2.5rem;
-        }
-
-        .item-row-edit .btn-remove-item {
-            justify-self: end;
-        }
 
         .tabs-tipo {
             margin-bottom: 1.25rem;
@@ -365,15 +358,77 @@
             font-size: 1rem;
         }
 
+        .item-layout {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .item-cuerpo {
+            min-width: 0;
+        }
+
         .item-foto {
-            grid-template-columns: 72px 1fr;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .item-foto .foto-boton {
+            width: 100%;
+        }
+
+        .item-cabecera {
+            display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-posicion {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .item-acciones {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .btn-mover {
+            background: white;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            height: 36px;
+            padding: 0 0.7rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn-mover:hover:not(:disabled) {
+            background: #f0f0f0;
+        }
+
+        .btn-mover:disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .btn-mover:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
         }
 
         .foto-vista,
         .foto-vacia {
-            width: 72px;
-            height: 72px;
+            width: 100%;
+            aspect-ratio: 1;
+            height: auto;
             border-radius: 8px;
             border: 1px solid #ddd;
             object-fit: cover;
@@ -542,8 +597,13 @@
                 order: -1;
             }
 
-            .item-fila-principal > .btn-remove-item {
-                justify-self: end;
+            .item-layout {
+                grid-template-columns: 96px 1fr;
+                gap: 0.75rem;
+            }
+
+            .btn-mover {
+                min-height: 44px;
             }
 
             /* Fila de categoría en dos columnas: Disponible | Destacado, ID | Duración */
@@ -815,6 +875,18 @@
                 </details>`;
         }
 
+        function htmlCabeceraItem() {
+            return `
+                <div class="item-cabecera">
+                    <span class="item-posicion" aria-hidden="true"></span>
+                    <div class="item-acciones">
+                        <button type="button" class="btn-mover" data-dir="-1" aria-label="Subir">↑ Subir</button>
+                        <button type="button" class="btn-mover" data-dir="1" aria-label="Bajar">↓ Bajar</button>
+                        <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">Eliminar</button>
+                    </div>
+                </div>`;
+        }
+
         function htmlFotoItem() {
             return `
                 <div class="item-fila item-foto">
@@ -969,6 +1041,10 @@
             const nuevoItem = document.createElement('div');
             nuevoItem.className = 'item-row item-row-edit';
             nuevoItem.innerHTML = `
+                ${htmlCabeceraItem()}
+                <div class="item-layout">
+                ${htmlFotoItem()}
+                <div class="item-cuerpo">
                 <div class="item-fila item-fila-principal">
                     <label class="campo" hidden><span>Tipo</span>
                         <select class="item-tipo" required>
@@ -986,9 +1062,7 @@
                             <span class="moneda" aria-label="Moneda">${escapeHtml(monedaActual)}</span>
                         </span>
                     </label>
-                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">Eliminar</button>
                 </div>
-                ${htmlFotoItem()}
                 <div class="item-fila">
                     <label class="campo"><span>Descripción</span>
                         <textarea class="item-desc" placeholder="Máx. 200 caracteres" maxlength="200" required></textarea>
@@ -1013,6 +1087,8 @@
                         <input class="item-reserva" type="text" placeholder="Opcional: https://…">
                     </label>
                 </div>
+                </div>
+                </div>
                 ${htmlDetalleServicio({}, false)}
             `;
 
@@ -1032,6 +1108,19 @@
                 nuevoItem.dataset.idGenerico = idInput.value;
             }
             nuevoItem.querySelector('.item-nombre').focus();
+        }
+
+        // Mueve el item entre los de su mismo tipo; el orden del DOM es el orden guardado
+        function moverItem(row, dir) {
+            const hermanos = [...document.querySelectorAll('#items-container .item-row')]
+                .filter(r => r.querySelector('.item-tipo').value === row.querySelector('.item-tipo').value);
+            const destino = hermanos[hermanos.indexOf(row) + dir];
+            if (!destino) return;
+            if (dir < 0) destino.before(row); else destino.after(row);
+            filtrarItems();
+            const mismo = row.querySelector(`.btn-mover[data-dir="${dir}"]`);
+            (mismo.disabled ? row.querySelector(`.btn-mover[data-dir="${-dir}"]`) : mismo).focus();
+            row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
 
         function eliminarItem(button) {
@@ -1130,6 +1219,14 @@
                 const tipo = row.querySelector('.item-tipo').value;
                 if (tipo in cuentas) cuentas[tipo]++;
                 row.hidden = tipo !== tipoActual;
+            });
+
+            // Posición y botones de orden dentro del tipo visible
+            const visibles = [...document.querySelectorAll('#items-container .item-row')].filter(r => !r.hidden);
+            visibles.forEach((row, i) => {
+                row.querySelector('.item-posicion').textContent = `Posición ${i + 1} de ${visibles.length}`;
+                row.querySelector('.btn-mover[data-dir="-1"]').disabled = i === 0;
+                row.querySelector('.btn-mover[data-dir="1"]').disabled = i === visibles.length - 1;
             });
 
             const nombres = { producto: 'Productos', servicio: 'Servicios' };
@@ -1296,6 +1393,10 @@
                 : (item.tipo === 'producto' ? categoriasPorTipo.producto : []);
 
             nuevoItem.innerHTML = `
+                ${htmlCabeceraItem()}
+                <div class="item-layout">
+                ${htmlFotoItem()}
+                <div class="item-cuerpo">
                 <div class="item-fila item-fila-principal">
                     <label class="campo" hidden><span>Tipo</span>
                         <select class="item-tipo" required>
@@ -1313,9 +1414,7 @@
                             <span class="moneda" aria-label="Moneda">${escapeHtml(monedaActual)}</span>
                         </span>
                     </label>
-                    <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">Eliminar</button>
                 </div>
-                ${htmlFotoItem()}
                 <div class="item-fila">
                     <label class="campo"><span>Descripción</span>
                         <textarea class="item-desc" placeholder="Máx. 200 caracteres" maxlength="200" required>${escapeHtml(item.descripcion)}</textarea>
@@ -1340,6 +1439,8 @@
                     <label class="campo"><span>Enlace de reserva propio</span>
                         <input class="item-reserva" type="text" placeholder="Opcional: https://…" value="${escapeHtml(item.reserva_url || item.calendly_url)}">
                     </label>
+                </div>
+                </div>
                 </div>
                 ${htmlDetalleServicio(item, item.tipo === 'servicio')}
             `;
@@ -1468,6 +1569,11 @@
                 const fotoBoton = event.target.closest('.foto-boton');
                 if (fotoBoton) {
                     fotoBoton.closest('.item-row').querySelector('.foto-archivo').click();
+                    return;
+                }
+                const mover = event.target.closest('.btn-mover');
+                if (mover) {
+                    moverItem(mover.closest('.item-row'), parseInt(mover.dataset.dir, 10));
                     return;
                 }
                 const agregar = event.target.closest('.btn-var-agregar');
