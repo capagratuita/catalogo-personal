@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Admin - Landing</title>
+    <title>Admin - Portada</title>
     <link rel="stylesheet" href="../assets/styles.css">
     <style>
         .admin-panel {
@@ -548,7 +548,7 @@
                 <div class="tab-panel" id="panel-seccion" role="tabpanel" hidden></div>
 
                 <div class="acciones-formulario">
-                    <button type="submit" class="btn">Guardar Landing</button>
+                    <button type="submit" class="btn">Guardar Portada</button>
                     <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Previsualizar JSON</button>
                 </div>
 
@@ -1101,7 +1101,7 @@
                 landingActual = landing;
                 modificado = false;
 
-                mostrarExito('Landing guardada exitosamente');
+                mostrarExito('Portada guardada exitosamente');
             } catch (error) {
                 console.error('Error guardando landing:', error);
                 mostrarError(error.message || 'Error guardando la landing. Por favor, intente nuevamente.');
