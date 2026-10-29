@@ -108,6 +108,19 @@
             text-overflow: ellipsis;
         }
 
+        .tabs-separador {
+            align-self: center;
+            margin: 0 0.5rem 0 0.75rem;
+            padding-left: 0.9rem;
+            border-left: 2px solid #ccc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            white-space: nowrap;
+        }
+
         .tab:hover,
         .tab-agregar:hover {
             color: var(--primary);
@@ -621,6 +634,14 @@
         function claveDe(s) { return s.uid; }
         function etiquetaDe(s) { return s.titulo.trim() || TIPOS[s.tipo].nombre; }
 
+        function crearSeparadorSecciones() {
+            const separador = document.createElement('span');
+            separador.className = 'tabs-separador';
+            separador.setAttribute('role', 'presentation');
+            separador.textContent = 'Secciones';
+            return separador;
+        }
+
         function renderPestanas() {
             const tabs = document.getElementById('tabs');
             const definiciones = [
@@ -630,7 +651,9 @@
             ];
 
             tabs.replaceChildren();
-            definiciones.forEach(def => {
+            definiciones.forEach((def, i) => {
+                // Separador entre las pestañas fijas (Portada, Apariencia y SEO) y las secciones
+                if (i === 2) tabs.appendChild(crearSeparadorSecciones());
                 const boton = document.createElement('button');
                 boton.type = 'button';
                 boton.className = 'tab';
@@ -650,6 +673,7 @@
                 boton.addEventListener('click', () => seleccionar(def.clave));
                 tabs.appendChild(boton);
             });
+            if (definiciones.length === 2) tabs.appendChild(crearSeparadorSecciones());
         }
 
         function seleccionar(clave, { enfocar = false } = {}) {

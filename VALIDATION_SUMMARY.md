@@ -104,3 +104,7 @@
 - `secciones[].posicion` (`antes|despues`): 18 pruebas Node pasan (nueva: valor inválido rechazado). Servidor: `posicion: 'arriba'` -> 400 en español; `antes` -> 200; la portada queda `hero > secciones-antes > catalogo > secciones-landing`. jsdom: el editor muestra el selector (defecto «Después del catálogo»), la ida y vuelta conserva `posicion` y la clave se omite cuando es `despues`. Landing local restaurada.
 - Menú del admin: General · Landing · Catálogo · Fotos · FAQ · Respaldo (la URL sigue siendo `/admin/identidad`).
 - Pendiente: revisión visual a 375px y en escritorio.
+
+## 2026-10-29 — Separador entre pestañas fijas y secciones (Landing)
+- Las pestañas fijas (Portada, Apariencia y SEO) quedan a la izquierda y un separador con la etiqueta «Secciones» las divide de las pestañas de cada sección. jsdom: el separador es `role="presentation"` (no entra en la navegación por flechas: de Apariencia pasa directo a la primera sección) y también aparece si no hay ninguna sección. No se guardó nada en el servidor.
+- Pendiente: revisión visual a 375px y en escritorio.
