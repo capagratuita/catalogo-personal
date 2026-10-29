@@ -100,6 +100,48 @@ async function logout() {
   window.location.href = '/admin/index.html';
 }
 
+const FOTO_LADO_MAX = 1200;
+const FOTO_PESO_MAX = 250 * 1024;
+
+function canvasABlob(canvas, calidad) {
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', calidad));
+}
+
+// Reduce la foto a JPEG de hasta 1200 px y ~250 KB. Una imagen ligera y en JPEG se ve rápido en el sitio
+// y es la que WhatsApp acepta en la vista previa de un enlace (con WebP o pesos grandes no la muestra).
+// Si el navegador no puede procesarla, devuelve el archivo original.
+async function optimizarImagen(archivo) {
+  try {
+    const bitmap = await createImageBitmap(archivo);
+    let escala = Math.min(1, FOTO_LADO_MAX / Math.max(bitmap.width, bitmap.height));
+    let blob;
+
+    for (let intento = 0; intento < 4; intento++) {
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(bitmap.width * escala));
+      canvas.height = Math.max(1, Math.round(bitmap.height * escala));
+
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; // JPEG no tiene transparencia
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+      for (const calidad of [0.85, 0.78, 0.7, 0.62, 0.55]) {
+        blob = await canvasABlob(canvas, calidad);
+        if (blob && blob.size <= FOTO_PESO_MAX) break;
+      }
+      if (blob && blob.size <= FOTO_PESO_MAX) break;
+      escala *= 0.85;
+    }
+
+    bitmap.close();
+    if (!blob) return archivo;
+    return new File([blob], 'foto.jpg', { type: 'image/jpeg' });
+  } catch {
+    return archivo;
+  }
+}
+
 // Respaldo: un solo JSON con las 4 keys. Las escrituras pasan por PUT /api/content.
 async function exportarTodo() {
   const respaldo = { version: 1, exportado: new Date().toISOString() };
@@ -182,6 +224,7 @@ window.admin = {
   isAuthenticated,
   getContent,
   putContent,
+  optimizarImagen,
   exportarTodo,
   importarTodo,
   logout

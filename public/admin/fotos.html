@@ -287,7 +287,7 @@
                     <div class="upload-zone-icon">📷</div>
                     <div class="upload-zone-text">
                         <strong>Haz clic para subir una imagen</strong><br>
-                        PNG, JPEG o WebP (máximo 5MB)
+                        PNG, JPEG o WebP. Se convierte a JPEG ligero (máx. 1200 px) al subir
                     </div>
                 </label>
                 <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
@@ -363,8 +363,8 @@
                     return;
                 }
 
-                if (file.size > 5 * 1024 * 1024) {
-                    mostrarError('El archivo es demasiado grande. Máximo 5MB');
+                if (file.size > 25 * 1024 * 1024) {
+                    mostrarError('El archivo es demasiado grande. Máximo 25MB');
                     return;
                 }
 
@@ -430,7 +430,8 @@
             try {
                 const formData = new FormData();
                 formData.append('id', itemSeleccionado.id);
-                formData.append('file', archivoImagen);
+                const optimizada = await window.admin.optimizarImagen(archivoImagen);
+                formData.append('file', optimizada);
 
                 const response = await fetch('/api/upload', {
                     method: 'POST',
@@ -444,7 +445,7 @@
 
                 const data = await response.json();
 
-                mostrarExito(`Imagen subida exitosamente. URL: ${data.url}`);
+                mostrarExito(`Imagen subida exitosamente (${Math.round(optimizada.size / 1024)} KB). URL: ${data.url}`);
 
                 renderizarPrevisualizacion();
                 document.getElementById('preview-section').style.display = 'block';
