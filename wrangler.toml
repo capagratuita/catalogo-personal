@@ -2,6 +2,10 @@ name = "catalogo-personal"
 main = "src/worker.js"
 compatibility_date = "2026-10-01"
 
+# URL pública *.workers.dev. Sin URLs de vista previa: compartirían KV y contraseña con producción.
+workers_dev = true
+preview_urls = false
+
 # Archivos estáticos (public/). `run_worker_first` lista las rutas que pasan por el Worker
 # (páginas con SEO, API y admin protegido); el resto se sirve directo, sin gastar invocaciones.
 [assets]
