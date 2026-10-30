@@ -2,16 +2,16 @@
 
 ## 1. Estado actual (verificado 2026-10-29)
 
-El producto está orientado a **servicios de profesionales independientes y emprendedores**; los productos son un extra. El flujo local funciona sin Cloudflare login y el chat con IA queda deshabilitado por defecto.
+El producto está orientado a **servicios de profesionales independientes y emprendedores**; los productos son un extra. El flujo local funciona sin Cloudflare login.
 
 - `npm run dev` arranca en `http://localhost:8788` y en la LAN (`0.0.0.0:8788`). `npm test` ejecuta 20 pruebas de Node (validadores, límite de intentos, acciones del frontend).
-- `wrangler.toml` trae el bloque `[ai]` comentado; sin ese binding, `/api/chat` devuelve 503 con un mensaje accionable. Los IDs de los dos KV son los del autor: cada fork debe poner los suyos (ver `docs/guia-paso-a-paso.md`).
+- Los IDs de los dos KV son los del autor: cada fork debe poner los suyos (ver `docs/guia-paso-a-paso.md`).
 - Auth con cookie HMAC-SHA256 (`functions/_lib/auth.js`) y límite de 5 fallos / 15 min por IP en `/api/login` (`_lib/intentos.js`). El middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
 - Los servicios no usan carrito: una sola acción (cotizar, reservar o consultar por WhatsApp). El carrito es solo de productos y se oculta en `solo-servicios` (sección 8).
 - Servicios con modalidad, zona, qué incluye, variantes de precio y galería de hasta 6 fotos extra (mosaico y visor en la ficha); reserva genérica (`reserva_url`); `landing.secciones` se pinta en la portada (incluye `sobre-mi` y `testimonios`); color de acento configurable con contraste AA; analítica opcional (Cloudflare Web Analytics).
 - Estado local persistido en `.wrangler/state` (el KV local actual contiene un catálogo de panadería de pruebas, no el de ejemplo). La foto de ejemplo `sobre-mi` se borró del KV local.
 - Verificado en esta sesión con `npm run dev`, curl y jsdom (no hay navegador real en la máquina de desarrollo). Detalle en `VALIDATION_SUMMARY.md`.
-- Pendiente: revisión visual completa en navegador real (`docs/e2e-checklist.md`; en esta sesión se revisó con Chromium de Playwright la portada en los 4 estilos y los editores del admin a 375px); probar el despliegue real en Cloudflare con una persona ajena (`docs/friction-log.md`); no hay UI de chat; no hay `lint` ni `typecheck`.
+- Pendiente: revisión visual completa en navegador real (`docs/e2e-checklist.md`; en esta sesión se revisó con Chromium de Playwright la portada en los 4 estilos y los editores del admin a 375px); probar el despliegue real en Cloudflare con una persona ajena (`docs/friction-log.md`); no hay `lint` ni `typecheck`.
 
 ## 2. Contexto y stack (cerrado)
 
@@ -23,7 +23,6 @@ Template para que una persona sin terminal haga fork y despliegue su propia inst
 | API | Pages Functions | Endpoints `/api/*` |
 | Contenido | Workers KV | Keys exactas: `config`, `catalogo`, `landing`, `faq` |
 | Imágenes | Workers KV (namespace separado, binding `IMAGES`) | Convención `items/{id}.{ext}`; R2 descartado porque exige método de pago |
-| Chat | Workers AI (binding `AI`) | RAG ligero con catálogo + FAQ |
 | Auth admin | `ADMIN_PASSWORD` | Protege `/admin/*` y escrituras en `/api/*` |
 | Citas | Enlace de reserva (Calendly, Cal.com, Google Calendar…) | Enlace global + override opcional por servicio |
 | WhatsApp | `wa.me` | Enlaces generados en cliente |
@@ -35,10 +34,9 @@ Bindings:
 |---|---|---|
 | `env.KV` | KV local automático | Namespace KV real |
 | `env.IMAGES` | KV local automático | Segundo namespace KV real (`catalogo-fotos-kv`) |
-| `env.AI` | Comentado por defecto; si se activa, es **remoto** y requiere `npx wrangler login` | Binding AI |
 | `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado) | Secret del dashboard |
 
-En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace KV (`KV` para contenido, `IMAGES` para fotos) en `wrangler.toml`. Para habilitar el chat, descomenta el bloque `[ai]` y su `binding = "AI"`; en local requiere `npx wrangler login`. No agregues `main`, `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
+En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace KV (`KV` para contenido, `IMAGES` para fotos) en `wrangler.toml`. No agregues `main`, `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
 
 ## 3. Reglas duras (violarlas es un bug)
 
@@ -61,14 +59,13 @@ En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace 
 
 ```bash
 npm install
-npm run dev        # http://localhost:8788 y LAN 0.0.0.0:8788; sin AI por defecto
+npm run dev        # http://localhost:8788 y LAN 0.0.0.0:8788
 npm run deploy     # wrangler pages deploy public
 ```
 
 - Para abrir desde otro dispositivo: `hostname -I | awk '{print $1}'` y visita `http://<IP>:8788`; si no conecta, permite el puerto `8788` en el firewall.
 - `env.KV` y `env.IMAGES` funcionan en local sin login.
-- `env.AI` está comentado en `wrangler.toml`. Para probar el chat, descomenta `[ai]`/`binding = "AI"` y ejecuta `npx wrangler login`; en entornos no interactivos necesitas `CLOUDFLARE_API_TOKEN` o el arranque falla al conectar el binding remoto.
-- `npm run deploy` también requiere autenticación de Wrangler (`npx wrangler login`); no agregues tokens al repo. Si quieres chat en producción, descomenta `[ai]` antes de desplegar.
+- `npm run deploy` también requiere autenticación de Wrangler (`npx wrangler login`); no agregues tokens al repo.
 - Sembrar KV local (las keys deben ser exactamente `config`, `catalogo`, `landing`, `faq`):
 
 ```bash
@@ -83,7 +80,7 @@ npx wrangler kv key get --binding=KV --local config
 - `npm test` (runner integrado de Node, sin dependencias) ejecuta `test/*.test.mjs`: validadores, límite de intentos de login y `accionItem`/`textoPrecio` de `app.js`. No hay `npm run lint` ni typecheck. Los antiguos `validate-phase*.sh` y `test-all-phases.sh` se eliminaron (eran greps no fiables).
 - `npm run test:integracion` (`test/integracion/*.test.mjs`, separado de `npm test`; reporter propio `reporte.mjs`: solo fallos y «n ok, n fallos, n omitidas»; helper común `ayuda.mjs`). Dos modos:
   - **Local (por defecto):** levanta su propio `wrangler pages dev` en un puerto libre (≠ 8788) con `--persist-to` en un directorio temporal, `ADMIN_PASSWORD` de prueba por `--binding` y KV sembrado con `config/*.example.json`; lo apaga y borra el directorio al terminar. Cubre fichas, redirecciones 301/404, portada, JSON-LD (Organization/LocalBusiness), `og:locale`, sitemap (`lastmod`, no disponibles), recorte, FAQ/carrito, cabeceras de `_headers`, auth, login/sesión y subida de foto. Escribe datos solo en ese estado temporal (`publico.test.mjs` y `escritura.test.mjs` arrancan cada uno el suyo).
-  - **Remoto, solo lectura:** `BASE_URL=https://personal-ecommerce.pages.dev npm run test:integracion` no arranca nada. **Regla estricta: solo GET/HEAD y un `PUT /api/content` sin cookie que debe dar 401; nunca login, subidas, `PUT` autenticado ni `/api/chat`.** Descubre un servicio y un producto leyendo `/api/content?key=catalogo`; las pruebas que necesitan modificar datos se omiten («requiere modo local») y las pasivas (dirección, items no disponibles, recorte, foto) corren solo si el sitio ya tiene esos datos.
+  - **Remoto, solo lectura:** `BASE_URL=https://personal-ecommerce.pages.dev npm run test:integracion` no arranca nada. **Regla estricta: solo GET/HEAD y un `PUT /api/content` sin cookie que debe dar 401; nunca login, subidas ni `PUT` autenticado.** Descubre un servicio y un producto leyendo `/api/content?key=catalogo`; las pruebas que necesitan modificar datos se omiten («requiere modo local») y las pasivas (dirección, items no disponibles, recorte, foto) corren solo si el sitio ya tiene esos datos.
 - Verificación real ya ejecutada: `npm run dev` compila; `GET /api/content?key=config|catalogo|landing|faq` devuelve 200; `POST /api/login` setea cookie; `/api/session` con cookie devuelve 200; `PUT /api/content` autenticado devuelve 200; `POST /api/upload` devuelve 200; `GET /api/image?id=pan-integral` devuelve la imagen; `POST /api/logout` invalida la sesión; `/admin/identidad` sin cookie redirige a `/admin/index.html`.
 
 ## 5. Estructura real y entrypoints
@@ -100,7 +97,7 @@ functions/
   index.js, faq.js, producto.js, producto/[id].js, servicio/[id].js, carrito.js     # páginas públicas con SEO y datos inyectados
   sitemap.xml.js, robots.txt.js
   _lib/{auth,defaults,cache,paginas,validadores,intentos}.js
-  api/{content,defaults,login,logout,session,upload,image,chat}.js
+  api/{content,defaults,login,logout,session,upload,image}.js
 config/*.example.json
 wrangler.toml, package.json, README.md
 test/*.test.mjs
@@ -115,10 +112,10 @@ AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
 
 La referencia ejecutable son `config/*.example.json` (ejemplo: tienda de Capa Gratuita; precios, WhatsApp `+00000000000` es un marcador a reemplazar; el email es opcional y va en `null`). Las páginas públicas no llevan el nombre del negocio en el HTML: `app.js` lo rellena desde `config.perfil` (`aplicarMarca`: logo, pie, redes con `data-red`, título). Campos y límites que el validador y la UI esperan:
 
-- `config`: `perfil` (antes `negocio`; `normalizarConfig` en `validadores.js` traduce los datos antiguos al leer y al guardar) con `nombre`, `descripcion_corta`, `whatsapp` (número) y/o `whatsapp_usuario` (nombre de usuario, sin `@`; hace falta al menos uno y, si hay ambos, gana el usuario: `buildWhatsAppLink` usa `https://api.whatsapp.com/send/?text=…&username=…&type=username&app_absent=0` en vez de `wa.me`), `email` (string|null, opcional), `moneda` (ISO 4217), `tipo_catalogo` (antes `modo_negocio`) (`solo-productos|solo-servicios|mixto`), `reserva_url` (string|null, opcional; antes `calendly_url`, que se sigue leyendo), `logo_url` (string|null), `direccion` (opcional, objeto|null: `calle≤120`, `ciudad≤80` obligatoria si se rellena algo, `region≤80`, `codigo_postal≤20`, `pais` ISO de 2 letras en mayúsculas; el admin la edita en «Dirección» de General y la guarda `null` si está vacía y `aplicarMarca` la muestra como `<address class="footer-direccion">` en el pie (`textoDireccion`, sin código de país), para que coincida con el JSON-LD; alimenta `address` del JSON-LD `LocalBusiness`), `redes.instagram/facebook` (string|null), `tono_chat`. Opcional a nivel raíz: `analitica{cf_token}` (token de Cloudflare Web Analytics, 16–64 alfanuméricos; `paginaPublica` inyecta el beacon en las páginas indexables, nunca en carrito, 404 ni admin).
+- `config`: `perfil` (antes `negocio`; `normalizarConfig` en `validadores.js` traduce los datos antiguos al leer y al guardar) con `nombre`, `descripcion_corta`, `whatsapp` (número) y/o `whatsapp_usuario` (nombre de usuario, sin `@`; hace falta al menos uno y, si hay ambos, gana el usuario: `buildWhatsAppLink` usa `https://api.whatsapp.com/send/?text=…&username=…&type=username&app_absent=0` en vez de `wa.me`), `email` (string|null, opcional), `moneda` (ISO 4217), `tipo_catalogo` (antes `modo_negocio`) (`solo-productos|solo-servicios|mixto`), `reserva_url` (string|null, opcional; antes `calendly_url`, que se sigue leyendo), `logo_url` (string|null), `direccion` (opcional, objeto|null: `calle≤120`, `ciudad≤80` obligatoria si se rellena algo, `region≤80`, `codigo_postal≤20`, `pais` ISO de 2 letras en mayúsculas; el admin la edita en «Dirección» de General y la guarda `null` si está vacía y `aplicarMarca` la muestra como `<address class="footer-direccion">` en el pie (`textoDireccion`, sin código de país), para que coincida con el JSON-LD; alimenta `address` del JSON-LD `LocalBusiness`), `redes.instagram/facebook` (string|null). Opcional a nivel raíz: `analitica{cf_token}` (token de Cloudflare Web Analytics, 16–64 alfanuméricos; `paginaPublica` inyecta el beacon en las páginas indexables, nunca en carrito, 404 ni admin).
 - `catalogo`: `categorias` tipadas como `{ producto: [...], servicio: [...] }` e `items` (máx. 200). El array plano legacy sigue aceptándose y el admin lo migra al cargar. Cada item: `id` slug único `^[a-z0-9-]+$`, `tipo` (`producto|servicio`), `nombre`, `descripcion` (spec ≤200), `precio` número ≥0, `categoria` existente en la lista de su tipo o `""` (opcional), `disponible`/`destacado` booleanos, `duracion_minutos` número en servicios y `null` en productos, `reserva_url` string|null (opcional; antes `calendly_url`). `modalidad` (`online|presencial|ambas`), `zona` (≤80), `incluye` (≤8 líneas de ≤100) y `variantes[{nombre≤60, precio≥0, duracion_minutos≥0|null}]` (≤6) y `galeria[{n, alt≤100?}]` (≤6; ver «Imágenes») son opcionales y solo para servicios (el validador los rechaza en productos); con variantes, la tarjeta y la ficha muestran «Desde» el precio más bajo y el JSON-LD usa `AggregateOffer`; el admin los edita en «Detalles del servicio» (filas con nombre, precio y minutos opcionales; botones «Añadir opción» —máx. 6— y «Quitar»; las filas vacías se ignoran y las inválidas se avisan al guardar) y fija `precio` al mínimo de las variantes. `precio_a_consultar` boolean opcional, solo en servicios (el validador rechaza `true` en productos): con `true` el precio es orientativo, se muestra «Desde X» si `precio` > 0 o «Precio a consultar» si es 0, el item no entra al carrito y su botón es «Consultar por WhatsApp» (`buildCotizacionLink`, con nombre y duración estimada); tiene prioridad sobre la reserva. En el admin, «Enlace de reserva propio» solo se ve en servicios cuya categoría es agendable (conserva su valor al ocultarse; la web lo ignora si la categoría no lo es). `categorias_agendamiento` es un array opcional de categorías de servicio; solo los servicios de esas categorías usan el enlace de reserva (`urlReserva` en `app.js`). Si falta el campo, el admin infiere `cita`/`citas` al cargar y las páginas públicas no marcan ninguna. El panel del admin solo lista categorías de servicio y guarda únicamente esas.
 - `landing`: `hero{titulo,subtitulo,cta_texto,cta_enlace,imagen_fondo_url}`, `secciones[]` con `tipo` (`texto|destacados|galeria|contacto|sobre-mi|testimonios`), `titulo`, `contenido` (≤2000), `items_ids`; `testimonios[{texto≤300, autor≤60, detalle≤80}]` (≤8, solo en `tipo: testimonios`); `nombre` (string ≤60, opcional, solo en `tipo: sobre-mi`: firma bajo la presentación y fuente de las iniciales cuando no hay foto; sin `nombre` y sin foto solo se muestra el texto); `tema{fuente,estilo,color_acento?}`; `seo{titulo,descripcion}`. El admin (`admin/landing.html`) edita con pestañas en dos niveles: un selector de nivel 1 (`Portada | Apariencia y SEO | Secciones (n)`, ancho completo, sin scroll en móvil) y, solo dentro de «Secciones», una cabecera fija con el botón «+ Añadir sección» y, debajo, una fila de nivel 2 con una pestaña por sección. «Secciones» abre la última sección vista (o la primera); sin secciones muestra un aviso vacío. Al eliminar una sección vuelve a «Secciones». Las flechas/Inicio/Fin navegan dentro de cada fila (estado en memoria `secciones`; alta con selector de tipo, subir/bajar, eliminar, casillas para `items_ids` desde el catálogo, tarjetas para testimonios, aviso de cambios sin guardar). `admin.putContent` muestra `detalle` del servidor, no solo `error`. `secciones[].posicion` (`antes|despues`, opcional, por defecto `despues`) decide si la sección va justo bajo la portada o debajo del catálogo; `index.html` pinta cada grupo en el orden guardado (`#secciones-antes`, `#secciones-landing`; `renderizarSecciones`) y las vacías no se muestran. El admin guarda `posicion` solo cuando es `antes`. `sobre-mi` usa la foto con id reservado `sobre-mi`, que se sube desde el propio editor de la sección («Tu foto»: vista previa y «Subir foto», al momento y sin pulsar Guardar; `montarFotoSobreMi` en `admin/landing.html`, con `admin.optimizarImagen` y `POST /api/upload`) o, como cualquier otra foto, desde `POST /api/upload` ( `ID_RESERVADOS` en `validadores.js` lo prohíbe en el catálogo y `/api/upload` lo acepta sin item). `contacto` añade botones de WhatsApp y correo desde `config.perfil`. El ejemplo no incluye testimonios a propósito (no inventar opiniones). **Arte de las secciones** (`index.html` + `styles.css`, bloque «Arte de las secciones»): cada `h2` lleva una línea de acento (`h2::after`); título y texto de `texto`, `sobre-mi` y `contacto` van siempre centrados, a cualquier ancho (`sobre-mi` es una columna única de 720px: foto, texto y firma; no hay cambio de layout por breakpoint); `contacto` lleva además botones del mismo ancho en móvil; `sobre-mi` pone la foto con marco desplazado de acento y, si no hay foto, un círculo con las iniciales de `secciones[].nombre` (`.sobre-mi-iniciales`; antes salían de `perfil.nombre`, que es el del negocio) y, sin nombre, solo el texto; `testimonios` usa comilla en círculo de acento (`.testimonio::before`), avatar con iniciales (`.testimonio-avatar`) y en móvil se desliza en horizontal (`scroll-snap`). Todo con variables, sin colores de marca fijos.
-- `faq`: `preguntas[{p,r}]` (máx. 15) y `tono`.
+- `faq`: `preguntas[{p,r}]` (máx. 15). Los campos antiguos `perfil.tono_chat` y `tono` (solo los usaba el chat) se aceptan y se ignoran; el admin ya no los guarda.
 
 El validador ya comprueba unicidad de `id`, existencia de `categoria` en la lista de su tipo (salvo `""`), longitud de `descripcion`, enums de `tipo_catalogo`/`fuente`/`estilo`, booleanos y que `categorias_agendamiento` solo contenga categorías de servicio. También valida email y URLs (`reserva_url`/`calendly_url`, `logo_url`, redes: http(s) absolutas; `logo_url` admite ruta `/…`) y, en `PUT landing`, que `items_ids` existan en el catálogo guardado (o el de ejemplo). Los validadores viven en `functions/_lib/validadores.js` (módulo puro, reexportado por `content.js`). No valida `hero.cta_enlace` ni `imagen_fondo_url`.
 
@@ -134,7 +131,6 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 | `POST /api/upload` | cookie `admin_session` | `multipart/form-data` con `id` y `file`; ≤5 MB; JPEG/PNG/WebP; item debe existir; guarda `items/{id}.{ext}` y borra extensiones viejas. Con `id` = `{servicio}-g{n}` (n 1–6) guarda una foto de la galería de ese servicio; 400 si el item base es un producto. |
 | `GET /api/defaults?key=...` | pública | 200 con el `config/*.example.json` de esa key (importado en el bundle); 400 si la key no es válida. Solo lectura: no escribe en KV. |
 | `GET /api/image?id=...` o `?url=items/...` | pública | 200 imagen desde KV; 404 si no existe o el id es inválido. |
-| `POST /api/chat` | pública | Body `{question}`; 200 `{answer}`; 400 pregunta vacía; 429 límite; 503 si falta el binding `AI`. |
 
 - Cookie esperada: `admin_session=<token>; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`.
 - Implementado en `functions/_lib/auth.js`: cookie firmada con HMAC-SHA256 usando `ADMIN_PASSWORD` como secreto; el middleware verifica `/admin/*` (excepto `/admin`, `/admin/` y `/admin/index.html`) y las escrituras. No hay sesiones en KV. Los intentos fallidos de login sí se guardan en KV (`intentos:{ip}`, TTL 15 min, `_lib/intentos.js`): solo se escribe al fallar y no se escribe más con la IP bloqueada, para no gastar las 1.000 escrituras diarias.
@@ -189,17 +185,13 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 5. Imagen unificada: subida -> `items/{id}.{ext}` -> `GET /api/image`.
 6. KV sembrado y flujo probado con `npm run dev` + curl.
 
-**Pendiente:**
-
-- Decidir si el chat se elimina o se deja como extra sin UI (hoy: extra desactivado y documentado).
-
-**Fases pendientes (plan de 6 fases, 2026-10-29):** las fases 1–5 están hechas (servicios sin carrito, modelo de servicio, identidad y confianza, reserva genérica y analítica, seguridad y calidad). La fase 6 (documentación) está escrita (`docs/guia-paso-a-paso.md`, `README.md`, `docs/e2e-checklist.md`, `docs/friction-log.md`, chat como extra opcional) pero **falta validarla con una persona ajena** y pasar el checklist en un navegador real. `config/claude-prompts.md` y `docs/video-script.md` quedan descartados salvo que se pidan.
+**Fases pendientes (plan de 6 fases, 2026-10-29):** las fases 1–5 están hechas (servicios sin carrito, modelo de servicio, identidad y confianza, reserva genérica y analítica, seguridad y calidad). La fase 6 (documentación) está escrita (`docs/guia-paso-a-paso.md`, `README.md`, `docs/e2e-checklist.md`, `docs/friction-log.md`) pero **falta validarla con una persona ajena** y pasar el checklist en un navegador real. `config/claude-prompts.md` y `docs/video-script.md` quedan descartados salvo que se pidan.
 
 ## 11. Criterios de aceptación
 
 - Un fork limpio arranca en local con `npm run dev`; para desplegar, configura los dos namespaces KV y autentica Wrangler.
 - No hay tokens ni credenciales en el repo.
-- Flujo local: login -> editar config/catálogo/landing/faq -> subir foto -> ver en ficha -> carrito (productos) / consultar o reservar (servicios) -> WhatsApp o enlace de reserva. El chat requiere descomentar `[ai]` y `npx wrangler login`.
+- Flujo local: login -> editar config/catálogo/landing/faq -> subir foto -> ver en ficha -> carrito (productos) / consultar o reservar (servicios) -> WhatsApp o enlace de reserva.
 - 375px y desktop; errores en español con mensaje accionable.
 - El sistema funciona en la capa gratuita de Cloudflare.
 
@@ -207,7 +199,6 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 - Lee la sección 1 antes de asumir que algo funciona.
 - Si tocas `wrangler.toml` o el script `dev`, respeta las reglas 11 y 12.
-- No reactives `[ai]` sin `npx wrangler login`; en entornos no interactivos usa `CLOUDFLARE_API_TOKEN` o deja el bloque comentado.
 - Si necesitas D1, tokens o commits automáticos, detente y pregunta.
 - Mantén `AGENTS.md`, `AGENTS_SUMMARY.md` y `VALIDATION_SUMMARY.md` sincronizados con el estado real.
 
@@ -217,5 +208,4 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 - Estado de partida: `npm run dev` escucha en `0.0.0.0:8788`; LAN `http://192.168.11.104:8788` (la IP puede cambiar; usa `hostname -I`). Las 4 keys KV están sembradas y el KV local `IMAGES` tiene las 5 fotos.
 - Para retomar: `cd /home/devops/proyectos/personal-ecommerce`, libera el puerto con `lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill`, ejecuta `npm run dev` y abre `http://localhost:8788` o la IP LAN.
 - Si `.wrangler/state` se borra, vuelve a sembrar KV con los comandos de la sección 4.
-- Pruebas pendientes: checkboxes de `categorias_agendamiento` (servicio agendable oculta carrito), 375px/escritorio, decidir UI de chat y actualizar `README.md`.
-- `[ai]` sigue comentado: para probar chat, descomenta el bloque en `wrangler.toml` y ejecuta `npx wrangler login`; sin eso `/api/chat` devuelve 503.
+- Pruebas pendientes: checkboxes de `categorias_agendamiento` (servicio agendable oculta carrito), 375px/escritorio, y actualizar `README.md`.

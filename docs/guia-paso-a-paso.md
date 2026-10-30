@@ -104,7 +104,3 @@ Tu fork no se actualiza solo. Cuando quieras las mejoras nuevas:
 ## Límites de la capa gratuita (referencia)
 
 Cada visita consume pocas operaciones (la página y una por foto), y el sitio usa caché para ahorrar lecturas. Para un catálogo personal sobra. Si algún día lo superas, Cloudflare te lo indica en el dashboard.
-
-## Extra opcional: chat con IA
-
-El código incluye un chat (`/api/chat`) que responde con tu catálogo y FAQ usando Workers AI, pero **está desactivado** y las páginas públicas no tienen botón de chat. Activarlo exige descomentar el bloque `[ai]` de `wrangler.toml` y autenticar Wrangler (`npx wrangler login`) en una terminal, además de que un chat público puede consumir tu cuota gratuita de IA. Para la mayoría de los casos, un buen FAQ más el botón de WhatsApp resuelve lo mismo.

@@ -102,8 +102,8 @@ test('landing: posición de la sección respecto al catálogo', () => {
 });
 
 test('faq: límites', () => {
-  rechaza(() => validateFAQ({ preguntas: Array.from({ length: 16 }, () => ({ p: 'p', r: 'r' })), tono: '' }), /15/);
-  rechaza(() => validateFAQ({ preguntas: [{ p: '', r: 'r' }], tono: '' }), /'p'/);
+  rechaza(() => validateFAQ({ preguntas: Array.from({ length: 16 }, () => ({ p: 'p', r: 'r' })) }), /15/);
+  rechaza(() => validateFAQ({ preguntas: [{ p: '', r: 'r' }] }), /'p'/);
 });
 
 test('config: WhatsApp por número, por usuario o ambos', () => {

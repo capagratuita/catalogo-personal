@@ -1,7 +1,7 @@
 # Registro de validación — 2026-10-28
 
 **Entorno:** local, Wrangler 4.154.0, `npm run dev` con `--ip 0.0.0.0 --port 8788`.  
-**Estado:** flujo de contenido, admin e imágenes operativo; chat con IA deshabilitado por defecto.
+**Estado:** flujo de contenido, admin e imágenes operativo.
 
 ## Pruebas ejecutadas
 
@@ -31,7 +31,6 @@
 | `GET /admin/identidad` con cookie | 200 |
 | `GET /admin/catalogo`, `/admin/fotos`, `/admin/landing`, `/admin/faq` con cookie | 200 |
 | `POST /api/logout` | 200; cookie invalidada |
-| `POST /api/chat` sin binding `AI` | 503 con mensaje accionable |
 | `GET /` y `GET /api/content?key=config` por IP LAN | 200 |
 | Guardar identidad, catálogo, landing y FAQ desde el admin (navegador) | OK, persiste en KV |
 | Subir foto y regenerar preview desde `admin/fotos.html` | OK |
@@ -48,15 +47,12 @@
 
 - KV local: `config`, `catalogo`, `landing` y `faq` sembradas en `.wrangler/state`.
 - Imágenes (migradas de R2 a KV `IMAGES` el 2026-10-28): 5 fotos servidas por `/api/image`; subida autenticada y 401 sin sesión verificados.
-- `wrangler.toml`: `[ai]` comentado; `/api/chat` responde 503.
 - `ADMIN_PASSWORD` vive en `.dev.vars`; no se imprime ni se versiona.
 
 ## No verificado todavía
 
 - Interacción en navegador con las pestañas Productos/Servicios, la migración de categorías legacy y los checkboxes de `categorias_agendamiento`.
 - Diseño a 375px y escritorio.
-- Chat con Workers AI (requiere descomentar `[ai]` y `npx wrangler login`).
-- No hay UI de chat en las páginas públicas.
 - Los scripts `validate-phase*.sh` y `test-all-phases.sh` no se usaron como prueba de runtime: son greps estáticos y tienen falsos positivos/negativos.
 - No hay `.git`, `npm test`, `npm run lint` ni `npm run typecheck`.
 
@@ -169,3 +165,7 @@
 - `npm test`: 34 pruebas pasan (sin cambios). `npm run test:integracion` local: 29 ok, 0 fallos, 3 omitidas (datos que el ejemplo no tiene: item no disponible, descripción >155 y foto; las cubre la variante activa con datos fabricados). Remoto (`BASE_URL=https://personal-ecommerce.pages.dev`, solo GET): 20 ok, 0 fallos, 12 omitidas (11 «requiere modo local» y 1 por falta de item no disponible).
 - Mutaciones comprobadas en local (revertidas): 301→302, sitemap sin filtrar `disponible` y `MAX_DESCRIPCION` 155→300 hacen fallar respectivamente la redirección, el sitemap y el recorte.
 - El modo remoto no hizo login, subidas ni `PUT` autenticado. Con `BASE_URL=http://127.0.0.1:9` (sin servidor) las dos suites fallan en ~3 s con «BASE_URL … no responde» (2 reintentos).
+
+## 2026-10-30 — Se elimina el chat con IA
+- Borrados `functions/api/chat.js`, el bloque `[ai]` de `wrangler.toml`, los campos `perfil.tono_chat` y `faq.tono` (ejemplos, validadores y admin) y las secciones de chat de README y de la guía. El validador ya no los exige; con datos antiguos que los traen sigue validando.
+- `npm test` y `npm run test:integracion` (local) pasan; ver resultado en la sesión.

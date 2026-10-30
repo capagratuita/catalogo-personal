@@ -57,10 +57,6 @@ El contenido vive en KV, no en el repositorio. Los ejemplos de `config/*.example
 
 Reglas del proyecto y contratos de datos: [AGENTS.md](AGENTS.md).
 
-## Chat con IA (opcional)
-
-Existe un endpoint `/api/chat` con Workers AI, desactivado por defecto y sin botón en el sitio. Detalles y advertencias al final de la guía de despliegue.
-
 ## Licencia
 
 MIT

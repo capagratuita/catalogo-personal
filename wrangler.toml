@@ -17,9 +17,3 @@ id = "0b5c9d9f26ee42b6ab7d9473ee446132"
 [[kv_namespaces]]
 binding = "IMAGES"
 id = "b2a6c12a3d6e4d2da5175b971ea40ead"
-
-# Workers AI: usado por /api/chat.
-# Descomenta este bloque para habilitar el chat en local o producción.
-# En local requiere `npx wrangler login`; sin el binding, /api/chat devuelve 503.
-# [ai]
-# binding = "AI"

@@ -160,7 +160,6 @@
         const MAX_PREGUNTAS = 15;
         const lista = document.getElementById('faq-lista');
         let modificado = false;
-        let tonoActual = '';
 
         function filas() {
             return Array.from(lista.querySelectorAll('.faq-item'));
@@ -171,9 +170,7 @@
                 preguntas: filas().map(fila => ({
                     p: fila.querySelector('.faq-p').value.trim(),
                     r: fila.querySelector('.faq-r').value.trim()
-                })),
-                // El validador exige 'tono'; ya no se edita aquí, se conserva el guardado
-                tono: tonoActual
+                }))
             };
         }
 
@@ -295,7 +292,6 @@
             try {
                 const faq = await window.admin.getContent('faq');
                 lista.innerHTML = '';
-                tonoActual = (faq && faq.tono) || '';
                 const preguntas = (faq && faq.preguntas) || [];
                 preguntas.forEach(item => agregarFAQ(item.p || '', item.r || '', false));
                 if (!preguntas.length) agregarFAQ('', '', false);

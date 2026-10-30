@@ -19,7 +19,7 @@
 - General del admin: «Modo del Negocio» pasó a **«Tipo de catálogo»**, con «Solo servicios» primero y como valor por defecto del formulario. `config/config.example.json` sigue en `mixto` a propósito (con `solo-servicios` los productos de ejemplo quedarían sin acción).
 - Refactor de datos: `config.negocio` → **`config.perfil`** y `modo_negocio` → **`tipo_catalogo`**. `normalizarConfig` (`functions/_lib/validadores.js`) traduce los datos antiguos al leer (`getContent`, `GET /api/content`) y al guardar (`PUT /api/content`), así que el KV existente y los respaldos viejos siguen funcionando sin migrar.
 - Redes: `perfil.redes.tiktok` y `perfil.redes.youtube` (opcionales; admin, pie de las 4 páginas públicas y `sameAs` del JSON-LD).
-- «Tono del Chat» se quitó de General; `perfil.tono_chat` sigue en los datos (el validador lo exige y el chat opcional lo usa) y se conserva al guardar.
+- «Tono del Chat» se quitó de General.
 - Commits: `5f9c869` (refactor y textos), `5ae4b36` (redes y tono del chat).
 
 ## Admin de Portada: pestañas en dos niveles (2026-10-29)
@@ -50,7 +50,7 @@
 - Las pruebas de UI se hicieron con jsdom contra `npm run dev`; no hay Chrome en esta máquina. Falta pasar `docs/e2e-checklist.md` en un navegador real a 375px.
 - El despliegue real en Cloudflare con la guía **no se ha probado**. Falta una persona ajena que la siga (`docs/friction-log.md`).
 - Pendiente de la reorientación: la barra del admin sigue diciendo «Landing»; `identidad.html` conserva su nombre de archivo; la reorientación no se revisó a ojo en navegador.
-- `[ai]` sigue comentado; el chat no tiene UI.
+- El chat con IA se eliminó por completo (2026-10-30): sin `/api/chat`, sin `[ai]`, sin `tono_chat`/`tono` (los datos antiguos con esos campos se aceptan y se ignoran).
 - El KV local tiene un catálogo de panadería de pruebas (no el de ejemplo) y la clave `intentos:127.0.0.1` se borró tras probar el bloqueo.
 
 ## Cómo retomar

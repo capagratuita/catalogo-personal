@@ -132,7 +132,6 @@ export function validateConfig(data) {
         instagram: ['string', 'null'],
         facebook: ['string', 'null'],
       },
-      tono_chat: 'string',
     },
   });
 
@@ -501,6 +500,5 @@ export function validateFAQ(data) {
     }
   }
 
-  if (typeof data.tono !== 'string') fail("El campo 'tono' debe ser un string");
   return data;
 }
