@@ -1,6 +1,6 @@
 import { getContent } from './defaults.js';
 import { TOKEN_ANALITICA } from './validadores.js';
-import { MAX_DESCRIPCION, recortar } from './seo.js';
+import { MAX_DESCRIPCION, localeOg, recortar } from './seo.js';
 
 const EXTENSIONES_FOTO = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -41,8 +41,8 @@ export async function existeFoto(env, id) {
   return false;
 }
 
-function etiquetasMeta(meta, origen, nombreSitio) {
-  const { titulo, ruta = '/', imagen, tipo = 'website', jsonLd, noindex, extra = [] } = meta;
+function etiquetasMeta(meta, origen, nombreSitio, locale) {
+  const { titulo, ruta = '/', imagen, imagenAlt, tipo = 'website', jsonLd, noindex, extra = [] } = meta;
   const descripcion = recortar(meta.descripcion, MAX_DESCRIPCION);
   const url = origen + ruta;
   const etiquetas = [];
@@ -55,16 +55,18 @@ function etiquetasMeta(meta, origen, nombreSitio) {
     `<meta property="og:type" content="${escapar(tipo)}">`,
     `<meta property="og:title" content="${escapar(titulo)}">`,
     `<meta property="og:url" content="${escapar(url)}">`,
-    `<meta property="og:locale" content="es_ES">`,
+    `<meta property="og:locale" content="${locale}">`,
   );
   if (nombreSitio) etiquetas.push(`<meta property="og:site_name" content="${escapar(nombreSitio)}">`);
   if (descripcion) etiquetas.push(`<meta property="og:description" content="${escapar(descripcion)}">`);
   if (imagen) etiquetas.push(`<meta property="og:image" content="${escapar(imagen)}">`);
+  if (imagen && imagenAlt) etiquetas.push(`<meta property="og:image:alt" content="${escapar(imagenAlt)}">`);
 
   etiquetas.push(`<meta name="twitter:card" content="${imagen ? 'summary_large_image' : 'summary'}">`);
   etiquetas.push(`<meta name="twitter:title" content="${escapar(titulo)}">`);
   if (descripcion) etiquetas.push(`<meta name="twitter:description" content="${escapar(descripcion)}">`);
   if (imagen) etiquetas.push(`<meta name="twitter:image" content="${escapar(imagen)}">`);
+  if (imagen && imagenAlt) etiquetas.push(`<meta name="twitter:image:alt" content="${escapar(imagenAlt)}">`);
 
   for (const [propiedad, contenido] of extra) {
     etiquetas.push(`<meta property="${escapar(propiedad)}" content="${escapar(contenido)}">`);
@@ -112,7 +114,7 @@ export function paginaPublica({ claves, meta, fuente }) {
     const cabecera = [
       estiloAcento,
       analitica,
-      datos.titulo ? etiquetasMeta(datos, origen, nombreSitio) : '',
+      datos.titulo ? etiquetasMeta(datos, origen, nombreSitio, localeOg(sitio.config?.perfil?.moneda)) : '',
       `<script type="application/json" id="sitio-datos">${jsonParaScript(sitio)}</script>`,
     ].join('\n');
 

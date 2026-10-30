@@ -12,6 +12,7 @@ export const onRequestGet = paginaPublica({
       descripcion: `Respuestas a las preguntas más comunes sobre ${perfil.nombre}.`,
       ruta: '/faq',
       imagen: urlImagenValida(perfil.logo_url),
+      imagenAlt: `Logo de ${perfil.nombre}`,
       jsonLd: preguntas.length && {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',

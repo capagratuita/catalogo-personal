@@ -90,3 +90,12 @@ test('tituloPagina quita el nombre del negocio si el título pasa de 60', () => 
   assert.equal(tituloPagina(largo, 'Panadería Artesanal El Molino'), largo);
   assert.ok(tituloPagina('x '.repeat(50), 'N').length <= 60);
 });
+
+import { localeOg } from '../functions/_lib/seo.js';
+
+test('localeOg deriva el idioma de la moneda y cae en es_LA', () => {
+  assert.equal(localeOg('PEN'), 'es_PE');
+  assert.equal(localeOg('MXN'), 'es_MX');
+  assert.equal(localeOg('USD'), 'es_LA');
+  assert.equal(localeOg(undefined), 'es_LA');
+});

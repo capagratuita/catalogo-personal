@@ -21,6 +21,7 @@ export const onRequestGet = paginaPublica({
       descripcion: landing.seo?.descripcion || perfil.descripcion_corta,
       ruta: '/',
       imagen: logo || urlImagenValida(landing.hero?.imagen_fondo_url),
+      imagenAlt: logo ? `Logo de ${perfil.nombre}` : perfil.nombre,
       jsonLd: {
         '@context': 'https://schema.org',
         '@graph': [

@@ -17,7 +17,8 @@ export const fichaPublica = ({ desdeRuta }) => paginaPublica({
 
     const ruta = rutaItem(item);
     if (desdeRuta !== (item.tipo === 'servicio')) return { titulo: item.nombre, redirigir: ruta };
-    const imagen = (await existeFoto(env, item.id))
+    const tieneFoto = await existeFoto(env, item.id);
+    const imagen = tieneFoto
       ? `${origen}/api/image?id=${encodeURIComponent(item.id)}`
       : urlImagenValida(perfil.logo_url);
     const esServicio = item.tipo === 'servicio';
@@ -59,6 +60,7 @@ export const fichaPublica = ({ desdeRuta }) => paginaPublica({
       descripcion: item.descripcion,
       ruta,
       imagen,
+      imagenAlt: tieneFoto ? item.nombre : `Logo de ${perfil.nombre}`,
       tipo: esServicio ? 'website' : 'product',
       extra: !esServicio ? [['product:price:amount', String(item.precio)], ['product:price:currency', perfil.moneda]] : [],
       jsonLd: {

@@ -110,3 +110,10 @@ export function tituloPagina(parte, negocio) {
   const completo = negocio ? `${parte} - ${negocio}` : parte;
   return completo.length <= MAX_TITULO ? completo : recortar(parte, MAX_TITULO);
 }
+
+const LOCALES = { PEN: 'es_PE', MXN: 'es_MX', COP: 'es_CO', ARS: 'es_AR', CLP: 'es_CL', EUR: 'es_ES' };
+
+// og:locale según la moneda del perfil; con otra (p. ej. USD) se usa español de Latinoamérica
+export function localeOg(moneda) {
+  return LOCALES[moneda] || 'es_LA';
+}
