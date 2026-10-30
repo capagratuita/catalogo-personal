@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Producto</title>
     <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
     <nav>
@@ -101,8 +101,11 @@
         let carrito = [];
 
         async function cargarProducto() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
+            // Servicios: /servicio/{id}. Productos: /producto?id={id}
+            const rutaServicio = window.location.pathname.match(/^\/servicio\/([^/]+)/);
+            const productId = rutaServicio
+                ? decodeURIComponent(rutaServicio[1])
+                : new URLSearchParams(window.location.search).get('id');
             
             if (!productId) {
                 window.location.href = '/#catalogo';
@@ -233,7 +236,7 @@
 
         // Compartir sin protagonismo: enlace a WhatsApp con el mensaje escrito y copiar el enlace
         function prepararCompartir(producto, config) {
-            const url = `${location.origin}/producto?id=${encodeURIComponent(producto.id)}`;
+            const url = location.origin + window.app.urlFicha(producto);
             const mensaje = `${producto.nombre} en ${config.perfil.nombre}: ${url}`;
 
             document.getElementById('compartir-whatsapp').href = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;

@@ -137,6 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLanding().then(landing => aplicarTema(landing.tema)).catch(() => {});
 });
 
+// URL de la ficha: los servicios tienen URL limpia (/servicio/{id}); los productos, /producto?id=
+function urlFicha(item) {
+  const id = encodeURIComponent(item.id);
+  return item.tipo === 'servicio' ? `/servicio/${id}` : `/producto?id=${id}`;
+}
+
 function renderItem(item, config, catalogo) {
   const accion = accionItem(item, config, catalogo);
   const esServicio = item.tipo === 'servicio';
@@ -153,7 +159,7 @@ function renderItem(item, config, catalogo) {
       ${precioHtml}
       ${duracionHtml}
       <div class="item-actions">
-        <a href="/producto?id=${item.id}" class="btn-ver">Ver Detalles</a>
+        <a href="${urlFicha(item)}" class="btn-ver">Ver Detalles</a>
         ${accionHtml}
       </div>
     </div>
@@ -337,6 +343,7 @@ window.app = {
   loadConfig,
   aplicarMarca,
   textoDireccion,
+  urlFicha,
   aplicarTema,
   loadLanding,
   loadFAQ,

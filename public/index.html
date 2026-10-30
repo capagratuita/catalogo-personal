@@ -323,7 +323,7 @@
                 const grid = crear('div', 'galeria-grid');
                 items.forEach(item => {
                     const enlace = crear('a', 'galeria-item');
-                    enlace.href = `/producto?id=${encodeURIComponent(item.id)}`;
+                    enlace.href = window.app.urlFicha(item);
                     const img = crear('img');
                     img.src = `/api/image?id=${encodeURIComponent(item.id)}`;
                     img.alt = item.nombre;
@@ -464,7 +464,7 @@
             // la ficha mostraría lo mismo que la tarjeta, así que su tarjeta es estática y trae
             // la descripción cortada a 2 líneas por CSS.
             const descripcionHtml = `<p class="descripcion">${escapeHtml(item.descripcion)}</p>`;
-            const urlFicha = `/producto?id=${encodeURIComponent(item.id)}`;
+            const urlFicha = window.app.urlFicha(item);
             const imagenHtml = `<img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="${escapeHtml(item.nombre)}" loading="lazy" width="400" height="300">`;
             card.classList.toggle('item-card-estatica', !isService);
             card.innerHTML = `

@@ -75,11 +75,12 @@ function etiquetasMeta(meta, origen, nombreSitio) {
 // Fábrica de las páginas públicas. Sirve el HTML estático y le inyecta:
 //  - título, descripción, canonical, Open Graph y datos estructurados (SEO y vista previa al compartir)
 //  - los datos del sitio en <script id="sitio-datos">, para que la página no pida /api/content otra vez
-// `meta(sitio, contexto)` devuelve los datos de la página; puede incluir `status`.
-export function paginaPublica({ claves, meta }) {
+// `meta(sitio, contexto)` devuelve los datos de la página; puede incluir `status` o `redirigir` (ruta).
+// `fuente(contexto)` da la respuesta HTML de partida cuando la URL no corresponde a un archivo estático.
+export function paginaPublica({ claves, meta, fuente }) {
   return async context => {
     const { request, env, next } = context;
-    const respuesta = await next();
+    const respuesta = await (fuente ? fuente(context) : next());
     if (!(respuesta.headers.get('Content-Type') || '').includes('text/html')) return respuesta;
 
     const sitio = {};
@@ -88,6 +89,11 @@ export function paginaPublica({ claves, meta }) {
     const origen = new URL(request.url).origin;
     const datos = (await meta?.(sitio, { ...context, origen })) ?? {};
     const nombreSitio = sitio.config?.perfil?.nombre;
+
+    // URL antigua o equivalente: redirección permanente a la canónica
+    if (datos.redirigir) {
+      return new Response(null, { status: 301, headers: { Location: origen + datos.redirigir } });
+    }
 
     // Color de acento de la landing: se pinta desde el servidor para que no parpadee al cargar
     const acento = sitio.landing?.tema?.color_acento;

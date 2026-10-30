@@ -16,7 +16,7 @@ test('htmlCatalogoEstatico lista los items y enlaza solo los servicios', () => {
   const html = htmlCatalogoEstatico(cat, cfg);
   assert.match(html, /Pan &lt;b&gt;/);
   assert.match(html, /Rico &amp; fresco/);
-  assert.match(html, /<a href="\/producto\?id=clase">Clase<\/a>/);
+  assert.match(html, /<a href="\/servicio\/clase">Clase<\/a>/);
   assert.doesNotMatch(html, /id=pan/);
 });
 
@@ -39,7 +39,7 @@ test('xmlSitemap pone lastmod con la fecha m√°s reciente y lo omite si no hay fe
   });
   assert.match(xml, /<loc>https:\/\/x\.test\/<\/loc><lastmod>2026-03-01T/);
   assert.match(xml, /<loc>https:\/\/x\.test\/faq<\/loc><lastmod>2026-02-01T/);
-  assert.match(xml, /id=a<\/loc><lastmod>2026-03-01T/);
+  assert.match(xml, /\/servicio\/a<\/loc><lastmod>2026-03-01T/);
   assert.doesNotMatch(xmlSitemap('https://x.test', cat, {}), /lastmod/);
 });
 
@@ -66,4 +66,11 @@ test('direccionPostal devuelve PostalAddress solo con ciudad y omite campos vac√
   );
   assert.equal(direccionPostal(null), null);
   assert.equal(direccionPostal({ calle: 'Av. Larco 123' }), null);
+});
+
+import { rutaItem } from '../functions/_lib/seo.js';
+
+test('rutaItem da URL limpia a los servicios y query a los productos', () => {
+  assert.equal(rutaItem({ id: 'taller-masa-madre', tipo: 'servicio' }), '/servicio/taller-masa-madre');
+  assert.equal(rutaItem({ id: 'pan-integral', tipo: 'producto' }), '/producto?id=pan-integral');
 });

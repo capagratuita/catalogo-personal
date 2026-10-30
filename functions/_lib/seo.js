@@ -1,6 +1,12 @@
 // HTML real para buscadores y vistas previas sin JavaScript. Módulo puro (testeable en Node).
 // app.js repinta la página con las tarjetas interactivas y retira este bloque.
 
+// URL de la ficha: los servicios tienen URL limpia (/servicio/{id}); los productos, /producto?id=
+export function rutaItem(item) {
+  const id = encodeURIComponent(item.id);
+  return item.tipo === 'servicio' ? `/servicio/${id}` : `/producto?id=${id}`;
+}
+
 const TITULOS = { producto: 'Productos', servicio: 'Servicios' };
 
 export function escaparHtml(texto) {
@@ -27,7 +33,7 @@ export function htmlCatalogoEstatico(catalogo, config) {
     const lista = delTipo.map(item => {
       const nombre = escaparHtml(item.nombre);
       const titulo = tipo === 'servicio'
-        ? `<a href="/producto?id=${encodeURIComponent(item.id)}">${nombre}</a>`
+        ? `<a href="${rutaItem(item)}">${nombre}</a>`
         : nombre;
       return `<li><h3>${titulo}</h3><p>${escaparHtml(item.descripcion)}</p></li>`;
     }).join('');
@@ -50,7 +56,7 @@ export function xmlSitemap(origen, catalogo, fechas = {}) {
   const rutas = [
     ['/', masReciente(fechas.config, fechas.catalogo, fechas.landing)],
     ['/faq', masReciente(fechas.config, fechas.faq)],
-    ...catalogo.items.map(item => [`/producto?id=${encodeURIComponent(item.id)}`, masReciente(fechas.config, fechas.catalogo)]),
+    ...catalogo.items.map(item => [rutaItem(item), masReciente(fechas.config, fechas.catalogo)]),
   ];
   const urls = rutas.map(([ruta, fecha]) =>
     `  <url><loc>${escaparHtml(origen + ruta)}</loc>${fecha ? `<lastmod>${fecha}</lastmod>` : ''}</url>`,
