@@ -91,3 +91,22 @@ export function direccionPostal(direccion) {
     ...Object.fromEntries(Object.entries(campos).filter(([, valor]) => valor)),
   };
 }
+
+export const MAX_TITULO = 60;
+export const MAX_DESCRIPCION = 155;
+
+// Recorta en el límite de una palabra y añade «…» (los buscadores truncan por su cuenta, pero peor)
+export function recortar(texto, maximo) {
+  const limpio = String(texto ?? '').replace(/\s+/g, ' ').trim();
+  if (limpio.length <= maximo) return limpio;
+  const corte = limpio.slice(0, maximo - 1);
+  const espacio = corte.lastIndexOf(' ');
+  const base = espacio > maximo / 2 ? corte.slice(0, espacio) : corte;
+  return base.replace(/[\s,;:.\-–—]+$/, '') + '…';
+}
+
+// «Página - Negocio»; si no cabe en MAX_TITULO se deja solo la parte propia de la página
+export function tituloPagina(parte, negocio) {
+  const completo = negocio ? `${parte} - ${negocio}` : parte;
+  return completo.length <= MAX_TITULO ? completo : recortar(parte, MAX_TITULO);
+}

@@ -74,3 +74,19 @@ test('rutaItem da URL limpia a los servicios y query a los productos', () => {
   assert.equal(rutaItem({ id: 'taller-masa-madre', tipo: 'servicio' }), '/servicio/taller-masa-madre');
   assert.equal(rutaItem({ id: 'pan-integral', tipo: 'producto' }), '/producto?id=pan-integral');
 });
+
+import { recortar, tituloPagina } from '../functions/_lib/seo.js';
+
+test('recortar corta en límite de palabra y no toca textos que caben', () => {
+  assert.equal(recortar('  Hola   mundo ', 20), 'Hola mundo');
+  const r = recortar('uno dos tres cuatro cinco seis siete, ocho nueve', 30);
+  assert.ok(r.length <= 30 && r.endsWith('…') && !/\s…$/.test(r), r);
+  assert.equal(recortar('a'.repeat(40), 10), 'a'.repeat(9) + '…');
+});
+
+test('tituloPagina quita el nombre del negocio si el título pasa de 60', () => {
+  assert.equal(tituloPagina('Clase', 'Mi negocio'), 'Clase - Mi negocio');
+  const largo = 'Taller intensivo de masa madre para principiantes';
+  assert.equal(tituloPagina(largo, 'Panadería Artesanal El Molino'), largo);
+  assert.ok(tituloPagina('x '.repeat(50), 'N').length <= 60);
+});

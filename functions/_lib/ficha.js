@@ -1,5 +1,5 @@
 import { paginaPublica, existeFoto, urlImagenValida } from './paginas.js';
-import { rutaItem } from './seo.js';
+import { rutaItem, tituloPagina } from './seo.js';
 
 // Ficha de un item. Los servicios viven en /servicio/{id} (el HTML es producto.html) y los productos
 // en /producto?id=; cada URL redirige a la que le corresponde al item.
@@ -55,7 +55,7 @@ export const fichaPublica = ({ desdeRuta }) => paginaPublica({
         .on('#producto-nombre', { element(el) { el.setInnerContent(item.nombre); } })
         .on('#producto-descripcion', { element(el) { el.setInnerContent(item.descripcion); } })
         .on('#producto-imagen', { element(el) { el.setAttribute('alt', item.nombre); } }),
-      titulo: `${item.nombre} - ${perfil.nombre}`,
+      titulo: tituloPagina(item.nombre, perfil.nombre),
       descripcion: item.descripcion,
       ruta,
       imagen,

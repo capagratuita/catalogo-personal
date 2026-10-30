@@ -126,7 +126,7 @@ function aplicarMarca(config) {
 
   if (!document.documentElement.dataset.marca) {
     document.documentElement.dataset.marca = '1';
-    if (!document.title.includes(perfil.nombre)) {
+    if (!document.getElementById('sitio-datos') && !document.title.includes(perfil.nombre)) {
       document.title = document.title ? `${document.title} - ${perfil.nombre}` : perfil.nombre;
     }
   }

@@ -1,5 +1,6 @@
 import { getContent } from './defaults.js';
 import { TOKEN_ANALITICA } from './validadores.js';
+import { MAX_DESCRIPCION, recortar } from './seo.js';
 
 const EXTENSIONES_FOTO = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -41,7 +42,8 @@ export async function existeFoto(env, id) {
 }
 
 function etiquetasMeta(meta, origen, nombreSitio) {
-  const { titulo, descripcion, ruta = '/', imagen, tipo = 'website', jsonLd, noindex, extra = [] } = meta;
+  const { titulo, ruta = '/', imagen, tipo = 'website', jsonLd, noindex, extra = [] } = meta;
+  const descripcion = recortar(meta.descripcion, MAX_DESCRIPCION);
   const url = origen + ruta;
   const etiquetas = [];
 

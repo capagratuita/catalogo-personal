@@ -1,4 +1,5 @@
 import { paginaPublica, urlImagenValida } from './_lib/paginas.js';
+import { tituloPagina } from './_lib/seo.js';
 
 export const onRequestGet = paginaPublica({
   claves: ['config', 'faq', 'landing'],
@@ -7,7 +8,7 @@ export const onRequestGet = paginaPublica({
     const preguntas = faq.preguntas || [];
 
     return {
-      titulo: `Preguntas frecuentes - ${perfil.nombre}`,
+      titulo: tituloPagina('Preguntas frecuentes', perfil.nombre),
       descripcion: `Respuestas a las preguntas más comunes sobre ${perfil.nombre}.`,
       ruta: '/faq',
       imagen: urlImagenValida(perfil.logo_url),
