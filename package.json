@@ -18,7 +18,7 @@
     "template"
   ],
   "author": "opencode",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "devDependencies": {
     "wrangler": "latest"
   },

@@ -61,4 +61,4 @@ Reglas del proyecto y contratos de datos: [AGENTS.md](AGENTS.md).
 
 ## Licencia
 
-MIT
+[GNU AGPL-3.0](LICENSE). Puedes usarlo y modificarlo libremente, también para tu negocio. Si publicas una versión modificada como servicio en red, debes ofrecer su código fuente a quienes lo usen, bajo la misma licencia. El nombre y el logo del proyecto no están incluidos en la licencia.
