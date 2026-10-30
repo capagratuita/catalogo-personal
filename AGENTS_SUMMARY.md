@@ -10,7 +10,7 @@
 2. **Modelo de servicio:** `modalidad`, `zona`, `incluye`, `variantes`; validadores en `functions/_lib/validadores.js` (módulo puro) con email/URLs y `items_ids`.
 3. **Identidad y confianza:** `landing.secciones` ahora se pinta (antes no se mostraba); secciones `sobre-mi` y `testimonios`; `color_acento` con contraste AA; foto de «Sobre mí» con id reservado.
 4. **Reserva genérica y analítica:** `reserva_url` (lee `calendly_url` antiguo); token de Cloudflare Web Analytics.
-5. **Seguridad y calidad:** límite de intentos de login; `npm test` (hoy 21 pruebas); se eliminaron `validate-phase*.sh`.
+5. **Seguridad y calidad:** límite de intentos de login; `npm test` (hoy 34 pruebas); se eliminaron `validate-phase*.sh`.
 6. **Documentación:** `docs/guia-paso-a-paso.md`, `README.md`, `docs/e2e-checklist.md`, `docs/friction-log.md`.
 
 ## Reorientación a catálogo personal (2026-10-29)
@@ -81,3 +81,17 @@ En local, si bloqueas tu propia IP con contraseñas incorrectas: `npx wrangler k
 - Error corregido en la sesión: un `replace` sin límite metió `animation: slideUp` en varias reglas de `styles.css` (rompió el mosaico); se deshizo. Se probó un mosaico 4:3 y se descartó: se mantiene el original.
 - Pendiente: las pestañas de `catalogo.html` y `landing.html` siguen con estilos propios parecidos pero no compartidos.
 - Commit: `2f166b0`.
+
+## SEO (2026-10-29)
+
+Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, secciones 6, 7 y 9):
+
+- **HTML real sin JS** (`ec273db`, `31b21b0`): `paginaPublica` admite `meta().reescribir(rw)` (HTMLRewriter). Portada: `h1` y subtítulo del hero reales y un bloque `#catalogo-estatico` (lista de items, `_lib/seo.js`) oculto por CSS y visible solo con `<noscript>`; `app.js` lo retira al pintar. Ficha: `h1#producto-nombre`, descripción y `alt` en el HTML. `alt` de las fotos de tarjeta = nombre del item.
+- **Sitemap** (`54407de`, `0233228`): `PUT /api/content` guarda `updated_at` en la **metadata del KV** (no en el JSON) y el sitemap lo usa como `<lastmod>`; keys nunca guardadas van sin fecha. Items con `disponible: false` no se listan (su ficha sigue en 200).
+- **Negocio local** (`d2ccbd4`, `7ff2194`): JSON-LD `LocalBusiness` con `areaServed` (zonas de servicios no solo online) y `address` desde el nuevo `perfil.direccion` (admin General → «Dirección», validador, `direccionPostal`); la dirección también sale en el pie (`<address class="footer-direccion">`). `Service.areaServed` en las fichas.
+- **URLs limpias** (`bcfb9b2`, `61dadd2`): `/servicio/{id}` y `/producto/{id}` (`functions/servicio/[id].js`, `functions/producto/[id].js`, lógica en `_lib/ficha.js`, HTML = `producto.html` vía `env.ASSETS`). `/producto?id=` y el tipo equivocado redirigen 301. `rutaItem` (servidor) y `urlFicha` (cliente) son la única fuente de la ruta.
+- **Longitudes** (`b5c490d`): descripción a 155 caracteres, títulos de ficha/FAQ a 60 (`recortar`, `tituloPagina`). El título de la portada no se toca. `aplicarMarca` ya no reañade el negocio al `document.title`.
+- **Detalles** (`d5bc3ec`): `og:image:alt`/`twitter:image:alt`, `og:locale` por moneda (`localeOg`) y `public/_headers`.
+- No hecho a propósito: sitemap de imágenes, `hreflang` (un solo idioma), cambios en `robots.txt`.
+- Pendiente: desplegar y comprobar en Cloudflare real las rutas `/servicio/…` y `/producto/…` (`env.ASSETS`) y las redirecciones 301; los `lastmod` aparecen en un sitio ya desplegado cuando se guarda cada key una vez. `npm test`: 34 pruebas.
+- Si `npm run dev` cae con `SQLITE_BUSY_RECOVERY`: `pkill -f workerd; pkill -f wrangler` y volver a arrancar.
