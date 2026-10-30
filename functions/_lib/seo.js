@@ -57,3 +57,14 @@ export function xmlSitemap(origen, catalogo, fechas = {}) {
   ).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
+
+// Zonas donde se atiende, tomadas de la `zona` de los servicios que no son solo online.
+// Sin ninguna, el negocio no se declara como local.
+export function zonasAtendidas(catalogo, config) {
+  if (config?.perfil?.tipo_catalogo === 'solo-productos') return [];
+  const zonas = (catalogo?.items || [])
+    .filter(item => item.tipo === 'servicio' && item.modalidad !== 'online' && typeof item.zona === 'string')
+    .map(item => item.zona.trim())
+    .filter(Boolean);
+  return [...new Set(zonas)];
+}

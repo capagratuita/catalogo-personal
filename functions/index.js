@@ -1,5 +1,5 @@
 import { paginaPublica, urlImagenValida } from './_lib/paginas.js';
-import { htmlCatalogoEstatico } from './_lib/seo.js';
+import { htmlCatalogoEstatico, zonasAtendidas } from './_lib/seo.js';
 
 export const onRequestGet = paginaPublica({
   claves: ['config', 'catalogo', 'landing'],
@@ -9,6 +9,7 @@ export const onRequestGet = paginaPublica({
     const redes = [perfil.redes?.instagram, perfil.redes?.facebook, perfil.redes?.tiktok, perfil.redes?.youtube].filter(Boolean);
 
     const hero = landing.hero || {};
+    const zonas = zonasAtendidas(catalogo, config);
 
     return {
       reescribir: rw => rw
@@ -24,12 +25,14 @@ export const onRequestGet = paginaPublica({
         '@graph': [
           { '@type': 'WebSite', name: perfil.nombre, url: origen + '/' },
           {
-            '@type': 'Organization',
+            // Con servicios presenciales y zona, el negocio es local (areaServed)
+            '@type': zonas.length ? 'LocalBusiness' : 'Organization',
             name: perfil.nombre,
             url: origen + '/',
             description: perfil.descripcion_corta,
             ...(logo && { logo }),
             ...(redes.length && { sameAs: redes }),
+            ...(zonas.length && { areaServed: zonas.length === 1 ? zonas[0] : zonas }),
           },
         ],
       },

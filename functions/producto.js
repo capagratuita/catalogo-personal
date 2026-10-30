@@ -63,7 +63,10 @@ export const onRequestGet = paginaPublica({
         description: item.descripcion,
         ...(imagen && { image: imagen }),
         ...(esServicio
-          ? { provider: { '@type': 'Organization', name: perfil.nombre, url: origen + '/' } }
+          ? {
+            provider: { '@type': 'Organization', name: perfil.nombre, url: origen + '/' },
+            ...(item.modalidad !== 'online' && item.zona && { areaServed: item.zona }),
+          }
           : { sku: item.id }),
         ...(oferta && { offers: oferta }),
       },

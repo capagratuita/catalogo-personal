@@ -42,3 +42,17 @@ test('xmlSitemap pone lastmod con la fecha más reciente y lo omite si no hay fe
   assert.match(xml, /id=a<\/loc><lastmod>2026-03-01T/);
   assert.doesNotMatch(xmlSitemap('https://x.test', cat, {}), /lastmod/);
 });
+
+import { zonasAtendidas } from '../functions/_lib/seo.js';
+
+test('zonasAtendidas ignora servicios solo online, productos y solo-productos', () => {
+  const cat = { items: [
+    { id: 'a', tipo: 'servicio', modalidad: 'ambas', zona: ' Lima ' },
+    { id: 'b', tipo: 'servicio', modalidad: 'presencial', zona: 'Lima' },
+    { id: 'c', tipo: 'servicio', modalidad: 'online', zona: 'Todo el mundo' },
+    { id: 'd', tipo: 'servicio' },
+    { id: 'e', tipo: 'producto', zona: 'Cusco' },
+  ] };
+  assert.deepEqual(zonasAtendidas(cat, { perfil: { tipo_catalogo: 'mixto' } }), ['Lima']);
+  assert.deepEqual(zonasAtendidas(cat, { perfil: { tipo_catalogo: 'solo-productos' } }), []);
+});
