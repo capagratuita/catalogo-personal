@@ -93,5 +93,5 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 - **Longitudes** (`b5c490d`): descripción a 155 caracteres, títulos de ficha/FAQ a 60 (`recortar`, `tituloPagina`). El título de la portada no se toca. `aplicarMarca` ya no reañade el negocio al `document.title`.
 - **Detalles** (`d5bc3ec`): `og:image:alt`/`twitter:image:alt`, `og:locale` por moneda (`localeOg`) y `public/_headers`.
 - No hecho a propósito: sitemap de imágenes, `hreflang` (un solo idioma), cambios en `robots.txt`.
-- Pendiente: desplegar y comprobar en Cloudflare real las rutas `/servicio/…` y `/producto/…` (`env.ASSETS`) y las redirecciones 301; los `lastmod` aparecen en un sitio ya desplegado cuando se guarda cada key una vez. `npm test`: 34 pruebas.
+- Comprobado en producción (`personal-ecommerce.pages.dev`, 2026-10-30): rutas limpias con `env.ASSETS`, redirecciones 301, 404 `noindex`, `lastmod` en el sitemap y `_headers`. Pendiente: pruebas de integración del servidor en `npm test` (hoy solo hay pruebas de funciones puras) y revisar a ojo en navegador el formulario «Dirección» y el pie. `npm test`: 34 pruebas.
 - Si `npm run dev` cae con `SQLITE_BUSY_RECOVERY`: `pkill -f workerd; pkill -f wrangler` y volver a arrancar.
