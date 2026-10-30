@@ -497,7 +497,7 @@
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="submit" class="btn">Guardar Portada</button>
+                    <button type="submit" class="btn">Guardar</button>
                     <button type="button" class="btn btn-secondary" onclick="previsualizarLanding()">Ver JSON</button>
                 </div>
 
@@ -1131,7 +1131,7 @@
                 landingActual = landing;
                 modificado = false;
 
-                mostrarExito('Portada guardada exitosamente');
+                mostrarExito('Cambios guardados');
             } catch (error) {
                 console.error('Error guardando landing:', error);
                 mostrarError(error.message || 'Error guardando la landing. Por favor, intente nuevamente.');
