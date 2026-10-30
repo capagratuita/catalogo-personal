@@ -72,3 +72,12 @@ npx wrangler kv key put --binding=KV --local faq      --path=config/faq.example.
 ```
 
 En local, si bloqueas tu propia IP con contraseñas incorrectas: `npx wrangler kv key delete --binding=KV --local "intentos:127.0.0.1"`.
+
+## Revisión de coherencia de la UI (2026-10-29)
+
+- Hex sueltos de `admin/catalogo.html` y `admin/landing.html` (incluidos marrones de la paleta antigua), `admin.css`, `styles.css` y JS de `respaldo.html`/`landing.html` sustituidos por variables; tokens nuevos de estado en `:root`.
+- Radios del admin con `--radius-*`. «+ Añadir sección» de Landing pasa al estilo primario.
+- Notificación temporal duplicada en `index/producto/carrito.html` → clase `.notificacion` en `styles.css`.
+- Error corregido en la sesión: un `replace` sin límite metió `animation: slideUp` en varias reglas de `styles.css` (rompió el mosaico); se deshizo. Se probó un mosaico 4:3 y se descartó: se mantiene el original.
+- Pendiente: las pestañas de `catalogo.html` y `landing.html` siguen con estilos propios parecidos pero no compartidos.
+- Commit: `2f166b0`.

@@ -149,3 +149,9 @@
 - `npm run dev` + curl: subir `taller-masa-madre-g1…g5` devuelve 200; subir `pan-integral-g1` devuelve 400 («solo los servicios pueden tener galería»); `PUT catalogo` con `galeria` devuelve 200.
 - Los scripts inline de `producto.html`, `admin/catalogo.html` e `index.html` pasan `node --check`.
 - No verificado en navegador (Brave headless no cargó la página): mosaico en sus 4 disposiciones, visor, editor de galería, botones Subir/Bajar y tarjetas de producto estáticas a 375px y escritorio.
+
+## 2026-10-29 — Revisión de coherencia de la UI (colores, radios, notificación)
+- `npm test`: 22 pruebas pasan. Comprobado por script que toda `var(--x)` usada en CSS/HTML está definida.
+- Chromium (Playwright, 1280px y 375px) contra `npm run dev`: ficha de `taller-masa-madre` con el mosaico original (principal a la izquierda, extras a la derecha) sin cambios de disposición.
+- No verificado en navegador: los editores de `admin/catalogo.html` y `admin/landing.html` tras el cambio de colores y radios, ni la `.notificacion` (añadir al carrito, copiar enlace).
+
