@@ -54,7 +54,7 @@ Tu repositorio no se actualiza solo. Cuando quieras las mejoras nuevas:
 2. Espera un minuto: se abre un **pull request** «Sincronizar con el template» con los cambios. Si no se crea solo, ábrelo desde **Pull requests** (rama `sincronizar-template`) o activa **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** y repite.
 3. Revisa los cambios y pulsa **Merge**. Cloudflare vuelve a desplegar solo.
 
-No se toca tu `wrangler.toml` (ahí está tu configuración de KV). Si el pull request avisa de que ese archivo cambió en el template, aplica los cambios a mano conservando tus `id`. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
+No se toca tu `wrangler.jsonc` (ahí está tu configuración de KV). Si el pull request avisa de que ese archivo cambió en el template, aplica los cambios a mano conservando tus `id`. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
 
 ## Problemas frecuentes
 

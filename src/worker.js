@@ -1,6 +1,6 @@
 // Punto de entrada del Worker. Sustituye al enrutado por archivos de Pages Functions:
 // cada ruta dinámica se declara aquí y lo demás se sirve como estático (binding ASSETS).
-// Las rutas dinámicas también deben estar en `assets.run_worker_first` de wrangler.toml;
+// Las rutas dinámicas también deben estar en `assets.run_worker_first` de wrangler.jsonc;
 // las que no estén allí se sirven directamente desde public/ sin invocar este Worker.
 import { onRequest as middleware } from './_middleware.js';
 import * as content from './api/content.js';

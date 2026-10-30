@@ -100,5 +100,5 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 ## Migración a Workers (2026-10-30)
 
 - `functions/` → `src/`; `src/worker.js` enruta (tablas `EXACTAS`/`CON_ID`) y llama al middleware; lo no atendido cae a `env.ASSETS`. `_middleware.js` copia la respuesta antes de añadir CORS (las de ASSETS son inmutables).
-- `wrangler.toml`: `main`, `[assets]` con `run_worker_first` (rutas dinámicas), KV sin `id` (auto-provisión). `package.json`: `dev` = `wrangler dev`, `deploy` = `wrangler deploy`.
+- `wrangler.jsonc` (antes `.toml`): `main`, `assets` con `run_worker_first` (rutas dinámicas), KV sin `id` (auto-provisión). `package.json`: `dev` = `wrangler dev`, `deploy` = `wrangler deploy`.
 - Pendiente: probar el botón «Deploy to Cloudflare» con una cuenta real y confirmar que pide `ADMIN_PASSWORD` desde `.dev.vars.example`.

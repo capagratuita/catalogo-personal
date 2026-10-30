@@ -2,7 +2,7 @@
 
 ## 1. Estado actual (verificado 2026-10-30)
 
-**Migrado de Pages a Workers (2026-10-30)** para ofrecer el botón «Deploy to Cloudflare» (README): un Worker con Static Assets (`src/worker.js`, `[assets]` en `wrangler.toml`), KV sin IDs en el repo y `.dev.vars.example` para el secreto. `npm test` (34) y `npm run test:integracion` local (29 ok) pasan con `wrangler dev`. **Sin verificar:** el botón en una cuenta real (creación automática de KV y petición de `ADMIN_PASSWORD`), y el nuevo `*.workers.dev`; las menciones a `personal-ecommerce.pages.dev` en los SUMMARY son históricas.
+**Migrado de Pages a Workers (2026-10-30)** para ofrecer el botón «Deploy to Cloudflare» (README): un Worker con Static Assets (`src/worker.js`, `assets` en `wrangler.jsonc`), KV sin IDs en el repo y `.dev.vars.example` para el secreto. `npm test` (34) y `npm run test:integracion` local (29 ok) pasan con `wrangler dev`. **Sin verificar:** el botón en una cuenta real (creación automática de KV y petición de `ADMIN_PASSWORD`), y el nuevo `*.workers.dev`; las menciones a `personal-ecommerce.pages.dev` en los SUMMARY son históricas.
 
 El producto está orientado a **servicios de profesionales independientes y emprendedores**; los productos son un extra. El flujo local funciona sin Cloudflare login.
 
@@ -37,9 +37,9 @@ Bindings:
 | `env.KV` | KV local automático | Namespace KV real |
 | `env.IMAGES` | KV local automático | Segundo namespace KV real (fotos) |
 | `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado; plantilla en `.dev.vars.example`) | Secret (el botón «Deploy to Cloudflare» lo pide desde `.dev.vars.example`) |
-| `env.ASSETS` | Automático | `[assets] binding = "ASSETS"` en `wrangler.toml` |
+| `env.ASSETS` | Automático | `assets.binding = "ASSETS"` en `wrangler.jsonc` |
 
-Los dos `[[kv_namespaces]]` de `wrangler.toml` van **sin `id`**: `wrangler deploy` y el botón «Deploy to Cloudflare» crean los namespaces solos. No pongas IDs reales en el repo (es público). No agregues `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
+Los dos `kv_namespaces` de `wrangler.jsonc` (formato JSONC, no TOML) van **sin `id`**: `wrangler deploy` y el botón «Deploy to Cloudflare» crean los namespaces solos. No pongas IDs reales en el repo (es público). No agregues `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
 
 ## 3. Reglas duras (violarlas es un bug)
 
@@ -52,7 +52,7 @@ Los dos `[[kv_namespaces]]` de `wrangler.toml` van **sin `id`**: `wrangler deplo
 7. **Solo `wrangler` como devDependency.** No agregues `@aws-sdk/*` ni librerías de runtime; usa APIs nativas de Cloudflare/Web.
 8. **Valida el JSON antes de `KV.put`** y devuelve `400` con detalle en español.
 9. **Nombres de dominio y UI en español neutro**; funciones técnicas pueden ir en inglés.
-10. **Un solo Worker** (`main = "src/worker.js"`, `export default { fetch }`). Los módulos de `src/` conservan la forma `export const onRequestGet/Put/Post` y `_middleware.js` con `onRequest`, pero **se enrutan a mano en `src/worker.js`**: una ruta nueva se añade allí y a `assets.run_worker_first` en `wrangler.toml`. No uses `addEventListener('fetch')`.
+10. **Un solo Worker** (`"main": "src/worker.js"`, `export default { fetch }`). Los módulos de `src/` conservan la forma `export const onRequestGet/Put/Post` y `_middleware.js` con `onRequest`, pero **se enrutan a mano en `src/worker.js`**: una ruta nueva se añade allí y a `assets.run_worker_first` en `wrangler.jsonc`. No uses `addEventListener('fetch')`.
 11. **No uses `--persist`** (eliminado en Wrangler 4.x). La persistencia local es automática; si necesitas ruta, `--persist-to <dir>`.
 12. **No uses sintaxis de Workers Sites** (`[site]`) ni de Pages (`pages_build_output_dir`, `wrangler pages …`). Usa `[assets]` y `wrangler dev` / `wrangler deploy`.
 13. **Móvil primero** (375px), HTML semántico, `alt`, contraste AA y navegación por teclado en el admin.
@@ -103,8 +103,8 @@ src/
   _lib/{auth,defaults,cache,paginas,validadores,intentos}.js
   api/{content,defaults,login,logout,session,upload,image}.js
 config/*.example.json
-wrangler.toml, package.json, README.md
-.github/workflows/sincronizar-template.yml   # manual: abre un PR con los cambios del template (excluye wrangler.toml y .github/)
+wrangler.jsonc, package.json, README.md
+.github/workflows/sincronizar-template.yml   # manual: abre un PR con los cambios del template (excluye wrangler.jsonc y .github/)
 test/*.test.mjs
 AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
 ```
@@ -202,7 +202,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 ## 12. Al trabajar en este repo
 
 - Lee la sección 1 antes de asumir que algo funciona.
-- Si tocas `wrangler.toml` o el script `dev`, respeta las reglas 11 y 12.
+- Si tocas `wrangler.jsonc` o el script `dev`, respeta las reglas 11 y 12.
 - Si necesitas D1, tokens o commits automáticos, detente y pregunta.
 - Mantén `AGENTS.md`, `AGENTS_SUMMARY.md` y `VALIDATION_SUMMARY.md` sincronizados con el estado real.
 
