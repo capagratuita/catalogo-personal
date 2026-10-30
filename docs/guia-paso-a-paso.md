@@ -16,7 +16,7 @@ Esta guía es para quien quiere publicar sus **servicios** (y, si quiere, alguno
 ## Paso 1. Despliega con un clic
 
 1. Pulsa el botón **Deploy to Cloudflare** del [README del proyecto](../README.md) (inicia sesión en Cloudflare y en GitHub si te lo pide).
-2. Cloudflare copia el proyecto a **tu** cuenta de GitHub y crea por ti los dos almacenes de datos (KV): uno para textos y catálogo, otro para fotos.
+2. Cloudflare copia el proyecto a **tu** cuenta de GitHub. El formulario te pide dos almacenes de datos (KV): uno para textos y catálogo, otro para fotos. En cada desplegable elige **+ Crear nuevo** y escribe un nombre distinto: `catalogo-contenido` para `KV` y `catalogo-fotos-kv` para `IMAGES`.
 3. Cuando te pida `ADMIN_PASSWORD`, escribe tu contraseña de administrador (mínimo 12 caracteres). Es un secreto: no se guarda en GitHub.
 4. Pulsa **Create and deploy**. Al terminar verás una dirección del tipo `https://tu-proyecto.tu-usuario.workers.dev`.
 
@@ -48,11 +48,13 @@ Hasta que pulses **Guardar** en cada sección, el sitio muestra los datos de eje
 
 ## Cómo traer mejoras del template
 
-Tu fork no se actualiza solo. Cuando quieras las mejoras nuevas:
+Tu repositorio no se actualiza solo. Cuando quieras las mejoras nuevas:
 
-1. En tu fork de GitHub pulsa **Sync fork → Update branch**.
-2. Si GitHub avisa de un conflicto, conserva tu versión de `wrangler.toml`.
-3. Cloudflare vuelve a desplegar solo. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
+1. En tu repositorio de GitHub entra en **Actions → Sincronizar con el template → Run workflow**. (Si es la primera vez y GitHub pide habilitar los workflows, acéptalo.)
+2. Espera un minuto: se abre un **pull request** «Sincronizar con el template» con los cambios. Si no se crea solo, ábrelo desde **Pull requests** (rama `sincronizar-template`) o activa **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** y repite.
+3. Revisa los cambios y pulsa **Merge**. Cloudflare vuelve a desplegar solo.
+
+No se toca tu `wrangler.toml` (ahí está tu configuración de KV). Si el pull request avisa de que ese archivo cambió en el template, aplica los cambios a mano conservando tus `id`. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
 
 ## Problemas frecuentes
 

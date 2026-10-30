@@ -104,6 +104,7 @@ src/
   api/{content,defaults,login,logout,session,upload,image}.js
 config/*.example.json
 wrangler.toml, package.json, README.md
+.github/workflows/sincronizar-template.yml   # manual: abre un PR con los cambios del template (excluye wrangler.toml y .github/)
 test/*.test.mjs
 AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
 ```

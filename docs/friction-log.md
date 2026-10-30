@@ -10,7 +10,7 @@ Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la 
 
 | # | Dónde | Riesgo | Cómo comprobarlo | Estado |
 |---|---|---|---|---|
-| 1 | Paso 1 | El botón debe crear los dos KV sin IDs en `wrangler.toml` y pedir `ADMIN_PASSWORD` desde `.dev.vars.example`. | Pulsar el botón desde una cuenta nueva. | Sin verificar |
+| 1 | Paso 1 | El formulario pide escribir el nombre de cada KV (+ Crear nuevo, sin sugerencia; `wrangler.toml` no admite nombre para KV). Falta confirmar que pide `ADMIN_PASSWORD` desde `.dev.vars.example`. | Pulsar el botón desde una cuenta nueva. | Sin verificar |
 | 2 | Paso 1 | Si el formulario no pide la contraseña, queda sin secreto hasta añadirla a mano y volver a desplegar. | Igual que el anterior. | Sin verificar |
 | 3 | Paso 1 | El nombre exacto de los menús y formularios de Cloudflare puede diferir de la guía. | Seguir la guía con una cuenta nueva. | Sin verificar |
 | 4 | Actualizar | El fork creado por el botón puede no recibir actualizaciones del template con facilidad. | Sincronizar un fork creado por el botón. | Sin verificar |
