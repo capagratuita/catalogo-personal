@@ -19,13 +19,13 @@ jobs:
   sincronizar:
     # En el repositorio original no hay nada que sincronizar
     if: github.repository != 'capagratuita/catalogo-personal'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Descargar tu repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Descargar el template
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.UPSTREAM }}
           path: _template
@@ -68,6 +68,15 @@ jobs:
 
           CUERPO="Mejoras traídas de https://github.com/$UPSTREAM. Revisa los cambios y fusiona: Cloudflare volverá a desplegar. Tu contenido (catálogo, textos, fotos) está en KV y no se toca. ${AVISO}"
           if [ -z "$(gh pr list --head "$RAMA" --state open --json number --jq '.[0].number')" ]; then
-            gh pr create --head "$RAMA" --title "Sincronizar con el template" --body "$CUERPO" \
-              || echo "No se pudo crear el pull request solo. Ábrelo desde la pestaña Pull requests (rama $RAMA) o activa Settings → Actions → General → «Allow GitHub Actions to create and approve pull requests»."
+            if ! gh pr create --head "$RAMA" --title "Sincronizar con el template" --body "$CUERPO"; then
+              URL="https://github.com/${GITHUB_REPOSITORY}/pull/new/${RAMA}"
+              echo "No se pudo crear el pull request solo. Ábrelo aquí: $URL"
+              {
+                echo "### Falta un paso: abre el pull request"
+                echo ""
+                echo "Los cambios ya están en la rama \`$RAMA\`. [Abrir el pull request]($URL)."
+                echo ""
+                echo "Para que se cree solo la próxima vez: Settings → Actions → General → Workflow permissions → «Allow GitHub Actions to create and approve pull requests»."
+              } >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi

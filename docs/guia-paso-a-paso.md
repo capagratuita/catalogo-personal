@@ -53,11 +53,12 @@ Tu repositorio no se actualiza solo. El botón de Cloudflare no copia la carpeta
 1. Abre [`sincronizar-template.yml`](https://github.com/capagratuita/catalogo-personal/blob/main/.github/workflows/sincronizar-template.yml) en el repositorio original y pulsa el icono **Copy raw file**.
 2. En tu repositorio: **Add file → Create new file**. En el nombre escribe exactamente `.github/workflows/sincronizar-template.yml` (GitHub crea las carpetas al escribir las `/`) y pega el contenido.
 3. Pulsa **Commit changes** sobre `main`.
+4. Una sola vez, para que el workflow pueda abrir el pull request: **Settings → Actions → General → Workflow permissions** y marca **Allow GitHub Actions to create and approve pull requests**. Guarda.
 
 Cuando quieras las mejoras nuevas:
 
 1. En tu repositorio entra en **Actions → Sincronizar con el template → Run workflow**. (Si GitHub pide habilitar los workflows, acéptalo.)
-2. Espera un minuto: se abre un **pull request** «Sincronizar con el template» con los cambios. Si no se crea solo, ábrelo desde **Pull requests** (rama `sincronizar-template`) o activa **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** y repite.
+2. Espera un minuto: se abre un **pull request** «Sincronizar con el template» con los cambios. Si no se crea solo (falta el ajuste del paso 4 de arriba), la ejecución deja en su resumen un enlace para abrirlo a mano.
 3. Revisa los cambios y pulsa **Merge**. Cloudflare vuelve a desplegar solo.
 
 No se toca tu `wrangler.jsonc` (ahí está tu configuración de KV) ni `.github/`, así que si el workflow cambia en el template tendrás que volver a copiarlo. Si el pull request avisa de que `wrangler.jsonc` cambió, aplica los cambios a mano conservando tus `id`. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
