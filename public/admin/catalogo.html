@@ -504,7 +504,7 @@
 
         .variante-fila {
             display: grid;
-            grid-template-columns: minmax(140px, 1fr) 140px 130px auto;
+            grid-template-columns: minmax(140px, 1fr) 140px 150px auto;
             gap: 0.5rem;
             margin-bottom: 0.5rem;
             align-items: center;
@@ -528,6 +528,11 @@
 
         .variante-fila .moneda {
             height: auto;
+        }
+
+        .variante-fila select.moneda {
+            font-family: inherit;
+            cursor: pointer;
         }
 
         .btn-var-quitar,
@@ -908,17 +913,21 @@
                 if (!nombre && !precioTexto && !minutosTexto) return;
 
                 const precio = Number(precioTexto);
-                const minutos = Number(minutosTexto);
+                const unidad = fila.querySelector('.var-unidad').value;
+                const cantidad = Number(minutosTexto.replace(',', '.'));
+                const minutos = unidad === 'h' ? Math.round(cantidad * 60) : cantidad;
                 const donde = `Opción ${i + 1} de '${idItem}'`;
                 if (!nombre) return erroresDetalle.push(`${donde}: falta el nombre.`);
                 if (!precioTexto || !Number.isFinite(precio) || precio < 0) return erroresDetalle.push(`${donde} («${nombre}»): el precio debe ser un número mayor o igual a 0.`);
-                if (minutosTexto && (!Number.isFinite(minutos) || minutos < 0)) return erroresDetalle.push(`${donde} («${nombre}»): los minutos deben ser un número mayor o igual a 0, o dejarse vacíos.`);
+                if (minutosTexto && (!Number.isFinite(cantidad) || cantidad < 0)) return erroresDetalle.push(`${donde} («${nombre}»): la duración debe ser un número mayor o igual a 0, o dejarse vacíos.`);
                 variantes.push({ nombre, precio, duracion_minutos: minutosTexto ? minutos : null });
             });
             return variantes;
         }
 
         function htmlVarianteFila(v = {}) {
+            const enHoras = v.duracion_minutos >= 60 && v.duracion_minutos % 30 === 0;
+            const duracion = v.duracion_minutos == null ? '' : (enHoras ? v.duracion_minutos / 60 : v.duracion_minutos);
             return `
                 <div class="variante-fila">
                     <input class="var-nombre" type="text" maxlength="60" placeholder="Nombre (ej. Sesión suelta)" aria-label="Nombre de la opción" value="${escapeHtml(v.nombre)}">
@@ -927,8 +936,11 @@
                         <span class="moneda" aria-label="Moneda">${escapeHtml(monedaActual)}</span>
                     </span>
                     <span class="precio-wrap var-precio-wrap">
-                        <input class="var-minutos" type="number" min="0" step="1" placeholder="Duración" aria-label="Minutos de la opción (opcional)" value="${v.duracion_minutos ?? ''}">
-                        <span class="moneda" aria-hidden="true">min</span>
+                        <input class="var-minutos" type="number" min="0" step="any" placeholder="Duración" aria-label="Duración de la opción (opcional)" value="${duracion}">
+                        <select class="var-unidad moneda" aria-label="Unidad de la duración">
+                            <option value="min"${enHoras ? '' : ' selected'}>min</option>
+                            <option value="h"${enHoras ? ' selected' : ''}>h</option>
+                        </select>
                     </span>
                     <button type="button" class="btn-var-quitar" aria-label="Quitar esta opción">×</button>
                 </div>`;
