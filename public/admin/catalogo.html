@@ -408,23 +408,69 @@
             gap: 0.4rem;
         }
 
-        .btn-mover {
-            background: white;
-            border: 1px solid #bbb;
-            border-radius: 5px;
+        .btn-mover,
+        .gal-acciones .btn-gal-mover {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
             height: 36px;
-            padding: 0 0.7rem;
-            font-size: 0.85rem;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 8px;
+            color: #444;
             cursor: pointer;
         }
 
-        .btn-mover:hover:not(:disabled) {
-            background: #f0f0f0;
+        .btn-mover:hover:not(:disabled),
+        .gal-acciones .btn-gal-mover:hover:not(:disabled) {
+            background: #eef0f3;
         }
 
-        .btn-mover:disabled {
-            color: #aaa;
-            cursor: not-allowed;
+        .btn-mover:disabled,
+        .gal-acciones .btn-gal-mover:disabled {
+            color: #c4c7cc;
+            cursor: default;
+            opacity: 1;
+        }
+
+        .asa {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            color: #8a8f98;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .asa:hover {
+            background: #eef0f3;
+            color: #444;
+        }
+
+        .arrastrando {
+            opacity: 0.85;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            outline: 2px solid var(--primary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .arrastrando .asa {
+            cursor: grabbing;
+        }
+
+        .item-cabecera .asa {
+            margin-right: -0.25rem;
+        }
+
+        .item-cabecera .item-posicion {
+            margin-right: auto;
         }
 
         .btn-mover:focus-visible {
@@ -620,13 +666,27 @@
             gap: 0.3rem;
         }
 
+        .gal-acciones .asa {
+            flex: none;
+            width: 32px;
+            height: 32px;
+        }
+
+        .gal-acciones .btn-gal-mover {
+            flex: none;
+        }
+
+        .gal-acciones .btn-gal-quitar {
+            margin-left: auto;
+        }
+
         .gal-acciones button {
             flex: 1;
             min-height: 36px;
             background: white;
             border: 1px solid #bbb;
             border-radius: 5px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             cursor: pointer;
         }
 
@@ -715,8 +775,10 @@
                 gap: 0.75rem;
             }
 
-            .btn-mover {
-                min-height: 44px;
+            .btn-mover,
+            .asa {
+                width: 44px;
+                height: 44px;
             }
 
             /* Fila de categoría en dos columnas: Disponible | Destacado, ID | Duración */
@@ -1034,8 +1096,9 @@
                     <img src="/api/image?id=${encodeURIComponent(`${idItem}-g${n}`)}&v=${Date.now()}" alt="">
                     <input type="text" class="gal-alt" maxlength="100" placeholder="Descripción de la foto" aria-label="Descripción de la foto ${n}" value="${escapeHtml(alt)}">
                     <div class="gal-acciones">
-                        <button type="button" class="btn-gal-mover" data-dir="-1" aria-label="Mover antes">◀</button>
-                        <button type="button" class="btn-gal-mover" data-dir="1" aria-label="Mover después">▶</button>
+                        <span class="asa" title="Arrastra para ordenar" aria-hidden="true">${ICONO_ASA}</span>
+                        <button type="button" class="btn-gal-mover" data-dir="-1" aria-label="Mover antes" title="Mover antes">${icono('izquierda')}</button>
+                        <button type="button" class="btn-gal-mover" data-dir="1" aria-label="Mover después" title="Mover después">${icono('derecha')}</button>
                         <button type="button" class="btn-gal-quitar">Quitar</button>
                     </div>
                 </li>`;
@@ -1084,13 +1147,49 @@
             }
         }
 
+        const ICONO_ASA = '<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" fill="currentColor"><circle cx="7" cy="5" r="1.5"/><circle cx="13" cy="5" r="1.5"/><circle cx="7" cy="10" r="1.5"/><circle cx="13" cy="10" r="1.5"/><circle cx="7" cy="15" r="1.5"/><circle cx="13" cy="15" r="1.5"/></svg>';
+        const TRAZOS = { arriba: 'M5 12l5-5 5 5', abajo: 'M5 8l5 5 5-5', izquierda: 'M12 5l-5 5 5 5', derecha: 'M8 5l5 5-5 5' };
+        function icono(nombre) {
+            return `<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${TRAZOS[nombre]}"/></svg>`;
+        }
+
+        // Ordenar arrastrando el asa (ratón o dedo). Los botones siguen sirviendo con teclado.
+        function iniciarArrastre(evento, elemento, hermanosDe, alTerminar) {
+            evento.preventDefault();
+            const asa = evento.target.closest('.asa');
+            asa.setPointerCapture(evento.pointerId);
+            elemento.classList.add('arrastrando');
+            const mover = (e) => {
+                const hermanos = hermanosDe();
+                const destino = document.elementsFromPoint(e.clientX, e.clientY)
+                    .find(el => el !== elemento && hermanos.includes(el));
+                if (destino) {
+                    if (hermanos.indexOf(elemento) < hermanos.indexOf(destino)) destino.after(elemento);
+                    else destino.before(elemento);
+                }
+                if (e.clientY < 70) window.scrollBy(0, -14);
+                else if (e.clientY > window.innerHeight - 70) window.scrollBy(0, 14);
+            };
+            const fin = () => {
+                asa.removeEventListener('pointermove', mover);
+                asa.removeEventListener('pointerup', fin);
+                asa.removeEventListener('pointercancel', fin);
+                elemento.classList.remove('arrastrando');
+                alTerminar();
+            };
+            asa.addEventListener('pointermove', mover);
+            asa.addEventListener('pointerup', fin);
+            asa.addEventListener('pointercancel', fin);
+        }
+
         function htmlCabeceraItem() {
             return `
                 <div class="item-cabecera">
+                    <span class="asa" title="Arrastra para ordenar" aria-hidden="true">${ICONO_ASA}</span>
                     <span class="item-posicion" aria-hidden="true"></span>
                     <div class="item-acciones">
-                        <button type="button" class="btn-mover" data-dir="-1" aria-label="Subir">↑ Subir</button>
-                        <button type="button" class="btn-mover" data-dir="1" aria-label="Bajar">↓ Bajar</button>
+                        <button type="button" class="btn-mover" data-dir="-1" aria-label="Subir" title="Subir">${icono('arriba')}</button>
+                        <button type="button" class="btn-mover" data-dir="1" aria-label="Bajar" title="Bajar">${icono('abajo')}</button>
                         <button type="button" class="btn-remove-item" onclick="eliminarItem(this)">Eliminar</button>
                     </div>
                 </div>`;
@@ -1427,6 +1526,7 @@
 
         function cambiarTabCategorias(tipo) {
             tipoActual = tipo;
+            try { sessionStorage.setItem('catalogo-tab', tipo); } catch (e) {}
             document.querySelectorAll('.categorias-tab').forEach(tab => {
                 const activa = tab.dataset.tipo === tipo;
                 tab.classList.toggle('activa', activa);
@@ -1604,7 +1704,11 @@
                 const hayProductos = items.some(i => i.tipo === 'producto');
                 const hayServicios = items.some(i => i.tipo === 'servicio');
                 const soloServicios = config && config.perfil && config.perfil.tipo_catalogo === 'solo-servicios';
-                cambiarTabCategorias(!hayProductos && (hayServicios || soloServicios) ? 'servicio' : 'producto');
+                let recordada = null;
+                try { recordada = sessionStorage.getItem('catalogo-tab'); } catch (e) {}
+                cambiarTabCategorias(recordada === 'producto' || recordada === 'servicio'
+                    ? recordada
+                    : (!hayProductos && (hayServicios || soloServicios) ? 'servicio' : 'producto'));
             } catch (error) {
                 console.error('Error cargando catálogo:', error);
                 // Si no hay catálogo, agregar un item vacío
@@ -1839,6 +1943,21 @@
                     detalle.querySelector('.btn-var-agregar').focus();
                 }
                 actualizarBotonVariantes(detalle);
+            });
+
+            document.getElementById('items-container').addEventListener('pointerdown', function(event) {
+                if (event.button > 0 || !event.target.closest('.asa')) return;
+                const foto = event.target.closest('.gal-foto');
+                if (foto) {
+                    const fila = foto.closest('.item-row');
+                    iniciarArrastre(event, foto, () => [...foto.parentElement.children], () => actualizarGaleria(fila));
+                    return;
+                }
+                const fila = event.target.closest('.item-row');
+                const tipo = fila.querySelector('.item-tipo').value;
+                iniciarArrastre(event, fila,
+                    () => [...document.querySelectorAll('#items-container .item-row')].filter(r => r.querySelector('.item-tipo').value === tipo),
+                    filtrarItems);
             });
 
             document.getElementById('items-container').addEventListener('change', function(event) {
