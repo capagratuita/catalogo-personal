@@ -137,10 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLanding().then(landing => aplicarTema(landing.tema)).catch(() => {});
 });
 
-// URL de la ficha: los servicios tienen URL limpia (/servicio/{id}); los productos, /producto?id=
+// URL limpia de la ficha: /servicio/{id} para servicios y /producto/{id} para productos
 function urlFicha(item) {
   const id = encodeURIComponent(item.id);
-  return item.tipo === 'servicio' ? `/servicio/${id}` : `/producto?id=${id}`;
+  return `/${item.tipo === 'servicio' ? 'servicio' : 'producto'}/${id}`;
 }
 
 function renderItem(item, config, catalogo) {

@@ -70,9 +70,9 @@ test('direccionPostal devuelve PostalAddress solo con ciudad y omite campos vacÃ
 
 import { rutaItem } from '../functions/_lib/seo.js';
 
-test('rutaItem da URL limpia a los servicios y query a los productos', () => {
+test('rutaItem da URL limpia a servicios y productos', () => {
   assert.equal(rutaItem({ id: 'taller-masa-madre', tipo: 'servicio' }), '/servicio/taller-masa-madre');
-  assert.equal(rutaItem({ id: 'pan-integral', tipo: 'producto' }), '/producto?id=pan-integral');
+  assert.equal(rutaItem({ id: 'pan-integral', tipo: 'producto' }), '/producto/pan-integral');
 });
 
 import { recortar, tituloPagina } from '../functions/_lib/seo.js';

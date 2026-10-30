@@ -1,10 +1,10 @@
 // HTML real para buscadores y vistas previas sin JavaScript. Módulo puro (testeable en Node).
 // app.js repinta la página con las tarjetas interactivas y retira este bloque.
 
-// URL de la ficha: los servicios tienen URL limpia (/servicio/{id}); los productos, /producto?id=
+// URL limpia de la ficha: /servicio/{id} para servicios y /producto/{id} para productos
 export function rutaItem(item) {
   const id = encodeURIComponent(item.id);
-  return item.tipo === 'servicio' ? `/servicio/${id}` : `/producto?id=${id}`;
+  return `/${item.tipo === 'servicio' ? 'servicio' : 'producto'}/${id}`;
 }
 
 const TITULOS = { producto: 'Productos', servicio: 'Servicios' };

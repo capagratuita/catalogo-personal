@@ -1,3 +1,4 @@
 import { fichaPublica } from './_lib/ficha.js';
 
-export const onRequestGet = fichaPublica({ desdeRuta: false });
+// URL antigua /producto?id=…: redirige a la ficha con URL limpia
+export const onRequestGet = fichaPublica();

@@ -1,14 +1,15 @@
 import { paginaPublica, existeFoto, urlImagenValida } from './paginas.js';
 import { rutaItem, tituloPagina } from './seo.js';
 
-// Ficha de un item. Los servicios viven en /servicio/{id} (el HTML es producto.html) y los productos
-// en /producto?id=; cada URL redirige a la que le corresponde al item.
-export const fichaPublica = ({ desdeRuta }) => paginaPublica({
+// Ficha de un item. Los servicios viven en /servicio/{id} y los productos en /producto/{id} (el HTML es
+// producto.html en ambos); cada URL redirige a la que le corresponde al item. `tipo` es el del item que
+// atiende la ruta; sin él es la URL antigua /producto?id=, que siempre redirige.
+export const fichaPublica = ({ tipo } = {}) => paginaPublica({
   claves: ['config', 'catalogo', 'landing'],
-  fuente: desdeRuta ? ({ env, request }) => env.ASSETS.fetch(new URL('/producto', request.url)) : undefined,
+  fuente: tipo ? ({ env, request }) => env.ASSETS.fetch(new URL('/producto', request.url)) : undefined,
   meta: async ({ config, catalogo }, { request, env, origen, params }) => {
     const perfil = config.perfil;
-    const id = desdeRuta ? params.id : new URL(request.url).searchParams.get('id');
+    const id = tipo ? params.id : new URL(request.url).searchParams.get('id');
     const item = catalogo.items.find(i => i.id === id);
 
     if (!item) {
@@ -16,7 +17,7 @@ export const fichaPublica = ({ desdeRuta }) => paginaPublica({
     }
 
     const ruta = rutaItem(item);
-    if (desdeRuta !== (item.tipo === 'servicio')) return { titulo: item.nombre, redirigir: ruta };
+    if (item.tipo !== tipo) return { titulo: item.nombre, redirigir: ruta };
     const tieneFoto = await existeFoto(env, item.id);
     const imagen = tieneFoto
       ? `${origen}/api/image?id=${encodeURIComponent(item.id)}`

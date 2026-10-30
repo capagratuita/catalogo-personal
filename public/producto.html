@@ -101,10 +101,10 @@
         let carrito = [];
 
         async function cargarProducto() {
-            // Servicios: /servicio/{id}. Productos: /producto?id={id}
-            const rutaServicio = window.location.pathname.match(/^\/servicio\/([^/]+)/);
-            const productId = rutaServicio
-                ? decodeURIComponent(rutaServicio[1])
+            // /servicio/{id} y /producto/{id}; la URL antigua /producto?id={id} se redirige en el servidor
+            const rutaFicha = window.location.pathname.match(/^\/(?:servicio|producto)\/([^/]+)/);
+            const productId = rutaFicha
+                ? decodeURIComponent(rutaFicha[1])
                 : new URLSearchParams(window.location.search).get('id');
             
             if (!productId) {
