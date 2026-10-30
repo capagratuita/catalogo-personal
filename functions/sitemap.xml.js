@@ -1,18 +1,23 @@
 import { getContent } from './_lib/defaults.js';
+import { xmlSitemap } from './_lib/seo.js';
 
-function escapar(texto) {
-  return texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const CLAVES = ['config', 'catalogo', 'landing', 'faq'];
+
+// Fecha del último guardado de cada key (metadata que añade PUT /api/content)
+async function fechasContenido(env) {
+  const fechas = {};
+  await Promise.all(CLAVES.map(async clave => {
+    const { metadata } = await env.KV.getWithMetadata(clave, { type: 'text' });
+    if (metadata?.updated_at) fechas[clave] = metadata.updated_at;
+  }));
+  return fechas;
 }
 
 export const onRequestGet = async ({ request, env }) => {
   const origen = new URL(request.url).origin;
-  const catalogo = await getContent(env, 'catalogo', request);
+  const [catalogo, fechas] = await Promise.all([getContent(env, 'catalogo', request), fechasContenido(env)]);
 
-  const rutas = ['/', '/faq', ...catalogo.items.map(item => `/producto?id=${encodeURIComponent(item.id)}`)];
-  const urls = rutas.map(ruta => `  <url><loc>${escapar(origen + ruta)}</loc></url>`).join('\n');
-
-  return new Response(
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
-    { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' } },
-  );
+  return new Response(xmlSitemap(origen, catalogo, fechas), {
+    headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+  });
 };

@@ -38,3 +38,22 @@ export function htmlCatalogoEstatico(catalogo, config) {
     ? `<section class="catalogo catalogo-estatico" id="catalogo-estatico"><div class="container">${secciones}</div></section>`
     : '';
 }
+
+function masReciente(...fechas) {
+  return fechas.filter(Boolean).sort().at(-1);
+}
+
+// sitemap.xml. `fechas` trae el updated_at (ISO) de cada key de contenido; las que nunca se
+// han guardado no lo tienen y su URL va sin <lastmod> (mejor omitirlo que inventarlo).
+// Los items comparten la fecha del catálogo: no se guarda una por item.
+export function xmlSitemap(origen, catalogo, fechas = {}) {
+  const rutas = [
+    ['/', masReciente(fechas.config, fechas.catalogo, fechas.landing)],
+    ['/faq', masReciente(fechas.config, fechas.faq)],
+    ...catalogo.items.map(item => [`/producto?id=${encodeURIComponent(item.id)}`, masReciente(fechas.config, fechas.catalogo)]),
+  ];
+  const urls = rutas.map(([ruta, fecha]) =>
+    `  <url><loc>${escaparHtml(origen + ruta)}</loc>${fecha ? `<lastmod>${fecha}</lastmod>` : ''}</url>`,
+  ).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}

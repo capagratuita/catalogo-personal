@@ -63,9 +63,11 @@ export const onRequestPut = async ({ request, env }) => {
     } else {
       validators[key](body);
     }
-    await env.KV.put(key, JSON.stringify(body));
+    // La fecha va en la metadata de KV (no en el JSON) y alimenta el <lastmod> del sitemap
+    const updated_at = new Date().toISOString();
+    await env.KV.put(key, JSON.stringify(body), { metadata: { updated_at } });
     await invalidarContenido(request, key);
-    return json({ ok: true, updated_at: new Date().toISOString() });
+    return json({ ok: true, updated_at });
   } catch (error) {
     return json({ error: 'JSON inválido', detalle: error.message }, 400);
   }
