@@ -2,7 +2,7 @@
 
 ## 1. Estado actual (verificado 2026-10-30)
 
-**Migrado de Pages a Workers (2026-10-30)** para ofrecer el botón «Deploy to Cloudflare» (README): un Worker con Static Assets (`src/worker.js`, `assets` en `wrangler.jsonc`), KV sin IDs en el repo y `.dev.vars.example` para el secreto. `npm test` (34) y `npm run test:integracion` local (29 ok) pasan con `wrangler dev`. **Sin verificar:** el botón en una cuenta real (creación automática de KV y petición de `ADMIN_PASSWORD`), y el nuevo `*.workers.dev`; las menciones a `personal-ecommerce.pages.dev` en los SUMMARY son históricas.
+**Migrado de Pages a Workers (2026-10-30)** para ofrecer el botón «Deploy to Cloudflare» (README): un Worker con Static Assets (`src/worker.js`, `assets` en `wrangler.jsonc`), KV sin IDs en el repo y `.dev.vars.example` para el secreto. `npm test` (34) y `npm run test:integracion` local (29 ok) pasan con `wrangler dev`. **Botón verificado (2026-10-30):** con `wrangler.jsonc` el asistente crea los dos KV con los nombres que se escriban y los enlaza (con `wrangler.toml` no); los nombres por defecto son iguales y fallan, hay que cambiarlos. **Sin verificar:** las menciones a `personal-ecommerce.pages.dev` en los SUMMARY son históricas.
 
 El producto está orientado a **servicios de profesionales independientes y emprendedores**; los productos son un extra. El flujo local funciona sin Cloudflare login.
 

@@ -16,7 +16,7 @@ Esta guía es para quien quiere publicar sus **servicios** (y, si quiere, alguno
 ## Paso 1. Despliega con un clic
 
 1. Pulsa el botón **Deploy to Cloudflare** del [README del proyecto](../README.md) (inicia sesión en Cloudflare y en GitHub si te lo pide).
-2. Desplázate hasta el final del formulario: verás los nombres de los dos almacenes de datos (KV) y el campo `ADMIN_PASSWORD`. No necesitas cambiar los nombres de los KV: el sitio usará los que Cloudflare crea al desplegar (`<nombre-del-worker>-kv` y `<nombre-del-worker>-images`, p. ej. `catalogo-personal-kv`). Si el asistente crea otros dos KV con nombres distintos, quedarán sin usar y puedes borrarlos después en **Storage & Databases → KV**.
+2. Desplázate hasta el final del formulario: verás los nombres de los dos almacenes de datos (KV) y el campo `ADMIN_PASSWORD`. Por defecto los dos KV traen el mismo nombre y **eso falla**. Cámbialos a dos nombres distintos entre sí, por ejemplo `catalogo-datos` (para `KV`, textos y catálogo) y `catalogo-fotos` (para `IMAGES`, fotos).
 3. Cuando te pida `ADMIN_PASSWORD`, escribe tu contraseña de administrador (mínimo 12 caracteres). Es un secreto: no se guarda en GitHub.
 4. Pulsa **Implementar**. Al terminar verás una dirección del tipo `https://tu-proyecto.tu-usuario.workers.dev`.
 

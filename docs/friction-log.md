@@ -10,7 +10,7 @@ Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la 
 
 | # | Dónde | Riesgo | Cómo comprobarlo | Estado |
 |---|---|---|---|---|
-| 1 | Paso 1 | El formulario (al hacer scroll) crea dos KV con los nombres que se escriban, pero el Worker usa otros dos que crea `wrangler deploy` (`<worker>-kv`, `<worker>-images`); los del formulario quedan sin usar (visto el 2026-10-30, cuenta nueva: 4 KV). | Repetir en cuenta limpia sin tocar los nombres de KV. | Despliegue 1 ok; segundo despliegue ok el 2026-10-30 (bindings «inherited», sin «Provisioning») |
+| 1 | Paso 1 | Los dos campos de KV del formulario traen el mismo nombre por defecto (el del Worker) y el despliegue falla («title already exists»). Con `wrangler.toml` los KV del formulario no se enlazaban; con `wrangler.jsonc` sí (2026-10-30). | Cambiar los dos nombres a valores distintos (`catalogo-datos`, `catalogo-fotos`); si falla, borrar los KV sobrantes antes de repetir. | Verificado con `wrangler.jsonc` (bindings ya enlazados, sin «Provisioning») |
 | 2 | Paso 1 | Si el formulario no pide la contraseña, queda sin secreto hasta añadirla a mano y volver a desplegar. | Igual que el anterior. | Sin verificar |
 | 3 | Paso 1 | El nombre exacto de los menús y formularios de Cloudflare puede diferir de la guía. | Seguir la guía con una cuenta nueva. | Sin verificar |
 | 4 | Actualizar | El fork creado por el botón puede no recibir actualizaciones del template con facilidad. | Sincronizar un fork creado por el botón. | Sin verificar |
