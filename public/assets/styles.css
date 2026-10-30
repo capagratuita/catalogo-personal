@@ -26,6 +26,14 @@
   --accent: #B6F23C;
   --ok: #0B6B3F;
   --ok-hover: #09582F;
+  --ok-bg: #E8F5E9;
+  --danger: #B42318;
+  --danger-bg: #FEF3F2;
+  --danger-line: #F1C4BF;
+  --warn: #6D4C00;
+  --warn-bg: #FFF8E1;
+  --warn-line: #F9A825;
+  --line-strong: #CCD0D6;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Estilo (landing.tema.estilo). Estos valores son el estilo «moderno»; los otros los sobrescriben al final del archivo. */
@@ -502,6 +510,9 @@ nav .carrito-contador {
   border-radius: var(--radius-box);
   background: var(--bg-alt);
   cursor: zoom-in;
+  /* Mientras la foto carga (lazy) el navegador pinta su alt: se oculta, sigue disponible para lectores */
+  font-size: 0;
+  color: transparent;
 }
 
 .mosaico-tile img,
@@ -916,16 +927,16 @@ nav .carrito-contador {
 
 .carrito-item-eliminar {
   background: transparent;
-  color: #b42318;
-  border: 1px solid #f1c4bf;
+  color: var(--danger);
+  border: 1px solid var(--danger-line);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-btn);
   cursor: pointer;
 }
 
 .carrito-item-eliminar:hover {
-  background: #fef3f2;
-  border-color: #b42318;
+  background: var(--danger-bg);
+  border-color: var(--danger);
 }
 
 .carrito-resumen {
@@ -1119,16 +1130,16 @@ footer .redes-sociales {
   }
 
   .error {
-    color: #d32f2f;
-    background: #ffebee;
+    color: var(--danger);
+    background: var(--danger-bg);
     padding: 1rem;
     border-radius: var(--radius-btn);
     margin: 1rem 0;
   }
 
   .success {
-    color: #388e3c;
-    background: #e8f5e8;
+    color: var(--ok);
+    background: var(--ok-bg);
     padding: 1rem;
     border-radius: var(--radius-btn);
     margin: 1rem 0;
@@ -1591,3 +1602,24 @@ html[data-estilo="elegante"] .carrito-items,
 html[data-estilo="elegante"] .carrito-resumen { border: 1px solid var(--ink); }
 html[data-estilo="elegante"] .catalogo,
 html[data-estilo="elegante"] .landing-seccion { padding-top: 5rem; padding-bottom: 5rem; }
+
+/* Notificación temporal (añadido al carrito, enlace copiado…) */
+.notificacion {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: #fff;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius-btn);
+  z-index: 1000;
+  max-width: 92vw;
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(100%); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

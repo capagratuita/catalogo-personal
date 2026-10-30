@@ -49,7 +49,7 @@
             gap: 0.5rem;
             overflow-x: auto;
             overflow-y: hidden;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid var(--line);
             margin-bottom: 1.5rem;
         }
 
@@ -67,23 +67,23 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #555;
+            color: var(--muted);
         }
 
         .btn-agregar {
             min-height: 44px;
             padding: 0.5rem 1rem;
-            border: 2px solid #0B6B3F;
-            border-radius: 8px;
-            background: #fff;
-            color: #0B6B3F;
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-btn);
+            background: var(--bg);
+            color: var(--primary);
             font-size: 0.95rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
         }
 
         .btn-agregar:hover,
-        .btn-agregar[aria-expanded="true"] { background: #0B6B3F; color: #fff; }
+        .btn-agregar[aria-expanded="true"] { background: var(--primary); color: var(--bg); }
 
         .btn-agregar:focus-visible {
             outline: 2px solid var(--primary);
@@ -104,7 +104,7 @@
             padding: 0.7rem 1rem;
             min-height: 44px;
             font-size: 0.95rem;
-            color: #555;
+            color: var(--muted);
             cursor: pointer;
             white-space: nowrap;
             max-width: 220px;
@@ -117,8 +117,8 @@
             gap: 0.25rem;
             padding: 0.25rem;
             margin-bottom: 1rem;
-            background: #eef0f2;
-            border-radius: 10px;
+            background: var(--bg-alt);
+            border-radius: var(--radius-box);
         }
 
         .tab-nivel1 {
@@ -126,17 +126,17 @@
             min-height: 44px;
             padding: 0.5rem 0.4rem;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-btn);
             background: none;
             font-size: 0.95rem;
-            color: #444;
+            color: var(--ink-soft);
             cursor: pointer;
         }
 
-        .tab-nivel1:hover { background: #e2e5e8; }
+        .tab-nivel1:hover { background: var(--line); }
 
         .tab-nivel1[aria-selected="true"] {
-            background: #fff;
+            background: var(--bg);
             color: var(--primary);
             font-weight: 700;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -150,13 +150,13 @@
         .sin-secciones {
             text-align: center;
             padding: 1.5rem 0;
-            color: #555;
+            color: var(--muted);
         }
 
         .tab:hover,
         .tab-agregar:hover {
             color: var(--primary);
-            background: #f5f5f5;
+            background: var(--bg-alt);
         }
 
         .tab[aria-selected="true"] {
@@ -172,7 +172,7 @@
         }
 
         .tab-agregar {
-            color: #0B6B3F;
+            color: var(--ok);
             font-weight: 600;
         }
 
@@ -195,8 +195,8 @@
         .foto-sobre-mi-vacia {
             display: grid;
             place-items: center;
-            background: #eef0f2;
-            color: #555;
+            background: var(--bg-alt);
+            color: var(--muted);
             font-size: 0.8rem;
         }
 
@@ -210,15 +210,15 @@
 
         .ayuda {
             font-size: 0.85rem;
-            color: #555;
+            color: var(--muted);
             margin-top: 0.3rem;
         }
 
         .elegir-tipo {
             margin-bottom: 1.5rem;
             padding: 1rem;
-            background: #f9f9f9;
-            border-radius: 5px;
+            background: var(--bg-alt);
+            border-radius: var(--radius-btn);
         }
 
         .elegir-tipo-lista {
@@ -231,12 +231,12 @@
         .tipo-opcion {
             text-align: left;
             background: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             padding: 0.75rem;
             cursor: pointer;
             font-size: 0.9rem;
-            color: #333;
+            color: var(--ink-soft);
         }
 
         .tipo-opcion strong {
@@ -263,9 +263,9 @@
 
         .btn-mini {
             background: white;
-            color: #333;
-            border: 1px solid #bbb;
-            border-radius: 5px;
+            color: var(--ink-soft);
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius-btn);
             padding: 0.5rem 0.9rem;
             min-height: 44px;
             cursor: pointer;
@@ -273,11 +273,11 @@
         }
 
         .btn-mini:hover:not(:disabled) {
-            background: #f0f0f0;
+            background: var(--bg-alt);
         }
 
         .btn-mini:disabled {
-            color: #aaa;
+            color: var(--muted);
             cursor: not-allowed;
         }
 
@@ -287,24 +287,24 @@
         }
 
         .btn-peligro {
-            color: #b71c1c;
-            border-color: #b71c1c;
+            color: var(--danger);
+            border-color: var(--danger);
             margin-left: auto;
         }
 
         .aviso-vacio {
-            background: #fff8e1;
-            color: #6d4c00;
-            border-left: 4px solid #f9a825;
+            background: var(--warn-bg);
+            color: var(--warn);
+            border-left: 4px solid var(--warn-line);
             padding: 0.6rem 0.8rem;
-            border-radius: 0 5px 5px 0;
+            border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
         }
 
         .items-lista {
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             padding: 0.5rem 0.75rem;
             max-height: 320px;
             overflow-y: auto;
@@ -312,7 +312,7 @@
 
         .items-lista legend {
             font-weight: bold;
-            color: #555;
+            color: var(--muted);
             padding: 0 0.4rem;
         }
 
@@ -322,7 +322,7 @@
             gap: 0.6rem;
             padding: 0.55rem 0.25rem;
             min-height: 44px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--line);
             cursor: pointer;
         }
 
@@ -337,19 +337,19 @@
         }
 
         .items-lista small {
-            color: #666;
+            color: var(--muted);
         }
 
         .item-fantasma {
-            color: #b71c1c;
+            color: var(--danger);
         }
 
         .testimonio-editor {
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             padding: 1rem;
             margin-bottom: 1rem;
-            background: #fafafa;
+            background: var(--bg-alt);
         }
 
         .testimonio-editor-cabecera {
@@ -358,7 +358,7 @@
             align-items: center;
             margin-bottom: 0.75rem;
             font-weight: bold;
-            color: #555;
+            color: var(--muted);
         }
 
         .testimonio-campos {
@@ -369,7 +369,7 @@
 
         .contador {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--muted);
             text-align: right;
         }
 
@@ -1036,7 +1036,7 @@
             aviso.textContent = cumple
                 ? `Contraste ${ratio.toFixed(1)}:1: el texto de los botones se lee bien.`
                 : `Contraste ${ratio.toFixed(1)}:1: demasiado oscuro, el texto de los botones no se leería bien. Elige un tono más claro (mínimo 4.5:1).`;
-            aviso.style.color = cumple ? '#0B6B3F' : '#b71c1c';
+            aviso.style.color = cumple ? 'var(--ok)' : 'var(--danger)';
         }
 
         // ---------- Carga ----------

@@ -18,7 +18,7 @@
         .categorias-tabs {
             display: flex;
             gap: 0.25rem;
-            border-bottom: 1px solid #e5dcd5;
+            border-bottom: 1px solid var(--line);
         }
 
         .categorias-tab {
@@ -67,7 +67,7 @@
             padding: 0.35rem 0.6rem 0.35rem 0.8rem;
             background: var(--bg-alt);
             color: var(--primary);
-            border-radius: 999px;
+            border-radius: var(--radius-pill);
             font-size: 0.9rem;
             font-weight: 600;
         }
@@ -86,7 +86,7 @@
         }
 
         .categoria-chip button:hover {
-            color: #d32f2f;
+            color: var(--danger);
         }
 
         .categorias-add {
@@ -103,7 +103,7 @@
             color: white;
             border: none;
             padding: 0 1rem;
-            border-radius: 5px;
+            border-radius: var(--radius-btn);
             cursor: pointer;
             font-size: 1.2rem;
         }
@@ -117,9 +117,9 @@
             flex-direction: column;
             gap: 0.6rem;
             padding: 0.75rem;
-            background: #fbf7f3;
-            border: 1px dashed #d8c3b4;
-            border-radius: 8px;
+            background: var(--bg-alt);
+            border: 1px dashed var(--line-strong);
+            border-radius: var(--radius-btn);
         }
 
         .categorias-agendamiento-info {
@@ -133,7 +133,7 @@
             font-weight: 700;
             letter-spacing: 0.03em;
             text-transform: uppercase;
-            color: #6b4a35;
+            color: var(--ink-soft);
         }
 
         .categorias-agendamiento-ayuda {
@@ -154,13 +154,13 @@
             gap: 0.4rem;
             margin: 0;
             padding: 0.35rem 0.65rem;
-            background: #ffffff;
-            border: 1px solid #ddd0c6;
-            border-radius: 999px;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-pill);
             font-size: 0.85rem;
             font-weight: 400;
             line-height: 1.2;
-            color: #5a463a;
+            color: var(--ink-soft);
             cursor: pointer;
             user-select: none;
         }
@@ -188,7 +188,7 @@
 
         .categorias-agendamiento-opciones .sin-categorias {
             font-size: 0.85rem;
-            color: #999;
+            color: var(--muted);
         }
 
         .item-row {
@@ -196,7 +196,7 @@
             grid-template-columns: 100px 150px 1fr 120px 80px auto;
             gap: 1rem;
             padding: 1rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--line);
             align-items: center;
         }
 
@@ -213,9 +213,9 @@
         .item-row-edit {
             display: block;
             margin: 0.75rem;
-            border: 1px solid #e2d3c5;
-            border-radius: 8px;
-            background: #fffdfb;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
+            background: var(--bg);
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
 
@@ -274,8 +274,8 @@
             padding: 0.5rem;
             font-size: 0.9rem;
             font-family: inherit;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             resize: vertical;
         }
 
@@ -284,7 +284,7 @@
             align-items: center;
             gap: 0.4rem;
             font-size: 0.85rem;
-            color: #555;
+            color: var(--muted);
             white-space: nowrap;
         }
 
@@ -295,8 +295,8 @@
         .item-row-edit input,
         .item-row-edit select {
             width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
         }
 
         /* Etiqueta sutil sobre cada campo; todos los controles con la misma altura para que alineen */
@@ -310,7 +310,7 @@
         .item-row-edit .campo > span {
             font-size: 0.7rem;
             font-weight: 400;
-            color: #6b6b6b;
+            color: var(--muted);
             line-height: 1.2;
         }
 
@@ -339,11 +339,11 @@
             height: 2.5rem;
             box-sizing: border-box;
             padding: 0 0.55rem;
-            border: 1px solid #ddd;
+            border: 1px solid var(--line);
             border-left: 0;
-            border-radius: 0 5px 5px 0;
-            background: #f2f2f2;
-            color: #555;
+            border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
+            background: var(--bg-alt);
+            color: var(--muted);
             font-size: 0.8rem;
         }
 
@@ -394,13 +394,13 @@
             gap: 0.5rem;
             margin-bottom: 0.75rem;
             padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--line);
         }
 
         .item-posicion {
             font-size: 0.8rem;
             font-weight: 600;
-            color: #555;
+            color: var(--muted);
         }
 
         .item-acciones {
@@ -418,19 +418,19 @@
             padding: 0;
             background: transparent;
             border: 0;
-            border-radius: 8px;
-            color: #444;
+            border-radius: var(--radius-btn);
+            color: var(--ink-soft);
             cursor: pointer;
         }
 
         .btn-mover:hover:not(:disabled),
         .gal-acciones .btn-gal-mover:hover:not(:disabled) {
-            background: #eef0f3;
+            background: var(--bg-alt);
         }
 
         .btn-mover:disabled,
         .gal-acciones .btn-gal-mover:disabled {
-            color: #c4c7cc;
+            color: var(--muted);
             cursor: default;
             opacity: 1;
         }
@@ -441,16 +441,16 @@
             justify-content: center;
             width: 36px;
             height: 36px;
-            border-radius: 8px;
-            color: #8a8f98;
+            border-radius: var(--radius-btn);
+            color: var(--muted);
             cursor: grab;
             touch-action: none;
             user-select: none;
         }
 
         .asa:hover {
-            background: #eef0f3;
-            color: #444;
+            background: var(--bg-alt);
+            color: var(--ink-soft);
         }
 
         .arrastrando {
@@ -483,10 +483,10 @@
             width: 100%;
             aspect-ratio: 1;
             height: auto;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+            border-radius: var(--radius-btn);
+            border: 1px solid var(--line);
             object-fit: cover;
-            background: #f4f4f4;
+            background: var(--bg-alt);
         }
 
         .foto-vacia {
@@ -494,13 +494,13 @@
             align-items: center;
             justify-content: center;
             font-size: 0.75rem;
-            color: #555;
+            color: var(--muted);
         }
 
         .foto-boton {
             padding: 0.4rem 0.9rem;
-            border: 1px solid #999;
-            border-radius: 5px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius-btn);
             background: white;
             font-size: 0.85rem;
             cursor: pointer;
@@ -514,13 +514,13 @@
         .foto-estado {
             margin-top: 0.35rem;
             font-size: 0.8rem;
-            color: #555;
+            color: var(--muted);
         }
 
         .item-servicio-detalle {
             margin-top: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             padding: 0.5rem 0.75rem;
         }
 
@@ -546,14 +546,14 @@
             padding: 0.5rem;
             font-size: 0.9rem;
             font-family: inherit;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             resize: vertical;
         }
 
         .etiqueta-detalle {
             font-size: 0.85rem;
-            color: #555;
+            color: var(--muted);
         }
 
         .variante-fila {
@@ -597,8 +597,8 @@
         .btn-var-quitar,
         .btn-var-agregar {
             background: white;
-            border: 1px solid #bbb;
-            border-radius: 5px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius-btn);
             min-height: 44px;
             cursor: pointer;
             font-size: 0.9rem;
@@ -606,8 +606,8 @@
 
         .btn-var-quitar {
             width: 44px;
-            color: #b71c1c;
-            border-color: #b71c1c;
+            color: var(--danger);
+            border-color: var(--danger);
         }
 
         .btn-var-agregar {
@@ -616,11 +616,11 @@
 
         .btn-var-quitar:hover,
         .btn-var-agregar:hover:not(:disabled) {
-            background: #f0f0f0;
+            background: var(--bg-alt);
         }
 
         .btn-var-agregar:disabled {
-            color: #888;
+            color: var(--muted);
             cursor: not-allowed;
         }
 
@@ -644,8 +644,8 @@
             flex-direction: column;
             gap: 0.35rem;
             padding: 0.4rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
             background: white;
         }
 
@@ -653,8 +653,8 @@
             width: 100%;
             aspect-ratio: 4 / 3;
             object-fit: cover;
-            border-radius: 5px;
-            background: #f4f4f4;
+            border-radius: var(--radius-btn);
+            background: var(--bg-alt);
         }
 
         .gal-foto input {
@@ -662,8 +662,8 @@
             box-sizing: border-box;
             padding: 0.35rem 0.5rem;
             font-size: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-btn);
         }
 
         .gal-acciones {
@@ -689,15 +689,15 @@
             flex: 1;
             min-height: 36px;
             background: white;
-            border: 1px solid #bbb;
-            border-radius: 5px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius-btn);
             font-size: 0.85rem;
             cursor: pointer;
         }
 
         .gal-acciones .btn-gal-quitar {
-            color: #b71c1c;
-            border-color: #b71c1c;
+            color: var(--danger);
+            border-color: var(--danger);
         }
 
         .gal-acciones button:disabled,
@@ -717,8 +717,8 @@
             padding: 0 0.9rem;
             min-height: 44px;
             background: white;
-            border: 1px solid #bbb;
-            border-radius: 5px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius-btn);
             font-size: 0.9rem;
             cursor: pointer;
         }
@@ -727,10 +727,10 @@
         .foto-boton,
         .btn-var-agregar,
         .btn-gal-agregar {
-            background: #f1f3f5;
+            background: var(--bg-alt);
             border: 0;
-            border-radius: 8px;
-            color: #222;
+            border-radius: var(--radius-btn);
+            color: var(--ink-soft);
             font-size: 0.85rem;
             font-weight: 500;
         }
@@ -738,32 +738,32 @@
         .foto-boton:hover:not(:disabled),
         .btn-var-agregar:hover:not(:disabled),
         .btn-gal-agregar:hover:not(:disabled) {
-            background: #e6e9ed;
+            background: var(--line);
         }
 
         .btn-var-quitar,
         .gal-acciones .btn-gal-quitar {
             background: transparent;
             border: 0;
-            border-radius: 8px;
-            color: #b71c1c;
+            border-radius: var(--radius-btn);
+            color: var(--danger);
             font-weight: 500;
         }
 
         .btn-var-quitar:hover,
         .gal-acciones .btn-gal-quitar:hover {
-            background: #fdecec;
+            background: var(--danger-bg);
         }
 
         .galeria-estado {
             font-size: 0.8rem;
-            color: #555;
+            color: var(--muted);
             margin-top: 0.35rem;
         }
 
         .item-servicio-detalle .ayuda {
             font-size: 0.8rem;
-            color: #555;
+            color: var(--muted);
             margin-top: 0.25rem;
         }
 
@@ -852,7 +852,7 @@
             color: white;
             border: none;
             padding: 0.5rem 1rem;
-            border-radius: 5px;
+            border-radius: var(--radius-btn);
             cursor: pointer;
             margin-bottom: 1rem;
             font-size: 0.9rem;
@@ -864,10 +864,10 @@
 
         .btn-remove-item {
             background: transparent;
-            color: #b71c1c;
+            color: var(--danger);
             border: 0;
             padding: 0 0.9rem;
-            border-radius: 8px;
+            border-radius: var(--radius-btn);
             font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
@@ -875,19 +875,19 @@
         }
 
         .btn-remove-item:hover {
-            background: #fdecec;
+            background: var(--danger-bg);
         }
 
         .btn-remove-item:focus-visible {
-            outline: 2px solid #b71c1c;
+            outline: 2px solid var(--danger);
             outline-offset: 2px;
         }
 
         .categoria-section {
             margin-bottom: 2rem;
             padding: 1rem;
-            background: #f9f9f9;
-            border-radius: 5px;
+            background: var(--bg-alt);
+            border-radius: var(--radius-btn);
         }
 
         .categoria-section h3 {

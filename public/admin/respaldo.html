@@ -125,7 +125,7 @@
                 for (const r of resultados) {
                     const li = document.createElement('li');
                     li.textContent = r.ok ? `✔ ${r.key}: importado` : `✘ ${r.key}: ${r.error}`;
-                    li.style.color = r.ok ? '#388e3c' : '#d32f2f';
+                    li.style.color = r.ok ? 'var(--ok)' : 'var(--danger)';
                     lista.appendChild(li);
                 }
                 if (resultados.every(r => r.ok)) {

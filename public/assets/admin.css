@@ -38,9 +38,9 @@
 }
 
 .btn-logout:hover {
-  background: #ffebee;
-  border-color: #d32f2f;
-  color: #b71c1c;
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .ayuda {
@@ -71,7 +71,7 @@
 .form-group select {
   width: 100%;
   padding: 0.7rem 0.8rem;
-  border: 1px solid #ccd0d6;
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-btn);
   font-size: 1rem;
   font-family: inherit;
@@ -106,7 +106,7 @@
 .form-group input.invalido,
 .form-group textarea.invalido,
 .form-group select.invalido {
-  border-color: #d32f2f;
+  border-color: var(--danger);
 }
 
 /* Grupo de campos: tarjeta con título */
@@ -158,7 +158,7 @@
 .btn-secondary {
   background: white;
   color: var(--ink);
-  border: 1px solid #ccd0d6;
+  border: 1px solid var(--line-strong);
 }
 
 .btn-secondary:hover {
@@ -166,8 +166,8 @@
 }
 
 .btn:disabled {
-  background: #ccc;
-  border-color: #ccc;
+  background: var(--line-strong);
+  border-color: var(--line-strong);
   color: white;
   cursor: not-allowed;
 }
@@ -175,7 +175,7 @@
 .btn-secondary:disabled {
   background: white;
   border-color: var(--line);
-  color: #999;
+  color: var(--muted);
 }
 
 .btn:focus-visible,
@@ -209,12 +209,12 @@
 }
 
 .btn-icono.peligro {
-  color: #b71c1c;
+  color: var(--danger);
 }
 
 .btn-icono.peligro:hover:not(:disabled) {
-  background: #ffebee;
-  border-color: #d32f2f;
+  background: var(--danger-bg);
+  border-color: var(--danger);
 }
 
 /* Barra de guardado: se queda visible al bajar por formularios largos */
@@ -238,7 +238,7 @@
 }
 
 .estado-cambios.pendiente {
-  color: #8a5a00;
+  color: var(--warn);
   font-weight: 600;
 }
 
@@ -264,7 +264,7 @@ details.avanzado .contenido {
   margin-top: 0.9rem;
   padding: 1rem;
   background: var(--bg-alt);
-  border-radius: 5px;
+  border-radius: var(--radius-btn);
   font-family: monospace;
   font-size: 0.85rem;
   white-space: pre-wrap;
@@ -281,13 +281,13 @@ details.avanzado .contenido {
 }
 
 .error {
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .success {
-  background: #e8f5e8;
-  color: #2e6b32;
+  background: var(--ok-bg);
+  color: var(--ok);
 }
 
 /* Avisos flotantes: visibles aunque la página esté desplazada */
@@ -312,7 +312,7 @@ details.avanzado .contenido {
 }
 
 .spinner {
-  border: 3px solid #f3f3f3;
+  border: 3px solid var(--line);
   border-top: 3px solid var(--primary);
   border-radius: 50%;
   width: 30px;
