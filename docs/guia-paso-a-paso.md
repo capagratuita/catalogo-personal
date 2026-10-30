@@ -35,7 +35,7 @@ El proyecto trae los IDs del autor; tienes que cambiarlos por los tuyos.
 2. Busca los dos bloques `[[kv_namespaces]]`:
    - el de `binding = "KV"` → pega el ID de `catalogo-contenido`;
    - el de `binding = "IMAGES"` → pega el ID de `catalogo-fotos-kv`.
-3. Cambia `name = "personal-ecommerce"` por el nombre que usarás para tu proyecto en Cloudflare (solo letras, números y guiones).
+3. Cambia `name = "catalogo-personal"` por el nombre que usarás para tu proyecto en Cloudflare (solo letras, números y guiones).
 4. **No toques nada más.** Pulsa **Commit changes**.
 
 ## Paso 4. Conecta el proyecto a Cloudflare Pages

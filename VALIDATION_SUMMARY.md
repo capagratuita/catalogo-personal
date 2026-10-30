@@ -169,3 +169,6 @@
 ## 2026-10-30 — Se elimina el chat con IA
 - Borrados `functions/api/chat.js`, el bloque `[ai]` de `wrangler.toml`, los campos `perfil.tono_chat` y `faq.tono` (ejemplos, validadores y admin) y las secciones de chat de README y de la guía. El validador ya no los exige; con datos antiguos que los traen sigue validando.
 - `npm test` y `npm run test:integracion` (local) pasan; ver resultado en la sesión.
+
+## 2026-10-30 — Cambio de nombre a catalogo-personal
+- `package.json`/`package-lock.json` (`name`, `repository`), `wrangler.toml` (`name`), guía y rutas de `AGENTS.md`/`AGENTS_SUMMARY.md` actualizados. Las entradas anteriores conservan `personal-ecommerce.pages.dev` porque es la URL contra la que se probó entonces.

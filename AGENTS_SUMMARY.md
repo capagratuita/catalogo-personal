@@ -1,7 +1,7 @@
 # Memoria de sesión — Catálogo Personal
 
 **Fecha:** 2026-10-29
-**Ruta:** `/Users/guillermo/Capa Gratuita/personal-ecommerce`
+**Ruta:** `/Users/guillermo/Capa Gratuita/catalogo-personal`
 **Objetivo:** continuar sin repetir el diagnóstico. Detalle técnico en `AGENTS.md`; log de pruebas en `VALIDATION_SUMMARY.md`.
 
 ## Qué se hizo (plan de 6 fases, tras el análisis de posicionamiento)
@@ -56,7 +56,7 @@
 ## Cómo retomar
 
 ```bash
-cd "/Users/guillermo/Capa Gratuita/personal-ecommerce"
+cd "/Users/guillermo/Capa Gratuita/catalogo-personal"
 lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill
 npm run dev      # si cae con SQLITE_BUSY tras editar archivos, reiniciarlo
 npm test
