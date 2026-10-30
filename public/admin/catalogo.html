@@ -253,7 +253,15 @@
         }
 
         .item-fila-secundaria > .campo:has(.item-duracion) {
-            flex: 0 0 110px;
+            flex: 0 0 150px;
+        }
+
+        .item-row-edit .precio-wrap select.item-unidad {
+            width: auto;
+            flex: none;
+            padding: 0 0.3rem;
+            font-family: inherit;
+            cursor: pointer;
         }
 
         .item-fila-secundaria > .campo:last-child {
@@ -925,6 +933,21 @@
             return variantes;
         }
 
+        function htmlDuracionItem(minutos) {
+            const enHoras = minutos >= 60 && minutos % 30 === 0;
+            const valor = minutos == null ? '' : (enHoras ? minutos / 60 : minutos);
+            return `
+                    <label class="campo"><span>Duración</span>
+                        <span class="precio-wrap">
+                            <input class="item-duracion" type="number" min="0" step="any" placeholder="Duración" value="${valor}">
+                            <select class="item-unidad moneda" aria-label="Unidad de la duración">
+                                <option value="min"${enHoras ? '' : ' selected'}>min</option>
+                                <option value="h"${enHoras ? ' selected' : ''}>h</option>
+                            </select>
+                        </span>
+                    </label>`;
+        }
+
         function htmlVarianteFila(v = {}) {
             const enHoras = v.duracion_minutos >= 60 && v.duracion_minutos % 30 === 0;
             const duracion = v.duracion_minutos == null ? '' : (enHoras ? v.duracion_minutos / 60 : v.duracion_minutos);
@@ -1193,7 +1216,7 @@
                 }
 
                 item.duracion_minutos = item.tipo === 'servicio'
-                    ? parseInt(row.querySelector('.item-duracion').value) || 0
+                    ? Math.round((Number(row.querySelector('.item-duracion').value.replace(',', '.')) || 0) * (row.querySelector('.item-unidad').value === 'h' ? 60 : 1))
                     : null;
 
                 if (item.tipo === 'servicio') {
@@ -1272,9 +1295,7 @@
                     <label class="item-disponible"><input type="checkbox" checked> Disponible</label>
                     <label class="item-destacado"><input type="checkbox"> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox"> Precio a consultar</label>
-                    <label class="campo"><span>Duración (min)</span>
-                        <input class="item-duracion" type="number" placeholder="Minutos" value="0">
-                    </label>
+                    ${htmlDuracionItem(0)}
                     <label class="campo"><span>Enlace de reserva propio (opcional)</span>
                         <input class="item-reserva" type="text" placeholder="Opcional: https://…">
                     </label>
@@ -1335,11 +1356,13 @@
             actualizarReserva(row);
         }
 
-        // El enlace de reserva propio solo se usa si la categoría del servicio es agendable;
-        // oculto conserva su valor (se ignora en la web) y vuelve a verse al marcarla.
+        // El enlace de reserva propio solo se usa si la categoría del servicio es agendable
+        // y no es «Precio a consultar» (que tiene prioridad); oculto conserva su valor
+        // (se ignora en la web) y vuelve a verse al cumplirse de nuevo.
         function actualizarReserva(row) {
             const esServicio = row.querySelector('.item-tipo').value === 'servicio';
-            const agendable = esServicio && categoriasAgendamiento.includes(row.querySelector('.item-categoria').value);
+            const cotizar = row.querySelector('.item-cotizar input').checked;
+            const agendable = esServicio && !cotizar && categoriasAgendamiento.includes(row.querySelector('.item-categoria').value);
             row.querySelector('.item-reserva').closest('.campo').hidden = !agendable;
         }
 
@@ -1640,9 +1663,7 @@
                     <label class="item-disponible"><input type="checkbox" ${item.disponible !== false ? 'checked' : ''}> Disponible</label>
                     <label class="item-destacado"><input type="checkbox" ${item.destacado ? 'checked' : ''}> Destacado</label>
                     <label class="item-cotizar" title="Se muestra como «Desde X» si el precio es mayor que 0, o «Precio a consultar» si es 0. No entra al carrito: se consulta por WhatsApp."><input type="checkbox" ${item.precio_a_consultar ? 'checked' : ''}> Precio a consultar</label>
-                    <label class="campo"><span>Duración (min)</span>
-                        <input class="item-duracion" type="number" placeholder="Minutos" value="${item.tipo === 'servicio' ? (item.duracion_minutos || 0) : ''}">
-                    </label>
+                    ${htmlDuracionItem(item.tipo === 'servicio' ? (item.duracion_minutos || 0) : null)}
                     <label class="campo"><span>Enlace de reserva propio (opcional)</span>
                         <input class="item-reserva" type="text" placeholder="Opcional: https://…" value="${escapeHtml(item.reserva_url || item.calendly_url)}">
                     </label>
@@ -1840,7 +1861,7 @@
                     if (archivo) subirFotoItem(event.target.closest('.item-row'), archivo);
                     return;
                 }
-                if (event.target.matches('.item-categoria')) {
+                if (event.target.matches('.item-categoria, .item-cotizar input')) {
                     actualizarReserva(event.target.closest('.item-row'));
                     return;
                 }
