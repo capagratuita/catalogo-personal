@@ -97,6 +97,39 @@
                     </div>
                 </section>
 
+                <section class="grupo" aria-labelledby="g-direccion">
+                    <h3 id="g-direccion">Dirección (opcional)</h3>
+                    <p class="ayuda">Si atiendes en un lugar físico, Google puede mostrarte como negocio local. Déjalo vacío si trabajas solo online. Si rellenas algo, la ciudad es obligatoria.</p>
+
+                    <div class="form-group">
+                        <label for="direccion-calle">Calle y número</label>
+                        <input type="text" id="direccion-calle" name="direccion-calle" maxlength="120" autocomplete="street-address">
+                    </div>
+
+                    <div class="campos-2">
+                        <div class="form-group">
+                            <label for="direccion-ciudad">Ciudad</label>
+                            <input type="text" id="direccion-ciudad" name="direccion-ciudad" maxlength="80" autocomplete="address-level2">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="direccion-region">Región o provincia</label>
+                            <input type="text" id="direccion-region" name="direccion-region" maxlength="80" autocomplete="address-level1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="direccion-codigo_postal">Código postal</label>
+                            <input type="text" id="direccion-codigo_postal" name="direccion-codigo_postal" maxlength="20" autocomplete="postal-code">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="direccion-pais">País</label>
+                            <input type="text" id="direccion-pais" name="direccion-pais" maxlength="2" placeholder="PE" autocapitalize="characters" spellcheck="false" autocomplete="country" aria-describedby="direccion-pais-ayuda">
+                            <small id="direccion-pais-ayuda">Código de 2 letras: PE, MX, ES, CO…</small>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="grupo" aria-labelledby="g-redes">
                     <h3 id="g-redes">Redes sociales</h3>
                     <p class="ayuda">Todas son opcionales. Solo se muestran las que rellenes.</p>
@@ -181,6 +214,21 @@
             document.getElementById('perfil-redes-facebook').value = perfil.redes?.facebook || '';
             document.getElementById('perfil-redes-tiktok').value = perfil.redes?.tiktok || '';
             document.getElementById('perfil-redes-youtube').value = perfil.redes?.youtube || '';
+            for (const campo of CAMPOS_DIRECCION) {
+                document.getElementById(`direccion-${campo}`).value = perfil.direccion?.[campo] || '';
+            }
+        }
+
+        const CAMPOS_DIRECCION = ['calle', 'ciudad', 'region', 'codigo_postal', 'pais'];
+
+        // null si no se rellenó nada; el país se guarda en mayúsculas
+        function leerDireccion() {
+            const direccion = {};
+            for (const campo of CAMPOS_DIRECCION) {
+                direccion[campo] = document.getElementById(`direccion-${campo}`).value.trim() || null;
+            }
+            if (direccion.pais) direccion.pais = direccion.pais.toUpperCase();
+            return CAMPOS_DIRECCION.some(campo => direccion[campo]) ? direccion : null;
         }
 
         function obtenerFormulario() {
@@ -194,6 +242,7 @@
                 tipo_catalogo: document.getElementById('perfil-tipo_catalogo').value,
                 reserva_url: document.getElementById('perfil-reserva_url').value.trim() || null,
                 logo_url: document.getElementById('perfil-logo_url').value || null,
+                direccion: leerDireccion(),
                 redes: {
                     instagram: document.getElementById('perfil-redes-instagram').value || null,
                     facebook: document.getElementById('perfil-redes-facebook').value || null,

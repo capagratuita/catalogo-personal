@@ -77,6 +77,15 @@ function aplicarTema(tema) {
 }
 
 // Rellena nombre, pie de página, redes y título con los datos de config.perfil.
+// Dirección en una línea para el pie: «calle, ciudad, región, código postal» (sin el código de país)
+function textoDireccion(direccion) {
+  if (!direccion || !String(direccion.ciudad || '').trim()) return '';
+  return ['calle', 'ciudad', 'region', 'codigo_postal']
+    .map(campo => String(direccion[campo] || '').trim())
+    .filter(Boolean)
+    .join(', ');
+}
+
 function aplicarMarca(config) {
   const perfil = config && config.perfil;
   if (!perfil) return;
@@ -88,6 +97,19 @@ function aplicarMarca(config) {
   if (footerNombre) footerNombre.textContent = perfil.nombre;
   const footerDescripcion = document.querySelector('footer .container > div > p');
   if (footerDescripcion) footerDescripcion.textContent = perfil.descripcion_corta;
+
+  // Dirección postal (la misma que va en los datos estructurados de la portada)
+  const direccion = textoDireccion(perfil.direccion);
+  let footerDireccion = document.querySelector('footer address');
+  if (direccion && footerDescripcion && !footerDireccion) {
+    footerDireccion = document.createElement('address');
+    footerDireccion.className = 'footer-direccion';
+    footerDescripcion.insertAdjacentElement('afterend', footerDireccion);
+  }
+  if (footerDireccion) {
+    footerDireccion.textContent = direccion;
+    footerDireccion.hidden = !direccion;
+  }
 
   const enlaces = {
     instagram: perfil.redes && perfil.redes.instagram,
@@ -314,6 +336,7 @@ window.app = {
   loadCatalogo,
   loadConfig,
   aplicarMarca,
+  textoDireccion,
   aplicarTema,
   loadLanding,
   loadFAQ,

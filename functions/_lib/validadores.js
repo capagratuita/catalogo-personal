@@ -97,6 +97,28 @@ export function normalizarConfig(data) {
   return { ...resto, perfil };
 }
 
+// Dirección postal opcional (datos estructurados de negocio local). Todos los campos son texto;
+// si se rellena alguno, la ciudad es obligatoria y el país, si está, es un código ISO 3166-1 de 2 letras.
+export const CAMPOS_DIRECCION = { calle: 120, ciudad: 80, region: 80, codigo_postal: 20, pais: 2 };
+
+function validarDireccion(direccion) {
+  if (direccion === undefined || direccion === null) return;
+  if (!isPlainObject(direccion)) fail("El campo 'perfil.direccion' debe ser un objeto o null");
+  for (const [campo, maximo] of Object.entries(CAMPOS_DIRECCION)) {
+    const valor = direccion[campo];
+    if (valor === undefined || valor === null) continue;
+    if (typeof valor !== 'string') fail(`El campo 'perfil.direccion.${campo}' debe ser un texto`);
+    if (campo !== 'pais' && valor.length > maximo) fail(`El campo 'perfil.direccion.${campo}' admite como máximo ${maximo} caracteres`);
+  }
+  if (direccion.pais && !/^[A-Z]{2}$/.test(direccion.pais)) {
+    fail("El país de la dirección debe ser un código de 2 letras en mayúsculas, por ejemplo PE, MX o ES");
+  }
+  const rellena = Object.keys(CAMPOS_DIRECCION).some(campo => String(direccion[campo] || '').trim());
+  if (rellena && !String(direccion.ciudad || '').trim()) {
+    fail("Si indicas una dirección, la ciudad es obligatoria (perfil.direccion.ciudad)");
+  }
+}
+
 export function validateConfig(data) {
   validateObject(data, {
     perfil: {
@@ -142,6 +164,8 @@ export function validateConfig(data) {
     if (valor !== undefined) validateType(valor, ['string', 'null'], `perfil.${campo}`);
     validarUrl(valor, `perfil.${campo}`);
   }
+
+  validarDireccion(data.perfil.direccion);
 
   // Cloudflare Web Analytics (opcional): solo el token de la propiedad
   if (data.analitica !== undefined) {

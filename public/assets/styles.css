@@ -1627,3 +1627,8 @@ html[data-estilo="elegante"] .landing-seccion { padding-top: 5rem; padding-botto
 /* Lista de texto del catálogo para buscadores: app.js la reemplaza por las tarjetas.
    Solo se ve si el navegador no ejecuta JavaScript (ver <noscript> en index.html). */
 .catalogo-estatico { display: none; }
+
+footer .footer-direccion {
+  font-style: normal;
+  margin-top: 0.25rem;
+}

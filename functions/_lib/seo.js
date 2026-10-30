@@ -68,3 +68,20 @@ export function zonasAtendidas(catalogo, config) {
     .filter(Boolean);
   return [...new Set(zonas)];
 }
+
+// PostalAddress de schema.org a partir de perfil.direccion, o null si no hay dirección útil.
+export function direccionPostal(direccion) {
+  const texto = valor => (typeof valor === 'string' ? valor.trim() : '');
+  if (!direccion || !texto(direccion.ciudad)) return null;
+  const campos = {
+    streetAddress: texto(direccion.calle),
+    addressLocality: texto(direccion.ciudad),
+    addressRegion: texto(direccion.region),
+    postalCode: texto(direccion.codigo_postal),
+    addressCountry: texto(direccion.pais),
+  };
+  return {
+    '@type': 'PostalAddress',
+    ...Object.fromEntries(Object.entries(campos).filter(([, valor]) => valor)),
+  };
+}

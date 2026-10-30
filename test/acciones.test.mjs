@@ -59,3 +59,13 @@ test('WhatsApp: el usuario tiene prioridad sobre el número', () => {
   assert.equal(app.tieneWhatsApp(con({ whatsapp: '', whatsapp_usuario: 'revelix360' })), true);
   assert.equal(app.tieneWhatsApp(con({ whatsapp: '', whatsapp_usuario: null })), false);
 });
+
+test('textoDireccion arma una línea con calle, ciudad, región y código postal', () => {
+  const { textoDireccion } = cargarApp();
+  assert.equal(
+    textoDireccion({ calle: ' Av. Larco 123 ', ciudad: 'Lima', region: null, codigo_postal: '15074', pais: 'PE' }),
+    'Av. Larco 123, Lima, 15074',
+  );
+  assert.equal(textoDireccion({ calle: 'Av. Larco 123' }), '');
+  assert.equal(textoDireccion(null), '');
+});

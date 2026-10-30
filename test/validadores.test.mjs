@@ -137,3 +137,16 @@ test('catálogo: galería de fotos (solo servicios)', () => {
   c.items.push({ ...copia(c.items[servicio()]), id: `${c.items[servicio()].id}-g1` });
   rechaza(() => validateCatalogo(c), /galería/);
 });
+
+test('perfil.direccion es opcional; con datos exige ciudad y país ISO de 2 letras', () => {
+  const config = ejemplo('config');
+  const con = direccion => { const c = copia(config); c.perfil.direccion = direccion; return c; };
+  validateConfig(con(null));
+  validateConfig(con({ calle: 'Av. Larco 123', ciudad: 'Lima', region: 'Lima', codigo_postal: '15074', pais: 'PE' }));
+  validateConfig(con({ calle: null, ciudad: null, region: null, codigo_postal: null, pais: null }));
+  assert.throws(() => validateConfig(con({ calle: 'Av. Larco 123' })), /ciudad es obligatoria/);
+  assert.throws(() => validateConfig(con({ ciudad: 'Lima', pais: 'Perú' })), /2 letras/);
+  assert.throws(() => validateConfig(con({ ciudad: 'Lima', pais: 'pe' })), /2 letras/);
+  assert.throws(() => validateConfig(con({ ciudad: 'x'.repeat(81) })), /80 caracteres/);
+  assert.throws(() => validateConfig(con('Lima')), /objeto/);
+});

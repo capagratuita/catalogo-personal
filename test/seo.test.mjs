@@ -56,3 +56,14 @@ test('zonasAtendidas ignora servicios solo online, productos y solo-productos', 
   assert.deepEqual(zonasAtendidas(cat, { perfil: { tipo_catalogo: 'mixto' } }), ['Lima']);
   assert.deepEqual(zonasAtendidas(cat, { perfil: { tipo_catalogo: 'solo-productos' } }), []);
 });
+
+import { direccionPostal } from '../functions/_lib/seo.js';
+
+test('direccionPostal devuelve PostalAddress solo con ciudad y omite campos vacíos', () => {
+  assert.deepEqual(
+    direccionPostal({ calle: ' Av. Larco 123 ', ciudad: 'Lima', region: null, codigo_postal: '', pais: 'PE' }),
+    { '@type': 'PostalAddress', streetAddress: 'Av. Larco 123', addressLocality: 'Lima', addressCountry: 'PE' },
+  );
+  assert.equal(direccionPostal(null), null);
+  assert.equal(direccionPostal({ calle: 'Av. Larco 123' }), null);
+});
