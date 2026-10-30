@@ -6,13 +6,14 @@
 
 El producto está orientado a **servicios de profesionales independientes y emprendedores**; los productos son un extra. El flujo local funciona sin Cloudflare login.
 
-- `npm run dev` arranca en `http://localhost:8788` y en la LAN (`0.0.0.0:8788`). `npm test` ejecuta 20 pruebas de Node (validadores, límite de intentos, acciones del frontend).
-- Los IDs de los dos KV son los del autor: cada fork debe poner los suyos (ver `docs/guia-paso-a-paso.md`).
+- `npm run dev` arranca en `http://localhost:8788` y en la LAN (`0.0.0.0:8788`). `npm test` ejecuta 34 pruebas de Node (validadores, límite de intentos, acciones del frontend).
+- `wrangler.jsonc` no lleva IDs de KV: el botón «Deploy to Cloudflare» crea los dos namespaces y escribe sus `id` en el repo de cada persona (sección «Despliegue con el botón»).
 - Auth con cookie HMAC-SHA256 (`src/_lib/auth.js`) y límite de 5 fallos / 15 min por IP en `/api/login` (`_lib/intentos.js`). El middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
 - Los servicios no usan carrito: una sola acción (cotizar, reservar o consultar por WhatsApp). El carrito es solo de productos y se oculta en `solo-servicios` (sección 8).
 - Servicios con modalidad, zona, qué incluye, variantes de precio y galería de hasta 6 fotos extra (mosaico y visor en la ficha); reserva genérica (`reserva_url`); `landing.secciones` se pinta en la portada (incluye `sobre-mi` y `testimonios`); color de acento configurable con contraste AA; analítica opcional (Cloudflare Web Analytics).
 - Estado local persistido en `.wrangler/state` (el KV local actual contiene un catálogo de panadería de pruebas, no el de ejemplo). La foto de ejemplo `sobre-mi` se borró del KV local.
 - Verificado en esta sesión con `npm run dev`, curl y jsdom (no hay navegador real en la máquina de desarrollo). Detalle en `VALIDATION_SUMMARY.md`.
+- Pendiente (despliegue): (1) **creación automática del PR** del workflow de sincronización con *Allow GitHub Actions to create and approve pull requests* activado (hoy solo se ha visto el camino de fallback con enlace en el resumen); (2) que una persona ajena siga la guía de punta a punta (`docs/friction-log.md`).
 - Pendiente: revisión visual completa en navegador real (`docs/e2e-checklist.md`; en esta sesión se revisó con Chromium de Playwright la portada en los 4 estilos y los editores del admin a 375px); probar el despliegue real en Cloudflare con una persona ajena (`docs/friction-log.md`); no hay `lint` ni `typecheck`.
 
 ## 2. Contexto y stack (cerrado)
@@ -190,6 +191,18 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 6. KV sembrado y flujo probado con `npm run dev` + curl.
 
 **Fases pendientes (plan de 6 fases, 2026-10-29):** las fases 1–5 están hechas (servicios sin carrito, modelo de servicio, identidad y confianza, reserva genérica y analítica, seguridad y calidad). La fase 6 (documentación) está escrita (`docs/guia-paso-a-paso.md`, `README.md`, `docs/e2e-checklist.md`, `docs/friction-log.md`) pero **falta validarla con una persona ajena** y pasar el checklist en un navegador real. `config/claude-prompts.md` y `docs/video-script.md` quedan descartados salvo que se pidan.
+
+## 10b. Despliegue con el botón «Deploy to Cloudflare» (verificado 2026-10-30)
+
+Lo observado en pruebas reales (cuentas de Cloudflare y GitHub limpias); no hay documentación oficial que lo respalde, así que si Cloudflare cambia el asistente hay que repetirlo.
+
+- **El botón no hace fork:** Cloudflare clona `capagratuita/catalogo-personal`, sobrescribe archivos y sube una copia nueva a la cuenta de GitHub de la persona (historial distinto) y crea el Worker con Workers Builds (comando de deploy `npm run deploy` = `wrangler deploy`). Un build creado así no se puede reintentar («seed_repo override»): para redesplegar hace falta un commit.
+- **Formato de la configuración:** con `wrangler.jsonc` el asistente crea los KV con los nombres escritos en el formulario y escribe sus `id` en el repo (los siguientes builds salen sin «Provisioning»). Con `wrangler.toml` no los enlazaba y `wrangler deploy` creaba otros (`<worker>-kv`, `<worker>-images`). No vuelvas a TOML.
+- **Nombres de KV:** los dos campos del formulario traen el mismo nombre por defecto (el del Worker) y el despliegue falla («title already exists»). La guía pide dos nombres distintos (`catalogo-datos`, `catalogo-fotos`). Un intento fallido deja KV sobrantes: bórralos antes de repetir. Un nombre igual al automático de Wrangler (`<worker>-kv`/`-images`) daba el error 10014.
+- **Secreto:** `ADMIN_PASSWORD` se pide en el formulario por `.dev.vars.example` y queda guardado aunque el primer despliegue falle.
+- **`.github/` no se copia:** el workflow `sincronizar-template.yml` se instala a mano una vez (guía, «Cómo traer mejoras del template»). Copia los archivos del template sobre el repo (no `merge`: no comparten historial), excluye `wrangler.jsonc`, `wrangler.toml`, `.github/`, `.dev.vars` y `node_modules`, avisa si `wrangler.jsonc` cambió salvo en los `id`, sube la rama `sincronizar-template` y abre un PR. Sin el ajuste *Allow GitHub Actions to create and approve pull requests* no puede crearlo y deja un enlace en el resumen de la ejecución. Ejecutado con éxito en un repo de prueba (rama + enlace + PR manual + merge + redeploy con los mismos KV). Si el workflow cambia en el template, hay que volver a copiarlo.
+- **URLs de vista previa:** `preview_urls = false` y `workers_dev = true` en `wrangler.jsonc` (las vistas previas compartirían KV y contraseña con producción).
+- **Licencia:** AGPL-3.0-only (`LICENSE`); el nombre y el logo no están incluidos.
 
 ## 11. Criterios de aceptación
 

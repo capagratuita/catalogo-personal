@@ -177,4 +177,18 @@
 
 - `npm test`: 34 ok. `npm run test:integracion` (local, `wrangler dev` 4.154): 29 ok, 0 fallos, 3 omitidas (datos que el ejemplo no tiene).
 - A mano con `wrangler dev`: `/admin/*` sin cookie → 302 a `/admin/index.html` (→ 307 `/admin/`); `/faq.html` → 307 `/faq`; `/servicio/nope` → 404; cabeceras de `_headers` presentes.
-- No verificado: despliegue real en Cloudflare ni el botón.
+
+### Despliegue real con el botón (2026-10-30, cuentas limpias de Cloudflare y GitHub)
+
+| Prueba | Resultado |
+|---|---|
+| Botón con `wrangler.toml` | Crea los KV del formulario pero `wrangler deploy` crea otros distintos; los del formulario quedan sin usar. |
+| Nombre de KV = `<worker>-kv`/`-images` | Falla: error 10014 «namespace with this title already exists». |
+| Nombres por defecto (iguales entre sí) | Falla: «Cannot provision a KV Namespace with the title … because it already exists». |
+| Botón con `wrangler.jsonc` y nombres distintos (`catalogo-datos`, `catalogo-fotos`) | Despliega; bindings enlazados a los KV creados, sin «Provisioning». |
+| `/admin` con la contraseña del formulario | Entra (también tras un primer despliegue fallido). |
+| Segundo build (commit) | Mismos IDs de KV; datos intactos. |
+| Workflow de sincronización (copiado a mano, repo creado por el botón) | Detecta 3 archivos distintos, sube la rama `sincronizar-template`; `GitHub Actions is not permitted to create or approve pull requests` → enlace en el resumen; PR manual, merge y redeploy correctos. |
+| Retry build de un build creado por el botón | No disponible («seed_repo override»). |
+
+- **No verificado:** creación automática del PR con *Allow GitHub Actions to create and approve pull requests* activado; sigue la guía una persona ajena; el aviso de `wrangler.jsonc` cambiado en el PR (el normalizador se probó solo con un caso de ejemplo).

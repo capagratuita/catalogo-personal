@@ -101,4 +101,7 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 
 - `functions/` → `src/`; `src/worker.js` enruta (tablas `EXACTAS`/`CON_ID`) y llama al middleware; lo no atendido cae a `env.ASSETS`. `_middleware.js` copia la respuesta antes de añadir CORS (las de ASSETS son inmutables).
 - `wrangler.jsonc` (antes `.toml`): `main`, `assets` con `run_worker_first` (rutas dinámicas), KV sin `id` (auto-provisión). `package.json`: `dev` = `wrangler dev`, `deploy` = `wrangler deploy`.
-- Pendiente: probar el botón «Deploy to Cloudflare» con una cuenta real y confirmar que pide `ADMIN_PASSWORD` desde `.dev.vars.example`.
+- Botón probado en cuentas limpias (varias rondas, 2026-10-30): ver AGENTS.md sección 10b. Claves: `wrangler.jsonc` (no `.toml`), dos nombres de KV distintos, el botón no copia `.github/`.
+- Licencia cambiada de MIT (solo declarada en README/package.json, sin archivo) a AGPL-3.0-only con `LICENSE`.
+- Workflow `sincronizar-template.yml`: `checkout@v5`, `ubuntu-24.04`, enlace al PR en el resumen si GitHub no deja crearlo.
+- **Pendiente:** (1) creación automática del PR con el ajuste de Actions activado; (2) prueba con una persona ajena; (3) repetir el flujo si Cloudflare cambia el asistente.
