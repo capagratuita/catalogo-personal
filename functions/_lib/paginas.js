@@ -115,12 +115,14 @@ export function paginaPublica({ claves, meta }) {
     const reescrita = new HTMLRewriter()
       .on('html', { element(el) { if (estiloValido) el.setAttribute('data-estilo', estiloValido); } })
       .on('title', { element(el) { if (datos.titulo) el.setInnerContent(datos.titulo); } })
-      .on('head', { element(el) { el.append(cabecera, { html: true }); } })
-      .transform(respuesta);
+      .on('head', { element(el) { el.append(cabecera, { html: true }); } });
+    // Contenido visible (h1, descripción, catálogo) para quien no ejecuta JavaScript
+    datos.reescribir?.(reescrita);
+    const transformada = reescrita.transform(respuesta);
 
-    const headers = new Headers(reescrita.headers);
+    const headers = new Headers(transformada.headers);
     headers.delete('ETag');
     headers.set('Cache-Control', 'public, max-age=60');
-    return new Response(reescrita.body, { status: datos.status ?? reescrita.status, headers });
+    return new Response(transformada.body, { status: datos.status ?? transformada.status, headers });
   };
 }

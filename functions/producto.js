@@ -46,6 +46,10 @@ export const onRequestGet = paginaPublica({
     }
 
     return {
+      reescribir: rw => rw
+        .on('#producto-nombre', { element(el) { el.setInnerContent(item.nombre); } })
+        .on('#producto-descripcion', { element(el) { el.setInnerContent(item.descripcion); } })
+        .on('#producto-imagen', { element(el) { el.setAttribute('alt', item.nombre); } }),
       titulo: `${item.nombre} - ${perfil.nombre}`,
       descripcion: item.descripcion,
       ruta,

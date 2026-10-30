@@ -6,6 +6,7 @@
     <title>Catálogo</title>
     <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="assets/styles.css">
+    <noscript><style>.catalogo-estatico { display: block; }</style></noscript>
 </head>
 <body>
     <nav>
@@ -247,6 +248,8 @@
         function renderizarCatalogo() {
             const data = window.paginaActual;
             if (!data || !data.catalogo || !data.config) return;
+            // Lista de texto que el servidor deja para buscadores; las tarjetas la reemplazan
+            document.getElementById('catalogo-estatico')?.remove();
             TIPOS.forEach(renderizarSeccion);
             renderizarSecciones(data.landing, data.catalogo, data.config);
             ajustarCta();

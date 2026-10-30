@@ -657,7 +657,7 @@ nav .carrito-contador {
   .mosaico-tile:hover img { transform: none; }
 }
 
-.producto-info h2 {
+.producto-info h1 {
   font-size: clamp(1.6rem, 4vw, 2.25rem);
   color: var(--ink);
   margin-bottom: 0.75rem;
@@ -1623,3 +1623,7 @@ html[data-estilo="elegante"] .landing-seccion { padding-top: 5rem; padding-botto
   from { opacity: 0; transform: translateX(-50%) translateY(100%); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* Lista de texto del catálogo para buscadores: app.js la reemplaza por las tarjetas.
+   Solo se ve si el navegador no ejecuta JavaScript (ver <noscript> en index.html). */
+.catalogo-estatico { display: none; }

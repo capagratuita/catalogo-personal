@@ -1,13 +1,20 @@
 import { paginaPublica, urlImagenValida } from './_lib/paginas.js';
+import { htmlCatalogoEstatico } from './_lib/seo.js';
 
 export const onRequestGet = paginaPublica({
   claves: ['config', 'catalogo', 'landing'],
-  meta: ({ config, landing }, { origen }) => {
+  meta: ({ config, catalogo, landing }, { origen }) => {
     const perfil = config.perfil;
     const logo = urlImagenValida(perfil.logo_url);
     const redes = [perfil.redes?.instagram, perfil.redes?.facebook, perfil.redes?.tiktok, perfil.redes?.youtube].filter(Boolean);
 
+    const hero = landing.hero || {};
+
     return {
+      reescribir: rw => rw
+        .on('.hero h1', { element(el) { el.setInnerContent(hero.titulo || perfil.nombre); } })
+        .on('.hero p', { element(el) { if (hero.subtitulo) el.setInnerContent(hero.subtitulo); } })
+        .on('#catalogo', { element(el) { el.append(htmlCatalogoEstatico(catalogo, config), { html: true }); } }),
       titulo: landing.seo?.titulo || perfil.nombre,
       descripcion: landing.seo?.descripcion || perfil.descripcion_corta,
       ruta: '/',
