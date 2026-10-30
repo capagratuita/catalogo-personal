@@ -27,8 +27,8 @@ export const onRequestGet = paginaPublica({
         '@graph': [
           { '@type': 'WebSite', name: perfil.nombre, url: origen + '/' },
           {
-            // Con dirección o con servicios presenciales y zona, el negocio es local
-            '@type': zonas.length || direccion ? 'LocalBusiness' : 'Organization',
+            // LocalBusiness exige dirección para Google; sin ella, Organization (que también admite areaServed)
+            '@type': direccion ? 'LocalBusiness' : 'Organization',
             name: perfil.nombre,
             url: origen + '/',
             description: perfil.descripcion_corta,
