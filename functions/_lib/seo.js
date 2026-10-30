@@ -56,7 +56,8 @@ export function xmlSitemap(origen, catalogo, fechas = {}) {
   const rutas = [
     ['/', masReciente(fechas.config, fechas.catalogo, fechas.landing)],
     ['/faq', masReciente(fechas.config, fechas.faq)],
-    ...catalogo.items.map(item => [rutaItem(item), masReciente(fechas.config, fechas.catalogo)]),
+    // Los no disponibles siguen existiendo (200, OutOfStock) pero no se anuncian en el sitemap
+    ...catalogo.items.filter(item => item.disponible !== false).map(item => [rutaItem(item), masReciente(fechas.config, fechas.catalogo)]),
   ];
   const urls = rutas.map(([ruta, fecha]) =>
     `  <url><loc>${escaparHtml(origen + ruta)}</loc>${fecha ? `<lastmod>${fecha}</lastmod>` : ''}</url>`,

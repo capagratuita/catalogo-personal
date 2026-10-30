@@ -43,6 +43,18 @@ test('xmlSitemap pone lastmod con la fecha más reciente y lo omite si no hay fe
   assert.doesNotMatch(xmlSitemap('https://x.test', cat, {}), /lastmod/);
 });
 
+test('xmlSitemap omite los items no disponibles', () => {
+  const cat = { items: [
+    { id: 'a', tipo: 'servicio', disponible: true },
+    { id: 'b', tipo: 'producto', disponible: false },
+    { id: 'c', tipo: 'producto' },
+  ] };
+  const xml = xmlSitemap('https://x.test', cat);
+  assert.match(xml, /\/servicio\/a</);
+  assert.match(xml, /\/producto\/c</);
+  assert.doesNotMatch(xml, /\/producto\/b</);
+});
+
 import { zonasAtendidas } from '../functions/_lib/seo.js';
 
 test('zonasAtendidas ignora servicios solo online, productos y solo-productos', () => {
