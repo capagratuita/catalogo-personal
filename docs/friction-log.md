@@ -10,11 +10,10 @@ Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la 
 
 | # | Dónde | Riesgo | Cómo comprobarlo | Estado |
 |---|---|---|---|---|
-| 1 | Paso 3 | Editar `wrangler.toml` en GitHub asusta; un ID mal pegado rompe el despliegue sin un mensaje claro. | Observar si pegan bien los IDs. | Sin verificar |
-| 2 | Paso 3 | Si `name` no coincide con el proyecto de Pages, la configuración puede no aplicarse. | Desplegar con un nombre distinto y mirar el resultado. | Sin verificar |
-| 3 | Paso 5 | El secreto no se aplica hasta un nuevo despliegue. | Medir cuánta gente no vuelve a desplegar. | Sin verificar |
-| 4 | Paso 4 | El nombre exacto de los menús de Cloudflare puede diferir de la guía. | Seguir la guía con una cuenta nueva. | Sin verificar |
-| 5 | Actualizar | El conflicto en `wrangler.toml` al sincronizar el fork es confuso. | Sincronizar un fork con IDs propios. | Sin verificar |
+| 1 | Paso 1 | El botón debe crear los dos KV sin IDs en `wrangler.toml` y pedir `ADMIN_PASSWORD` desde `.dev.vars.example`. | Pulsar el botón desde una cuenta nueva. | Sin verificar |
+| 2 | Paso 1 | Si el formulario no pide la contraseña, queda sin secreto hasta añadirla a mano y volver a desplegar. | Igual que el anterior. | Sin verificar |
+| 3 | Paso 1 | El nombre exacto de los menús y formularios de Cloudflare puede diferir de la guía. | Seguir la guía con una cuenta nueva. | Sin verificar |
+| 4 | Actualizar | El fork creado por el botón puede no recibir actualizaciones del template con facilidad. | Sincronizar un fork creado por el botón. | Sin verificar |
 | 6 | Admin | ~~Opciones de precio de un servicio escritas como texto con `|`.~~ | Resuelto: filas con nombre, precio y minutos, y botones para añadir y quitar. | Resuelto (jsdom) |
 | 7 | Admin | ~~Testimonios con `|` e IDs de items a mano en Landing.~~ | Resuelto: pestañas por sección, tarjetas de testimonios y casillas de items. | Resuelto (jsdom) |
 | 8 | Cuota | Un ataque de contraseñas desde muchas IP podría gastar las escrituras diarias de KV. | Revisar el uso de KV tras unos días en línea. | Sin verificar |

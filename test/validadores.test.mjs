@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateConfig, validateCatalogo, validateLanding, validateFAQ, contraste, normalizarConfig } from '../functions/_lib/validadores.js';
+import { validateConfig, validateCatalogo, validateLanding, validateFAQ, contraste, normalizarConfig } from '../src/_lib/validadores.js';
 import { ejemplo, copia } from './ayuda.mjs';
 
 const config = ejemplo('config');

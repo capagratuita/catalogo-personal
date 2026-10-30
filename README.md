@@ -15,11 +15,13 @@ Cada persona hace su propio fork y despliega su propia instancia. No es un SaaS 
 - **Portada editable:** portada, textos, destacados, galería, *Sobre mí* con foto, testimonios, contacto y color de acento propio.
 - **FAQ**, **SEO** (título, descripción, vista previa al compartir, datos estructurados, sitemap) y analítica opcional sin cookies (Cloudflare Web Analytics).
 - **Panel de administración** protegido con contraseña, con límite de intentos, respaldo y subida de fotos optimizadas.
-- Frontend en HTML, CSS y JavaScript puros; todo en la capa gratuita de Cloudflare (Pages, Functions y Workers KV).
+- Frontend en HTML, CSS y JavaScript puros; todo en la capa gratuita de Cloudflare (Workers con archivos estáticos y Workers KV).
 
 ## Publicar tu sitio
 
-Sigue **[docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md)**: sin terminal, unos 30–45 minutos.
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/capagratuita/catalogo-personal)
+
+El botón copia el proyecto a tu GitHub, crea los dos almacenes KV y despliega el Worker. Sigue **[docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md)**: sin terminal, unos 15–30 minutos.
 
 ## Probarlo en tu computador
 
@@ -27,7 +29,7 @@ Requiere [Node.js](https://nodejs.org) reciente (probado con la versión 22).
 
 ```bash
 npm install
-echo 'ADMIN_PASSWORD=pon-aqui-una-clave-larga' > .dev.vars
+cp .dev.vars.example .dev.vars   # y escribe tu clave en ADMIN_PASSWORD=
 npm run dev
 ```
 
@@ -47,8 +49,8 @@ Ejecuta las pruebas de los validadores, del límite de intentos de login y de la
 
 | Capa | Servicio |
 |---|---|
-| Páginas | Cloudflare Pages (`public/`) |
-| API | Pages Functions (`functions/`) |
+| Páginas | Workers Static Assets (`public/`) |
+| API y páginas con SEO | Worker (`src/worker.js`, rutas en `src/`) |
 | Contenido | Workers KV (`config`, `catalogo`, `landing`, `faq`) |
 | Fotos | Workers KV, namespace aparte (`IMAGES`) |
 | Acceso al panel | Cookie firmada con `ADMIN_PASSWORD` |

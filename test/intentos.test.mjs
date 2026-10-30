@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { estadoBloqueo, registrarFallo, limpiarFallos, MAX_FALLOS, VENTANA_SEGUNDOS } from '../functions/_lib/intentos.js';
+import { estadoBloqueo, registrarFallo, limpiarFallos, MAX_FALLOS, VENTANA_SEGUNDOS } from '../src/_lib/intentos.js';
 
 // KV en memoria con la misma forma que el binding (get/put/delete) y conteo de escrituras
 function kvFalso() {

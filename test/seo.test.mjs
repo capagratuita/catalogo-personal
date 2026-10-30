@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { htmlCatalogoEstatico } from '../functions/_lib/seo.js';
+import { htmlCatalogoEstatico } from '../src/_lib/seo.js';
 import { ejemplo, copia } from './ayuda.mjs';
 
 const catalogo = ejemplo('catalogo');
@@ -28,7 +28,7 @@ test('htmlCatalogoEstatico respeta tipo_catalogo y devuelve vacío sin items', (
   assert.equal(htmlCatalogoEstatico({ items: [] }, cfg), '');
 });
 
-import { xmlSitemap } from '../functions/_lib/seo.js';
+import { xmlSitemap } from '../src/_lib/seo.js';
 
 test('xmlSitemap pone lastmod con la fecha más reciente y lo omite si no hay fecha', () => {
   const cat = { items: [{ id: 'a', tipo: 'servicio', nombre: 'A', descripcion: '' }] };
@@ -55,7 +55,7 @@ test('xmlSitemap omite los items no disponibles', () => {
   assert.doesNotMatch(xml, /\/producto\/b</);
 });
 
-import { zonasAtendidas } from '../functions/_lib/seo.js';
+import { zonasAtendidas } from '../src/_lib/seo.js';
 
 test('zonasAtendidas ignora servicios solo online, productos y solo-productos', () => {
   const cat = { items: [
@@ -69,7 +69,7 @@ test('zonasAtendidas ignora servicios solo online, productos y solo-productos', 
   assert.deepEqual(zonasAtendidas(cat, { perfil: { tipo_catalogo: 'solo-productos' } }), []);
 });
 
-import { direccionPostal } from '../functions/_lib/seo.js';
+import { direccionPostal } from '../src/_lib/seo.js';
 
 test('direccionPostal devuelve PostalAddress solo con ciudad y omite campos vacíos', () => {
   assert.deepEqual(
@@ -80,14 +80,14 @@ test('direccionPostal devuelve PostalAddress solo con ciudad y omite campos vac�
   assert.equal(direccionPostal({ calle: 'Av. Larco 123' }), null);
 });
 
-import { rutaItem } from '../functions/_lib/seo.js';
+import { rutaItem } from '../src/_lib/seo.js';
 
 test('rutaItem da URL limpia a servicios y productos', () => {
   assert.equal(rutaItem({ id: 'taller-masa-madre', tipo: 'servicio' }), '/servicio/taller-masa-madre');
   assert.equal(rutaItem({ id: 'pan-integral', tipo: 'producto' }), '/producto/pan-integral');
 });
 
-import { recortar, tituloPagina } from '../functions/_lib/seo.js';
+import { recortar, tituloPagina } from '../src/_lib/seo.js';
 
 test('recortar corta en límite de palabra y no toca textos que caben', () => {
   assert.equal(recortar('  Hola   mundo ', 20), 'Hola mundo');
@@ -103,7 +103,7 @@ test('tituloPagina quita el nombre del negocio si el título pasa de 60', () => 
   assert.ok(tituloPagina('x '.repeat(50), 'N').length <= 60);
 });
 
-import { localeOg } from '../functions/_lib/seo.js';
+import { localeOg } from '../src/_lib/seo.js';
 
 test('localeOg deriva el idioma de la moneda y cae en es_LA', () => {
   assert.equal(localeOg('PEN'), 'es_PE');

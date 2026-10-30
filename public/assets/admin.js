@@ -204,7 +204,7 @@ const SECCIONES_ADMIN = [
 
 // Barra de navegación común; el login (index.html) no la lleva.
 function montarNavegacionAdmin() {
-  // Pages sirve /admin/identidad sin la extensión .html
+  // Workers (assets) sirve /admin/identidad sin la extensión .html
   const actual = location.pathname.split('/').pop().replace(/\.html$/, '');
   const contenedor = document.querySelector('nav .container');
   if (!contenedor || !SECCIONES_ADMIN.some(([archivo]) => archivo.replace(/\.html$/, '') === actual)) return;

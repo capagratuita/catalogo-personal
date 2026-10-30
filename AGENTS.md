@@ -1,12 +1,14 @@
 # AGENTS.md — Catálogo Personal desplegable en Cloudflare
 
-## 1. Estado actual (verificado 2026-10-29)
+## 1. Estado actual (verificado 2026-10-30)
+
+**Migrado de Pages a Workers (2026-10-30)** para ofrecer el botón «Deploy to Cloudflare» (README): un Worker con Static Assets (`src/worker.js`, `[assets]` en `wrangler.toml`), KV sin IDs en el repo y `.dev.vars.example` para el secreto. `npm test` (34) y `npm run test:integracion` local (29 ok) pasan con `wrangler dev`. **Sin verificar:** el botón en una cuenta real (creación automática de KV y petición de `ADMIN_PASSWORD`), y el nuevo `*.workers.dev`; las menciones a `personal-ecommerce.pages.dev` en los SUMMARY son históricas.
 
 El producto está orientado a **servicios de profesionales independientes y emprendedores**; los productos son un extra. El flujo local funciona sin Cloudflare login.
 
 - `npm run dev` arranca en `http://localhost:8788` y en la LAN (`0.0.0.0:8788`). `npm test` ejecuta 20 pruebas de Node (validadores, límite de intentos, acciones del frontend).
 - Los IDs de los dos KV son los del autor: cada fork debe poner los suyos (ver `docs/guia-paso-a-paso.md`).
-- Auth con cookie HMAC-SHA256 (`functions/_lib/auth.js`) y límite de 5 fallos / 15 min por IP en `/api/login` (`_lib/intentos.js`). El middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
+- Auth con cookie HMAC-SHA256 (`src/_lib/auth.js`) y límite de 5 fallos / 15 min por IP en `/api/login` (`_lib/intentos.js`). El middleware protege `/admin/*` (salvo login) y `PUT /api/content`/`POST /api/upload`.
 - Los servicios no usan carrito: una sola acción (cotizar, reservar o consultar por WhatsApp). El carrito es solo de productos y se oculta en `solo-servicios` (sección 8).
 - Servicios con modalidad, zona, qué incluye, variantes de precio y galería de hasta 6 fotos extra (mosaico y visor en la ficha); reserva genérica (`reserva_url`); `landing.secciones` se pinta en la portada (incluye `sobre-mi` y `testimonios`); color de acento configurable con contraste AA; analítica opcional (Cloudflare Web Analytics).
 - Estado local persistido en `.wrangler/state` (el KV local actual contiene un catálogo de panadería de pruebas, no el de ejemplo). La foto de ejemplo `sobre-mi` se borró del KV local.
@@ -19,8 +21,8 @@ Template para que una persona sin terminal haga fork y despliegue su propia inst
 
 | Capa | Servicio | Rol |
 |---|---|---|
-| Frontend | Cloudflare Pages (estáticos) | Landing, catálogo, ficha, carrito, FAQ, admin |
-| API | Pages Functions | Endpoints `/api/*` |
+| Frontend | Workers Static Assets (`public/`) | Landing, catálogo, ficha, carrito, FAQ, admin |
+| API | Worker (`src/worker.js`) | Endpoints `/api/*` y páginas con SEO |
 | Contenido | Workers KV | Keys exactas: `config`, `catalogo`, `landing`, `faq` |
 | Imágenes | Workers KV (namespace separado, binding `IMAGES`) | Convención `items/{id}.{ext}`; R2 descartado porque exige método de pago |
 | Auth admin | `ADMIN_PASSWORD` | Protege `/admin/*` y escrituras en `/api/*` |
@@ -34,9 +36,10 @@ Bindings:
 |---|---|---|
 | `env.KV` | KV local automático | Namespace KV real |
 | `env.IMAGES` | KV local automático | Segundo namespace KV real (`catalogo-fotos-kv`) |
-| `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado) | Secret del dashboard |
+| `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado; plantilla en `.dev.vars.example`) | Secret (el botón «Deploy to Cloudflare» lo pide desde `.dev.vars.example`) |
+| `env.ASSETS` | Automático | `[assets] binding = "ASSETS"` en `wrangler.toml` |
 
-En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace KV (`KV` para contenido, `IMAGES` para fotos) en `wrangler.toml`. No agregues `main`, `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
+Los dos `[[kv_namespaces]]` de `wrangler.toml` van **sin `id`**: `wrangler deploy` y el botón «Deploy to Cloudflare» crean los namespaces solos. No pongas IDs reales en el repo (es público). No agregues `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
 
 ## 3. Reglas duras (violarlas es un bug)
 
@@ -49,9 +52,9 @@ En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace 
 7. **Solo `wrangler` como devDependency.** No agregues `@aws-sdk/*` ni librerías de runtime; usa APIs nativas de Cloudflare/Web.
 8. **Valida el JSON antes de `KV.put`** y devuelve `400` con detalle en español.
 9. **Nombres de dominio y UI en español neutro**; funciones técnicas pueden ir en inglés.
-10. **Sintaxis Pages Functions**: `export const onRequestGet/Put/Post` y `_middleware.js` con `export const onRequest`. No uses `addEventListener('fetch')` ni `export default { fetch }`.
+10. **Un solo Worker** (`main = "src/worker.js"`, `export default { fetch }`). Los módulos de `src/` conservan la forma `export const onRequestGet/Put/Post` y `_middleware.js` con `onRequest`, pero **se enrutan a mano en `src/worker.js`**: una ruta nueva se añade allí y a `assets.run_worker_first` en `wrangler.toml`. No uses `addEventListener('fetch')`.
 11. **No uses `--persist`** (eliminado en Wrangler 4.x). La persistencia local es automática; si necesitas ruta, `--persist-to <dir>`.
-12. **No uses sintaxis de Workers Sites** (`[site]`, `site.bucket`, `site.entry-point`). Usa `pages_build_output_dir`.
+12. **No uses sintaxis de Workers Sites** (`[site]`) ni de Pages (`pages_build_output_dir`, `wrangler pages …`). Usa `[assets]` y `wrangler dev` / `wrangler deploy`.
 13. **Móvil primero** (375px), HTML semántico, `alt`, contraste AA y navegación por teclado en el admin.
 14. **Verifica con `npm test` y con `npm run dev` + llamadas reales.** `npm test` cubre validadores, límite de intentos y la lógica de acciones del frontend (Node, sin dependencias); `npm run test:integracion` prueba el servidor real (ver sección 4); ninguno sustituye la prueba en el navegador.
 
@@ -60,7 +63,7 @@ En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace 
 ```bash
 npm install
 npm run dev        # http://localhost:8788 y LAN 0.0.0.0:8788
-npm run deploy     # wrangler pages deploy public
+npm run deploy     # wrangler deploy
 ```
 
 - Para abrir desde otro dispositivo: `hostname -I | awk '{print $1}'` y visita `http://<IP>:8788`; si no conecta, permite el puerto `8788` en el firewall.
@@ -79,7 +82,7 @@ npx wrangler kv key get --binding=KV --local config
 - Los `config/*.example.json` no se cargan solos; hay que sembrarlos y volver a sembrar tras editarlos.
 - `npm test` (runner integrado de Node, sin dependencias) ejecuta `test/*.test.mjs`: validadores, límite de intentos de login y `accionItem`/`textoPrecio` de `app.js`. No hay `npm run lint` ni typecheck. Los antiguos `validate-phase*.sh` y `test-all-phases.sh` se eliminaron (eran greps no fiables).
 - `npm run test:integracion` (`test/integracion/*.test.mjs`, separado de `npm test`; reporter propio `reporte.mjs`: solo fallos y «n ok, n fallos, n omitidas»; helper común `ayuda.mjs`). Dos modos:
-  - **Local (por defecto):** levanta su propio `wrangler pages dev` en un puerto libre (≠ 8788) con `--persist-to` en un directorio temporal, `ADMIN_PASSWORD` de prueba por `--binding` y KV sembrado con `config/*.example.json`; lo apaga y borra el directorio al terminar. Cubre fichas, redirecciones 301/404, portada, JSON-LD (Organization/LocalBusiness), `og:locale`, sitemap (`lastmod`, no disponibles), recorte, FAQ/carrito, cabeceras de `_headers`, auth, login/sesión y subida de foto. Escribe datos solo en ese estado temporal (`publico.test.mjs` y `escritura.test.mjs` arrancan cada uno el suyo).
+  - **Local (por defecto):** levanta su propio `wrangler dev` en un puerto libre (≠ 8788) con `--persist-to` en un directorio temporal, `ADMIN_PASSWORD` de prueba por `--var` y KV sembrado con `config/*.example.json`; lo apaga y borra el directorio al terminar. Cubre fichas, redirecciones 301/404, portada, JSON-LD (Organization/LocalBusiness), `og:locale`, sitemap (`lastmod`, no disponibles), recorte, FAQ/carrito, cabeceras de `_headers`, auth, login/sesión y subida de foto. Escribe datos solo en ese estado temporal (`publico.test.mjs` y `escritura.test.mjs` arrancan cada uno el suyo).
   - **Remoto, solo lectura:** `BASE_URL=https://catalogo-personal.pages.dev npm run test:integracion` no arranca nada. **Regla estricta: solo GET/HEAD y un `PUT /api/content` sin cookie que debe dar 401; nunca login, subidas ni `PUT` autenticado.** Descubre un servicio y un producto leyendo `/api/content?key=catalogo`; las pruebas que necesitan modificar datos se omiten («requiere modo local») y las pasivas (dirección, items no disponibles, recorte, foto) corren solo si el sitio ya tiene esos datos.
 - Verificación real ya ejecutada: `npm run dev` compila; `GET /api/content?key=config|catalogo|landing|faq` devuelve 200; `POST /api/login` setea cookie; `/api/session` con cookie devuelve 200; `PUT /api/content` autenticado devuelve 200; `POST /api/upload` devuelve 200; `GET /api/image?id=pan-integral` devuelve la imagen; `POST /api/logout` invalida la sesión; `/admin/identidad` sin cookie redirige a `/admin/index.html`.
 
@@ -91,7 +94,8 @@ public/
   admin/*.html                                       # cargan ../assets/admin.js
   assets/{app.js,admin.js,styles.css}
   assets/images/placeholder.png
-functions/
+src/
+  worker.js                                          # router: rutas → módulos, middleware, ASSETS
   _middleware.js
   _lib/auth.js
   index.js, faq.js, producto.js, producto/[id].js, servicio/[id].js, carrito.js     # páginas públicas con SEO y datos inyectados
@@ -104,8 +108,7 @@ test/*.test.mjs
 AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
 ```
 
-- `public/` es el `pages_build_output_dir`.
-- `functions/api/*.js` se autodescubren como rutas; no hay `main` en `wrangler.toml`.
+- `public/` es `assets.directory`. Las rutas dinámicas están en `src/worker.js` (tabla `EXACTAS`/`CON_ID`) y deben coincidir con `assets.run_worker_first`; lo demás se sirve directo sin invocar el Worker. Si un manejador no atiende el método, la petición sigue a `env.ASSETS` (como en Pages).
 - `public/_headers` fija `nosniff`, `Referrer-Policy` y `X-Frame-Options` en los estáticos, caché de 30 días para la fuente, 1 día para las imágenes y `X-Robots-Tag: noindex` en `/admin/*` (no afecta a las respuestas de las Functions). Existe `docs/` (guía, checklist E2E, registro de fricciones). `AGENTS_SUMMARY.md` es la memoria de sesión y `VALIDATION_SUMMARY.md` el log de pruebas; ambos se actualizaron el 2026-10-29.
 
 ## 6. Contratos de datos
@@ -117,7 +120,7 @@ La referencia ejecutable son `config/*.example.json` (ejemplo: tienda de Capa Gr
 - `landing`: `hero{titulo,subtitulo,cta_texto,cta_enlace,imagen_fondo_url}`, `secciones[]` con `tipo` (`texto|destacados|galeria|contacto|sobre-mi|testimonios`), `titulo`, `contenido` (≤2000), `items_ids`; `testimonios[{texto≤300, autor≤60, detalle≤80}]` (≤8, solo en `tipo: testimonios`); `nombre` (string ≤60, opcional, solo en `tipo: sobre-mi`: firma bajo la presentación y fuente de las iniciales cuando no hay foto; sin `nombre` y sin foto solo se muestra el texto); `tema{fuente,estilo,color_acento?}`; `seo{titulo,descripcion}`. El admin (`admin/landing.html`) edita con pestañas en dos niveles: un selector de nivel 1 (`Portada | Apariencia y SEO | Secciones (n)`, ancho completo, sin scroll en móvil) y, solo dentro de «Secciones», una cabecera fija con el botón «+ Añadir sección» y, debajo, una fila de nivel 2 con una pestaña por sección. «Secciones» abre la última sección vista (o la primera); sin secciones muestra un aviso vacío. Al eliminar una sección vuelve a «Secciones». Las flechas/Inicio/Fin navegan dentro de cada fila (estado en memoria `secciones`; alta con selector de tipo, subir/bajar, eliminar, casillas para `items_ids` desde el catálogo, tarjetas para testimonios, aviso de cambios sin guardar). `admin.putContent` muestra `detalle` del servidor, no solo `error`. `secciones[].posicion` (`antes|despues`, opcional, por defecto `despues`) decide si la sección va justo bajo la portada o debajo del catálogo; `index.html` pinta cada grupo en el orden guardado (`#secciones-antes`, `#secciones-landing`; `renderizarSecciones`) y las vacías no se muestran. El admin guarda `posicion` solo cuando es `antes`. `sobre-mi` usa la foto con id reservado `sobre-mi`, que se sube desde el propio editor de la sección («Tu foto»: vista previa y «Subir foto», al momento y sin pulsar Guardar; `montarFotoSobreMi` en `admin/landing.html`, con `admin.optimizarImagen` y `POST /api/upload`) o, como cualquier otra foto, desde `POST /api/upload` ( `ID_RESERVADOS` en `validadores.js` lo prohíbe en el catálogo y `/api/upload` lo acepta sin item). `contacto` añade botones de WhatsApp y correo desde `config.perfil`. El ejemplo no incluye testimonios a propósito (no inventar opiniones). **Arte de las secciones** (`index.html` + `styles.css`, bloque «Arte de las secciones»): cada `h2` lleva una línea de acento (`h2::after`); título y texto de `texto`, `sobre-mi` y `contacto` van siempre centrados, a cualquier ancho (`sobre-mi` es una columna única de 720px: foto, texto y firma; no hay cambio de layout por breakpoint); `contacto` lleva además botones del mismo ancho en móvil; `sobre-mi` pone la foto con marco desplazado de acento y, si no hay foto, un círculo con las iniciales de `secciones[].nombre` (`.sobre-mi-iniciales`; antes salían de `perfil.nombre`, que es el del negocio) y, sin nombre, solo el texto; `testimonios` usa comilla en círculo de acento (`.testimonio::before`), avatar con iniciales (`.testimonio-avatar`) y en móvil se desliza en horizontal (`scroll-snap`). Todo con variables, sin colores de marca fijos.
 - `faq`: `preguntas[{p,r}]` (máx. 15). Los campos antiguos `perfil.tono_chat` y `tono` (solo los usaba el chat) se aceptan y se ignoran; el admin ya no los guarda.
 
-El validador ya comprueba unicidad de `id`, existencia de `categoria` en la lista de su tipo (salvo `""`), longitud de `descripcion`, enums de `tipo_catalogo`/`fuente`/`estilo`, booleanos y que `categorias_agendamiento` solo contenga categorías de servicio. También valida email y URLs (`reserva_url`/`calendly_url`, `logo_url`, redes: http(s) absolutas; `logo_url` admite ruta `/…`) y, en `PUT landing`, que `items_ids` existan en el catálogo guardado (o el de ejemplo). Los validadores viven en `functions/_lib/validadores.js` (módulo puro, reexportado por `content.js`). No valida `hero.cta_enlace` ni `imagen_fondo_url`.
+El validador ya comprueba unicidad de `id`, existencia de `categoria` en la lista de su tipo (salvo `""`), longitud de `descripcion`, enums de `tipo_catalogo`/`fuente`/`estilo`, booleanos y que `categorias_agendamiento` solo contenga categorías de servicio. También valida email y URLs (`reserva_url`/`calendly_url`, `logo_url`, redes: http(s) absolutas; `logo_url` admite ruta `/…`) y, en `PUT landing`, que `items_ids` existan en el catálogo guardado (o el de ejemplo). Los validadores viven en `src/_lib/validadores.js` (módulo puro, reexportado por `content.js`). No valida `hero.cta_enlace` ni `imagen_fondo_url`.
 
 ## 7. API y autenticación
 
@@ -133,16 +136,16 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 | `GET /api/image?id=...` o `?url=items/...` | pública | 200 imagen desde KV; 404 si no existe o el id es inválido. |
 
 - Cookie esperada: `admin_session=<token>; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`.
-- Implementado en `functions/_lib/auth.js`: cookie firmada con HMAC-SHA256 usando `ADMIN_PASSWORD` como secreto; el middleware verifica `/admin/*` (excepto `/admin`, `/admin/` y `/admin/index.html`) y las escrituras. No hay sesiones en KV. Los intentos fallidos de login sí se guardan en KV (`intentos:{ip}`, TTL 15 min, `_lib/intentos.js`): solo se escribe al fallar y no se escribe más con la IP bloqueada, para no gastar las 1.000 escrituras diarias.
+- Implementado en `src/_lib/auth.js`: cookie firmada con HMAC-SHA256 usando `ADMIN_PASSWORD` como secreto; el middleware verifica `/admin/*` (excepto `/admin`, `/admin/` y `/admin/index.html`) y las escrituras. No hay sesiones en KV. Los intentos fallidos de login sí se guardan en KV (`intentos:{ip}`, TTL 15 min, `_lib/intentos.js`): solo se escribe al fallar y no se escribe más con la IP bloqueada, para no gastar las 1.000 escrituras diarias.
 - `window.admin.isAuthenticated()` es asíncrona; en las páginas admin debe usarse con `await`.
 - **Tarjeta vs. ficha:** la tarjeta de la portada es un resumen (foto, nombre, descripción cortada a 2 líneas, precio, duración y una acción). **Solo las tarjetas de servicio llevan a la ficha** (`producto.html`; el enlace del título se estira con `h3 a::after` y la acción queda por encima, con `pointer-events` solo en el botón): allí viven la descripción completa, la galería, «Qué incluye», las opciones de precio y la reserva. **Las tarjetas de producto son estáticas** (`.item-card-estatica`: sin enlace, sin elevación ni sombra al pasar el ratón), porque su ficha mostraría lo mismo que la tarjeta; `/producto/{id}` sigue existiendo para compartir, SEO, sitemap y el carrito. El precio, la duración y el botón van siempre pegados al fondo de la tarjeta (`.item-meta` con `margin-top: auto`), para que se alineen aunque el título ocupe una o dos líneas. En servicios, al pasar el ratón la tarjeta sube 4 px (`--card-lift`) y aparece una sombra suave (`--shadow-hover`); ya no hay overlay «Ver detalles». Tarjetas redondeadas (`--radius-card` 20px) con fondo tenue (`--card-tint`; en blanco sobre fondos grises). No repitas en la tarjeta lo que ya está en la ficha de un servicio.
 - **Compartir:** la ficha lleva una línea discreta «Compartir: WhatsApp · Copiar enlace» (`prepararCompartir` en `producto.html`; `wa.me/?text=` con nombre y URL, y copia al portapapeles). No va en las tarjetas ni como botón.
 - **Servicios a cotizar:** `app.js` expone `requiereCotizacion`, `textoPrecio` y `buildCotizacionLink`. Las tarjetas muestran el precio también en servicios. El admin de Catálogo tiene la casilla «Precio a consultar» (solo se habilita en servicios).
 - **CTA del hero:** es un solo botón (`landing.hero.cta_texto/cta_enlace`). El ejemplo apunta a `/#seccion-servicio`, porque en un negocio mixto los productos ya quedan a la vista bajo el hero. `ajustarCta()` en `index.html` lo oculta si el destino `#...` no existe o está oculto (p. ej. solo-productos).
-- **Caché y límites gratuitos:** cada visita a una página pública es 1 invocación de función (la de la página) más 1 por foto; no pide `/api/content` porque `functions/_lib/paginas.js` inyecta los datos en `<script id="sitio-datos">` y `app.js` los lee de ahí (`/api/content` queda como respaldo). Las lecturas de KV pasan por la Cache API de borde 60 s (`_lib/cache.js`), se invalidan al hacer PUT/upload en ese centro de datos y las demás caducan solas; las fotos se cachean 5 min en el borde y 1 h en el navegador. La Cache API puede no aplicar en `*.pages.dev` (sí con dominio propio); sin caché todo funciona leyendo KV. El admin lee con `cache: 'no-store'`. Los cambios pueden tardar hasta ~60 s en verse.
+- **Caché y límites gratuitos:** cada visita a una página pública es 1 invocación de función (la de la página) más 1 por foto; no pide `/api/content` porque `src/_lib/paginas.js` inyecta los datos en `<script id="sitio-datos">` y `app.js` los lee de ahí (`/api/content` queda como respaldo). Las lecturas de KV pasan por la Cache API de borde 60 s (`_lib/cache.js`), se invalidan al hacer PUT/upload en ese centro de datos y las demás caducan solas; las fotos se cachean 5 min en el borde y 1 h en el navegador. La Cache API puede no aplicar en `*.pages.dev` (sí con dominio propio); sin caché todo funciona leyendo KV. El admin lee con `cache: 'no-store'`. Los cambios pueden tardar hasta ~60 s en verse.
 - **Longitud de títulos y descripciones:** `etiquetasMeta` recorta la descripción (meta, Open Graph y Twitter) a 155 caracteres en límite de palabra con «…» (`recortar`, `_lib/seo.js`); los títulos automáticos de ficha y FAQ usan `tituloPagina`: «Página - Negocio» y, si pasa de 60, solo la parte de la página. El título de la portada (`landing.seo.titulo`) no se toca. `aplicarMarca` ya no añade el nombre al `document.title` en páginas con `#sitio-datos`, porque el servidor decide el título.
 - **Open Graph:** `og:locale` sale de la moneda del perfil (`localeOg`: PEN→es_PE, MXN→es_MX, COP→es_CO, ARS→es_AR, CLP→es_CL, EUR→es_ES; otra, como USD→es_LA). `og:image:alt`/`twitter:image:alt` los pone cada página con `imagenAlt` (nombre del item si hay foto; «Logo de …» si es el logo). `hreflang` no hace falta con un solo idioma.
-- **URLs de ficha:** URL limpia `/servicio/{id}` para servicios y `/producto/{id}` para productos (`functions/servicio/[id].js` y `functions/producto/[id].js`; sirven `producto.html` con `env.ASSETS.fetch('/producto')`, por eso `producto.html` usa rutas absolutas y lee el id de la ruta). La URL antigua `/producto?id=…` (`functions/producto.js`) redirige 301 a la nueva, y cada ruta redirige también si el item es de otro tipo; id inexistente: 404 `noindex`. Un solo origen de verdad para la ruta: `urlFicha` (`app.js`) en cliente y `rutaItem` (`_lib/seo.js`) en servidor (canonical, sitemap, lista estática, enlaces). La lógica de la ficha vive en `_lib/ficha.js` (`fichaPublica({ tipo })`).
+- **URLs de ficha:** URL limpia `/servicio/{id}` para servicios y `/producto/{id}` para productos (`src/servicio/[id].js` y `src/producto/[id].js`; sirven `producto.html` con `env.ASSETS.fetch('/producto')`, por eso `producto.html` usa rutas absolutas y lee el id de la ruta). La URL antigua `/producto?id=…` (`src/producto.js`) redirige 301 a la nueva, y cada ruta redirige también si el item es de otro tipo; id inexistente: 404 `noindex`. Un solo origen de verdad para la ruta: `urlFicha` (`app.js`) en cliente y `rutaItem` (`_lib/seo.js`) en servidor (canonical, sitemap, lista estática, enlaces). La lógica de la ficha vive en `_lib/ficha.js` (`fichaPublica({ tipo })`).
 - **HTML visible para buscadores:** `paginaPublica` acepta `meta().reescribir(rw)` para añadir reglas de `HTMLRewriter`. La portada recibe `h1` y subtítulo del hero reales y un bloque `#catalogo-estatico` (lista de items, `_lib/seo.js`) que `renderizarCatalogo` retira al pintar las tarjetas; la ficha recibe `h1#producto-nombre`, descripción y `alt` de la foto. `test/seo.test.mjs` cubre el bloque.
 - **SEO y compartir:** `/`, `/faq`, `/servicio/{id}`, `/producto/{id}` y `/carrito` pasan por `paginaPublica()`, que inyecta título, descripción, canonical, Open Graph/Twitter y JSON-LD (WebSite+Organization —o LocalBusiness solo si hay `perfil.direccion` (`address`, que Google exige para negocio local); `areaServed` (zonas de servicios no solo online, `zonasAtendidas`) va en ambos casos, ver `zonasAtendidas` en `_lib/seo.js`—, FAQPage, Product/Service). `og:image` es la foto del item (si existe) o `negocio.logo_url`; si no hay ninguna, sin imagen. Un id inexistente responde 404 con `noindex`; el carrito y el admin llevan `noindex`. `/sitemap.xml` (home, FAQ y cada item con `disponible !== false`; la ficha de un item no disponible sigue respondiendo 200 con `OutOfStock`) y `/robots.txt` son dinámicos. `PUT /api/content` guarda `updated_at` en la metadata del KV (no en el JSON) y el sitemap lo usa como `<lastmod>` (home: el más reciente de config/catálogo/landing; FAQ: config/faq; items: config/catálogo, sin fecha por item); las keys nunca guardadas van sin `<lastmod>`. Para que la vista previa de WhatsApp muestre la foto, mantenla ligera (≲300 KB).
 - **Sitio recién desplegado:** `app.js` (`loadCatalogo/loadConfig/loadLanding/loadFAQ`, memoizadas) cae a `/api/defaults` cuando la key no existe en KV, así las páginas públicas muestran los ejemplos sin guardar nada. En cuanto el admin guarda una key, se usa la guardada.
@@ -164,7 +167,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 ## 9. Imágenes (KV `IMAGES`)
 
-- La convención es `items/{id}.{ext}` y el item debe existir en `catalogo`: el guardado en KV o, mientras no se haya guardado ninguno, el de ejemplo (`functions/_lib/defaults.js`, `getContent`). Al guardar un catálogo propio, solo valen sus IDs.
+- La convención es `items/{id}.{ext}` y el item debe existir en `catalogo`: el guardado en KV o, mientras no se haya guardado ninguno, el de ejemplo (`src/_lib/defaults.js`, `getContent`). Al guardar un catálogo propio, solo valen sus IDs.
 - Usa el binding: `await env.IMAGES.put(key, body, { metadata: { contentType: file.type } })` y lee con `getWithMetadata(key, { type: 'arrayBuffer' })`. Límites del KV gratuito: 1 GB, 1.000 escrituras/día, 100.000 lecturas/día, 25 MiB por valor (el tope de subida es 5 MB). Una foto nueva puede tardar hasta ~60 s en verse en otros puntos de la red (consistencia eventual).
 - `GET /api/image?id={id}` busca `items/{id}.jpg|jpeg|png|webp`; `GET /api/image?url=items/{id}.{ext}` sirve una key exacta. La ruta es pública y cachea 1 hora.
 - Al subir una imagen se borran las otras extensiones del mismo `id` para evitar servir una foto vieja.

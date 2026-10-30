@@ -1,18 +1,17 @@
 {
   "name": "catalogo-personal",
   "version": "0.0.1",
-  "description": "Template desplegable para publicar un catálogo personal de servicios (y productos) con Cloudflare Pages y Workers KV",
-  "main": "index.js",
+  "description": "Template desplegable para publicar un catálogo personal de servicios (y productos) con Cloudflare Workers y Workers KV",
+  "main": "src/worker.js",
   "scripts": {
-    "dev": "wrangler pages dev public --ip 0.0.0.0 --port 8788",
-    "deploy": "wrangler pages deploy public",
-    "deploy:pages": "wrangler pages deploy public",
+    "dev": "wrangler dev --ip 0.0.0.0 --port 8788",
+    "deploy": "wrangler deploy",
     "test": "node --test test/*.test.mjs",
     "test:integracion": "node --test --test-timeout=60000 --test-reporter=./test/integracion/reporte.mjs test/integracion/*.test.mjs"
   },
   "keywords": [
     "cloudflare",
-    "pages",
+    "workers",
     "kv",
     "catalog",
     "personal",

@@ -172,3 +172,9 @@
 
 ## 2026-10-30 — Cambio de nombre a catalogo-personal
 - `package.json`/`package-lock.json` (`name`, `repository`), `wrangler.toml` (`name`), guía y rutas de `AGENTS.md`/`AGENTS_SUMMARY.md` actualizados. Las entradas anteriores conservan `personal-ecommerce.pages.dev` porque es la URL contra la que se probó entonces.
+
+## Migración a Workers (2026-10-30)
+
+- `npm test`: 34 ok. `npm run test:integracion` (local, `wrangler dev` 4.154): 29 ok, 0 fallos, 3 omitidas (datos que el ejemplo no tiene).
+- A mano con `wrangler dev`: `/admin/*` sin cookie → 302 a `/admin/index.html` (→ 307 `/admin/`); `/faq.html` → 307 `/faq`; `/servicio/nope` → 404; cabeceras de `_headers` presentes.
+- No verificado: despliegue real en Cloudflare ni el botón.

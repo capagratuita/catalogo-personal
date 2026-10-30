@@ -1,19 +1,32 @@
 name = "catalogo-personal"
+main = "src/worker.js"
 compatibility_date = "2026-10-01"
-pages_build_output_dir = "public"
 
-# Workers KV: almacena los JSONs (config, catalogo, landing, faq)
-# En local, Wrangler usa un KV local automáticamente.
-# En producción, reemplaza "placeholder" con el ID real del namespace
-# (Dashboard → Workers & Pages → KV → tu namespace → ID).
+# Archivos estáticos (public/). `run_worker_first` lista las rutas que pasan por el Worker
+# (páginas con SEO, API y admin protegido); el resto se sirve directo, sin gastar invocaciones.
+[assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = [
+  "/",
+  "/faq",
+  "/carrito",
+  "/producto",
+  "/producto/*",
+  "/servicio/*",
+  "/sitemap.xml",
+  "/robots.txt",
+  "/api/*",
+  "/admin",
+  "/admin/*",
+]
+
+# Workers KV: contenido (config, catalogo, landing, faq). Sin `id`: el botón
+# «Deploy to Cloudflare» (y `wrangler deploy`) crean el namespace automáticamente.
 [[kv_namespaces]]
 binding = "KV"
-id = "0b5c9d9f26ee42b6ab7d9473ee446132"
 
-# Workers KV (segundo namespace): almacena las fotos de los items como binarios
-# (claves items/{id}.{ext}). Se usa KV en lugar de R2 porque no pide método de pago.
-# En local, Wrangler usa un KV local automáticamente.
-# En producción, reemplaza el id con el del namespace real de fotos.
+# Workers KV (segundo namespace): fotos de los items como binarios (claves items/{id}.{ext}).
+# Se usa KV en lugar de R2 porque no pide método de pago.
 [[kv_namespaces]]
 binding = "IMAGES"
-id = "b2a6c12a3d6e4d2da5175b971ea40ead"

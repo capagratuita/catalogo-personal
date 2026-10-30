@@ -96,3 +96,9 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 - No hecho a propósito: sitemap de imágenes, `hreflang` (un solo idioma), cambios en `robots.txt`.
 - Comprobado en producción (`personal-ecommerce.pages.dev`, 2026-10-30): rutas limpias con `env.ASSETS`, redirecciones 301, 404 `noindex`, `lastmod` en el sitemap y `_headers`. Las pruebas de integración del servidor ya existen (`npm run test:integracion`, local y `BASE_URL` remoto de solo lectura; ver AGENTS.md sección 4). Pendiente: revisar a ojo en navegador el formulario «Dirección» y el pie. `npm test`: 34 pruebas.
 - Si `npm run dev` cae con `SQLITE_BUSY_RECOVERY`: `pkill -f workerd; pkill -f wrangler` y volver a arrancar.
+
+## Migración a Workers (2026-10-30)
+
+- `functions/` → `src/`; `src/worker.js` enruta (tablas `EXACTAS`/`CON_ID`) y llama al middleware; lo no atendido cae a `env.ASSETS`. `_middleware.js` copia la respuesta antes de añadir CORS (las de ASSETS son inmutables).
+- `wrangler.toml`: `main`, `[assets]` con `run_worker_first` (rutas dinámicas), KV sin `id` (auto-provisión). `package.json`: `dev` = `wrangler dev`, `deploy` = `wrangler deploy`.
+- Pendiente: probar el botón «Deploy to Cloudflare» con una cuenta real y confirmar que pide `ADMIN_PASSWORD` desde `.dev.vars.example`.

@@ -1,7 +1,7 @@
 // Ayudas comunes de las pruebas de integración del servidor.
 //
 // Dos modos:
-//  - local (por defecto): levanta `wrangler pages dev` en un puerto libre, con estado y contraseña
+//  - local (por defecto): levanta `wrangler dev` en un puerto libre, con estado y contraseña
 //    temporales, y lo apaga al terminar. Aquí las pruebas pueden escribir datos.
 //  - remoto (BASE_URL=https://…): no arranca nada; solo lectura (GET/HEAD) y un PUT sin cookie que debe dar 401.
 import { spawn, execFile } from 'node:child_process';
@@ -18,7 +18,7 @@ const RAIZ = fileURLToPath(new URL('../../', import.meta.url));
 const WRANGLER = join(RAIZ, 'node_modules/wrangler/bin/wrangler.js');
 const CLAVES = ['config', 'catalogo', 'landing', 'faq'];
 
-// Contraseña solo para las pruebas locales: el servidor temporal la recibe por --binding
+// Contraseña solo para las pruebas locales: el servidor temporal la recibe por --var
 export const PASSWORD_PRUEBA = 'clave-de-prueba-integracion';
 
 export const dormir = ms => new Promise(r => setTimeout(r, ms));
@@ -98,9 +98,9 @@ async function arrancarLocal() {
       { cwd: RAIZ, env, timeout: 60000 });
     }
 
-    proceso = spawn(process.execPath, [WRANGLER, 'pages', 'dev', 'public', '--ip', '127.0.0.1',
+    proceso = spawn(process.execPath, [WRANGLER, 'dev', '--ip', '127.0.0.1',
       '--port', String(puerto), '--persist-to', persist, '--inspector-port', '0',
-      '--binding', `ADMIN_PASSWORD=${PASSWORD_PRUEBA}`],
+      '--var', `ADMIN_PASSWORD:${PASSWORD_PRUEBA}`],
     { cwd: RAIZ, env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
     const acumular = d => { log = (log + d).slice(-6000); };
     proceso.stdout.on('data', acumular);

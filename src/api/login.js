@@ -37,7 +37,7 @@ export const onRequestPost = async ({ request, env }) => {
 
   const respuesta = { ok: true };
   if (env.ADMIN_PASSWORD.length < LONGITUD_RECOMENDADA) {
-    respuesta.aviso = `Tu contraseña tiene menos de ${LONGITUD_RECOMENDADA} caracteres. Cámbiala por una más larga en Cloudflare: Workers & Pages → tu proyecto → Settings → Variables and Secrets → ADMIN_PASSWORD.`;
+    respuesta.aviso = `Tu contraseña tiene menos de ${LONGITUD_RECOMENDADA} caracteres. Cámbiala por una más larga en Cloudflare: Workers & Pages → tu Worker → Settings → Variables and Secrets → ADMIN_PASSWORD.`;
   }
 
   const cookie = await createSessionCookie(request, env);

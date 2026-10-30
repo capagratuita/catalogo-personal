@@ -39,7 +39,9 @@ export const onRequest = async ({ request, env, next }) => {
     }
   }
 
-  const response = await next();
+  // Las respuestas de ASSETS son inmutables: se copian para poder añadir cabeceras
+  const original = await next();
+  const response = new Response(original.body, original);
   for (const [key, value] of Object.entries(CORS_HEADERS)) {
     response.headers.set(key, value);
   }
