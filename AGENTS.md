@@ -55,7 +55,7 @@ En producción, reemplaza `id = "placeholder"` por el ID real de cada namespace 
 11. **No uses `--persist`** (eliminado en Wrangler 4.x). La persistencia local es automática; si necesitas ruta, `--persist-to <dir>`.
 12. **No uses sintaxis de Workers Sites** (`[site]`, `site.bucket`, `site.entry-point`). Usa `pages_build_output_dir`.
 13. **Móvil primero** (375px), HTML semántico, `alt`, contraste AA y navegación por teclado en el admin.
-14. **Verifica con `npm test` y con `npm run dev` + llamadas reales.** `npm test` cubre validadores, límite de intentos y la lógica de acciones del frontend (Node, sin dependencias); no sustituye la prueba en el servidor ni en el navegador.
+14. **Verifica con `npm test` y con `npm run dev` + llamadas reales.** `npm test` cubre validadores, límite de intentos y la lógica de acciones del frontend (Node, sin dependencias); `npm run test:integracion` prueba el servidor real (ver sección 4); ninguno sustituye la prueba en el navegador.
 
 ## 4. Comandos y setup local
 
@@ -81,6 +81,9 @@ npx wrangler kv key get --binding=KV --local config
 
 - Los `config/*.example.json` no se cargan solos; hay que sembrarlos y volver a sembrar tras editarlos.
 - `npm test` (runner integrado de Node, sin dependencias) ejecuta `test/*.test.mjs`: validadores, límite de intentos de login y `accionItem`/`textoPrecio` de `app.js`. No hay `npm run lint` ni typecheck. Los antiguos `validate-phase*.sh` y `test-all-phases.sh` se eliminaron (eran greps no fiables).
+- `npm run test:integracion` (`test/integracion/*.test.mjs`, separado de `npm test`; reporter propio `reporte.mjs`: solo fallos y «n ok, n fallos, n omitidas»; helper común `ayuda.mjs`). Dos modos:
+  - **Local (por defecto):** levanta su propio `wrangler pages dev` en un puerto libre (≠ 8788) con `--persist-to` en un directorio temporal, `ADMIN_PASSWORD` de prueba por `--binding` y KV sembrado con `config/*.example.json`; lo apaga y borra el directorio al terminar. Cubre fichas, redirecciones 301/404, portada, JSON-LD (Organization/LocalBusiness), `og:locale`, sitemap (`lastmod`, no disponibles), recorte, FAQ/carrito, cabeceras de `_headers`, auth, login/sesión y subida de foto. Escribe datos solo en ese estado temporal (`publico.test.mjs` y `escritura.test.mjs` arrancan cada uno el suyo).
+  - **Remoto, solo lectura:** `BASE_URL=https://personal-ecommerce.pages.dev npm run test:integracion` no arranca nada. **Regla estricta: solo GET/HEAD y un `PUT /api/content` sin cookie que debe dar 401; nunca login, subidas, `PUT` autenticado ni `/api/chat`.** Descubre un servicio y un producto leyendo `/api/content?key=catalogo`; las pruebas que necesitan modificar datos se omiten («requiere modo local») y las pasivas (dirección, items no disponibles, recorte, foto) corren solo si el sitio ya tiene esos datos.
 - Verificación real ya ejecutada: `npm run dev` compila; `GET /api/content?key=config|catalogo|landing|faq` devuelve 200; `POST /api/login` setea cookie; `/api/session` con cookie devuelve 200; `PUT /api/content` autenticado devuelve 200; `POST /api/upload` devuelve 200; `GET /api/image?id=pan-integral` devuelve la imagen; `POST /api/logout` invalida la sesión; `/admin/identidad` sin cookie redirige a `/admin/index.html`.
 
 ## 5. Estructura real y entrypoints

@@ -60,6 +60,7 @@ cd "/Users/guillermo/Capa Gratuita/personal-ecommerce"
 lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill
 npm run dev      # si cae con SQLITE_BUSY tras editar archivos, reiniciarlo
 npm test
+npm run test:integracion   # servidor temporal; con BASE_URL=… prueba un despliegue en solo lectura
 ```
 
 Si `.wrangler/state` se borra, volver a sembrar KV:
@@ -93,5 +94,5 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 - **Longitudes** (`b5c490d`): descripción a 155 caracteres, títulos de ficha/FAQ a 60 (`recortar`, `tituloPagina`). El título de la portada no se toca. `aplicarMarca` ya no reañade el negocio al `document.title`.
 - **Detalles** (`d5bc3ec`): `og:image:alt`/`twitter:image:alt`, `og:locale` por moneda (`localeOg`) y `public/_headers`.
 - No hecho a propósito: sitemap de imágenes, `hreflang` (un solo idioma), cambios en `robots.txt`.
-- Comprobado en producción (`personal-ecommerce.pages.dev`, 2026-10-30): rutas limpias con `env.ASSETS`, redirecciones 301, 404 `noindex`, `lastmod` en el sitemap y `_headers`. Pendiente: pruebas de integración del servidor en `npm test` (hoy solo hay pruebas de funciones puras) y revisar a ojo en navegador el formulario «Dirección» y el pie. `npm test`: 34 pruebas.
+- Comprobado en producción (`personal-ecommerce.pages.dev`, 2026-10-30): rutas limpias con `env.ASSETS`, redirecciones 301, 404 `noindex`, `lastmod` en el sitemap y `_headers`. Las pruebas de integración del servidor ya existen (`npm run test:integracion`, local y `BASE_URL` remoto de solo lectura; ver AGENTS.md sección 4). Pendiente: revisar a ojo en navegador el formulario «Dirección» y el pie. `npm test`: 34 pruebas.
 - Si `npm run dev` cae con `SQLITE_BUSY_RECOVERY`: `pkill -f workerd; pkill -f wrangler` y volver a arrancar.
