@@ -465,7 +465,7 @@
             // la descripción cortada a 2 líneas por CSS.
             const descripcionHtml = `<p class="descripcion">${escapeHtml(item.descripcion)}</p>`;
             const urlFicha = `/producto?id=${encodeURIComponent(item.id)}`;
-            const imagenHtml = `<img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="" loading="lazy" width="400" height="300">`;
+            const imagenHtml = `<img class="item-imagen" src="/api/image?id=${encodeURIComponent(item.id)}" alt="${escapeHtml(item.nombre)}" loading="lazy" width="400" height="300">`;
             card.classList.toggle('item-card-estatica', !isService);
             card.innerHTML = `
                 ${isService ? `<a class="item-enlace-imagen" href="${urlFicha}" tabindex="-1" aria-hidden="true">${imagenHtml}</a>` : imagenHtml}
