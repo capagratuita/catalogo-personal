@@ -70,6 +70,30 @@
             color: var(--muted);
         }
 
+        .secciones-acciones {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-abrir-pagina {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-btn);
+            background: var(--bg-alt);
+            color: var(--ink-soft);
+        }
+
+        .btn-abrir-pagina:hover { background: var(--line); }
+
+        .btn-abrir-pagina:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
         .btn-agregar {
             min-height: 44px;
             padding: 0.5rem 1rem;
@@ -411,7 +435,12 @@
                 <div id="barra-secciones" hidden>
                 <div class="secciones-cabecera">
                     <span class="secciones-titulo">Secciones de tu página</span>
-                    <button type="button" class="btn-agregar" id="btn-agregar-seccion" aria-expanded="false" aria-controls="elegir-tipo">+ Añadir sección</button>
+                    <div class="secciones-acciones">
+                        <a class="btn-abrir-pagina" href="/" target="_blank" rel="noopener" title="Abrir mi página en otra ventana" aria-label="Abrir mi página en otra ventana">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                        </a>
+                        <button type="button" class="btn-agregar" id="btn-agregar-seccion" aria-expanded="false" aria-controls="elegir-tipo">+ Añadir sección</button>
+                    </div>
                 </div>
                 <div class="tabs-barra">
                     <div class="tabs" role="tablist" aria-label="Secciones" id="tabs"></div>
