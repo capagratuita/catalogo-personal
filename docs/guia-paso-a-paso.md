@@ -48,13 +48,19 @@ Hasta que pulses **Guardar** en cada sección, el sitio muestra los datos de eje
 
 ## Cómo traer mejoras del template
 
-Tu repositorio no se actualiza solo. Cuando quieras las mejoras nuevas:
+Tu repositorio no se actualiza solo. El botón de Cloudflare no copia la carpeta `.github/`, así que el workflow de sincronización se instala a mano **una sola vez**:
 
-1. En tu repositorio de GitHub entra en **Actions → Sincronizar con el template → Run workflow**. (Si es la primera vez y GitHub pide habilitar los workflows, acéptalo.)
+1. Abre [`sincronizar-template.yml`](https://github.com/capagratuita/catalogo-personal/blob/main/.github/workflows/sincronizar-template.yml) en el repositorio original y pulsa el icono **Copy raw file**.
+2. En tu repositorio: **Add file → Create new file**. En el nombre escribe exactamente `.github/workflows/sincronizar-template.yml` (GitHub crea las carpetas al escribir las `/`) y pega el contenido.
+3. Pulsa **Commit changes** sobre `main`.
+
+Cuando quieras las mejoras nuevas:
+
+1. En tu repositorio entra en **Actions → Sincronizar con el template → Run workflow**. (Si GitHub pide habilitar los workflows, acéptalo.)
 2. Espera un minuto: se abre un **pull request** «Sincronizar con el template» con los cambios. Si no se crea solo, ábrelo desde **Pull requests** (rama `sincronizar-template`) o activa **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** y repite.
 3. Revisa los cambios y pulsa **Merge**. Cloudflare vuelve a desplegar solo.
 
-No se toca tu `wrangler.jsonc` (ahí está tu configuración de KV). Si el pull request avisa de que ese archivo cambió en el template, aplica los cambios a mano conservando tus `id`. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
+No se toca tu `wrangler.jsonc` (ahí está tu configuración de KV) ni `.github/`, así que si el workflow cambia en el template tendrás que volver a copiarlo. Si el pull request avisa de que `wrangler.jsonc` cambió, aplica los cambios a mano conservando tus `id`. Tu contenido (catálogo, fotos, textos) está en KV, no en el repositorio, así que no se pierde.
 
 ## Problemas frecuentes
 

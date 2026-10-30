@@ -21,7 +21,7 @@ Cada persona hace su propio fork y despliega su propia instancia. No es un SaaS 
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/capagratuita/catalogo-personal)
 
-El botón copia el proyecto a tu GitHub, crea los dos almacenes KV y despliega el Worker. Sigue **[docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md)**: sin terminal, unos 15–30 minutos. Para traer mejoras del template después, ejecuta a mano el workflow *Sincronizar con el template* (pestaña Actions de tu repositorio).
+El botón copia el proyecto a tu GitHub, crea los dos almacenes KV y despliega el Worker. Sigue **[docs/guia-paso-a-paso.md](docs/guia-paso-a-paso.md)**: sin terminal, unos 15–30 minutos. Para traer mejoras del template después, instala una vez el workflow *Sincronizar con el template* (el botón no copia `.github/`; la guía explica cómo) y ejecútalo a mano desde la pestaña Actions.
 
 ## Probarlo en tu computador
 

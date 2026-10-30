@@ -12,6 +12,7 @@ Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la 
 |---|---|---|---|---|
 | 1 | Paso 1 | Los dos campos de KV del formulario traen el mismo nombre por defecto (el del Worker) y el despliegue falla («title already exists»). Con `wrangler.toml` los KV del formulario no se enlazaban; con `wrangler.jsonc` sí (2026-10-30). | Cambiar los dos nombres a valores distintos (`catalogo-datos`, `catalogo-fotos`); si falla, borrar los KV sobrantes antes de repetir. | Verificado con `wrangler.jsonc` (bindings ya enlazados, sin «Provisioning») |
 | 2 | Paso 1 | Si el formulario no pide la contraseña, queda sin secreto hasta añadirla a mano y volver a desplegar. | Igual que el anterior. | Sin verificar |
+| 2b | Actualizar | El repo creado por el botón no incluye `.github/`: el workflow de sincronización hay que copiarlo a mano (visto el 2026-10-30). | Copiar el archivo desde la web de GitHub y ejecutarlo. | Documentado; falta ejecutarlo |
 | 3 | Paso 1 | El nombre exacto de los menús y formularios de Cloudflare puede diferir de la guía. | Seguir la guía con una cuenta nueva. | Sin verificar |
 | 4 | Actualizar | El fork creado por el botón puede no recibir actualizaciones del template con facilidad. | Sincronizar un fork creado por el botón. | Sin verificar |
 | 6 | Admin | ~~Opciones de precio de un servicio escritas como texto con `|`.~~ | Resuelto: filas con nombre, precio y minutos, y botones para añadir y quitar. | Resuelto (jsdom) |
