@@ -35,7 +35,7 @@ Bindings:
 | Binding | Local | Producción |
 |---|---|---|
 | `env.KV` | KV local automático | Namespace KV real |
-| `env.IMAGES` | KV local automático | Segundo namespace KV real (`catalogo-fotos-kv`) |
+| `env.IMAGES` | KV local automático | Segundo namespace KV real (fotos) |
 | `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado; plantilla en `.dev.vars.example`) | Secret (el botón «Deploy to Cloudflare» lo pide desde `.dev.vars.example`) |
 | `env.ASSETS` | Automático | `[assets] binding = "ASSETS"` en `wrangler.toml` |
 
