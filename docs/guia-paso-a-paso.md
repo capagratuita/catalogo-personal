@@ -25,9 +25,10 @@ Si lo cambias **después** de desplegar también funciona, pero la dirección an
 ## Paso 1. Despliega con un clic
 
 1. Pulsa el botón **Deploy to Cloudflare** del [README del proyecto](../README.md) (inicia sesión en Cloudflare y en GitHub si te lo pide).
-2. Desplázate hasta el final del formulario: verás los nombres de los dos almacenes de datos (KV) y el campo `ADMIN_PASSWORD`. Por defecto los dos KV traen el mismo nombre y **eso falla**. Cámbialos a dos nombres distintos entre sí, por ejemplo `catalogo-datos` (para `KV`, textos y catálogo) y `catalogo-fotos` (para `IMAGES`, fotos).
-3. Cuando te pida `ADMIN_PASSWORD`, escribe tu contraseña de administrador (mínimo 12 caracteres). Es un secreto: no se guarda en GitHub.
-4. Pulsa **Implementar**. Al terminar verás una dirección del tipo `https://tu-proyecto.tu-usuario.workers.dev`.
+2. Puedes cambiar libremente el **nombre del proyecto** en el formulario (por ejemplo `mi-portafolio`): será el nombre de tu repositorio en GitHub, de tu Worker y de la dirección (`https://mi-portafolio.tu-subdominio.workers.dev`). Después no lo cambies a mano en `wrangler.jsonc`: crearía un Worker nuevo.
+3. Desplázate hasta el final del formulario: verás los nombres de los dos almacenes de datos (KV) y el campo `ADMIN_PASSWORD`. Por defecto los dos KV traen el mismo nombre y **eso falla**. Cámbialos a dos nombres distintos entre sí, por ejemplo `catalogo-datos` (para `KV`, textos y catálogo) y `catalogo-fotos` (para `IMAGES`, fotos).
+4. Cuando te pida `ADMIN_PASSWORD`, escribe tu contraseña de administrador (mínimo 12 caracteres). Es un secreto: no se guarda en GitHub.
+5. Pulsa **Implementar**. Al terminar verás una dirección del tipo `https://tu-proyecto.tu-usuario.workers.dev`.
 
 > El sitio ya funciona y muestra datos de ejemplo. Si el formulario no te pidió la contraseña, añádela en tu Worker: **Settings → Variables and Secrets → Add**, tipo **Secret**, nombre exactamente `ADMIN_PASSWORD`, y vuelve a desplegar.
 
