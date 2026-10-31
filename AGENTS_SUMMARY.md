@@ -112,4 +112,5 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 - `config/paquetes/{solo-servicios,solo-productos,mixto}.json`: respaldos importables con todo al máximo y texto genérico (ver AGENTS.md sección 6). Tests: `test/paquetes.test.mjs` (unitario) y `test/integracion/paquetes.test.mjs` (importa por la API real).
 - Secciones únicas (`sobre-mi`, `contacto`, `testimonios`): validación en servidor (`SECCIONES_UNICAS`) y UI (opciones atenuadas con «Ya la tienes»). Los textos de la guía usan «Mensaje» (así se llama el tipo `texto` en el editor).
 - Guía: nueva sección 2.0 «Empieza desde un paquete de inicio».
-- **Pendiente:** revisar los paquetes con una persona (¿los textos genéricos bastan o hace falta una versión con ejemplos reales?) y probar su importación en el despliegue real.
+- Importación del paquete mixto desde Respaldo verificada en el despliegue real (2026-10-31); secciones únicas atenuadas en el editor real.
+- **Pendiente:** revisar los paquetes con una persona (¿los textos genéricos bastan o hace falta una versión con ejemplos reales?); probar solo-servicios y solo-productos en el despliegue real.

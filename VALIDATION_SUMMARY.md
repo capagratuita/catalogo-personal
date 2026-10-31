@@ -197,7 +197,7 @@
 
 - `npm test`: 44 ok (nuevos: `paquetes.test.mjs` ×9, unicidad en `validadores.test.mjs`). `npm run test:integracion` local: 34 ok, 0 fallos, 3 omitidas (importa cada paquete por `PUT` en el orden de Respaldo, comprueba portada, ficha y sitemap, y que una sección única repetida da 400).
 - Chromium (Playwright, 375 px) sobre `/admin/landing.html`: con el ejemplo (trae «Sobre mí» y «Contacto») esos dos botones salen deshabilitados con «Ya la tienes: solo puede haber una.»; tras añadir «Testimonios» también; en el selector de tipo de una sección las ocupadas salen `disabled`; al eliminar la sección vuelve a habilitarse. Sin errores de página.
-- No verificado: importar un paquete desde la pantalla Respaldo del despliegue real (solo por la API en local) y cómo se ven los paquetes en el sitio con fotos.
+- Verificado después en el despliegue real (2026-10-31, repo creado por el botón y sincronizado): el paquete `mixto.json` se importa desde Respaldo (config, catalogo, landing y faq «importado») y Contacto, Sobre mí y Testimonios salen atenuados en el selector. No verificado: cómo se ven los paquetes en el sitio con fotos.
 
 ### Sincronización con PR automático (2026-10-31, repo creado por el botón)
 
