@@ -1,6 +1,6 @@
 {
   "name": "mi-catalogo-digital",
-  "version": "0.0.1",
+  "version": "0.9.0",
   "description": "Template desplegable para publicar un catálogo personal de servicios (y productos) con Cloudflare Workers y Workers KV",
   "main": "src/worker.js",
   "scripts": {
@@ -17,10 +17,10 @@
     "personal",
     "template"
   ],
-  "author": "opencode",
+  "author": "capagratuita",
   "license": "AGPL-3.0-only",
   "devDependencies": {
-    "wrangler": "latest"
+    "wrangler": "^4.154.0"
   },
   "repository": {
     "type": "git",
