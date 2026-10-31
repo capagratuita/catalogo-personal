@@ -47,6 +47,26 @@ Dos reglas que valen para todo el panel:
 
 Orden recomendado: **General → Catálogo → Mi página → FAQ → Respaldo**. El catálogo va antes que la página porque algunas secciones de la página (destacados, galería) eligen items del catálogo.
 
+### 2.0 Opcional: empieza desde un paquete de inicio
+
+Si prefieres editar a partir de un sitio ya completo en vez de rellenar desde cero, importa uno de estos paquetes. Traen todas las secciones y todos los campos usados al máximo, con textos genéricos («Servicio 1», «Producto 1»…):
+
+| Paquete | Para quién | Archivo |
+|---|---|---|
+| **Solo servicios** | Profesionales y emprendedores que ofrecen servicios | [`solo-servicios.json`](https://github.com/capagratuita/catalogo-personal/blob/main/config/paquetes/solo-servicios.json) |
+| **Solo productos** | Quien vende productos, con carrito por WhatsApp | [`solo-productos.json`](https://github.com/capagratuita/catalogo-personal/blob/main/config/paquetes/solo-productos.json) |
+| **Mixto** | Servicios y productos a la vez | [`mixto.json`](https://github.com/capagratuita/catalogo-personal/blob/main/config/paquetes/mixto.json) |
+
+1. Abre el archivo en GitHub y pulsa **Download raw file** (el icono de descarga, arriba a la derecha del contenido).
+2. En el panel entra en **Respaldo → Importar**, elige el archivo y pulsa **Importar respaldo**. Confirma el aviso: **reemplaza todo el contenido guardado** (General, Catálogo, Mi página y FAQ).
+3. Recorre las pantallas del 2.1 al 2.4 y **cambia todo lo que sea de ejemplo**. Lo más importante:
+   - el WhatsApp (`+51999999999`), el correo (`correo@ejemplo.com`), el enlace de reserva (`calendly.com/tu-usuario/…`), la dirección y las redes sociales son falsos: ponlos tuyos o vacíalos;
+   - los **testimonios** son marcadores (empiezan con «[Ejemplo n]»): reemplázalos por opiniones reales con permiso o elimina la sección;
+   - borra los servicios, productos, categorías y preguntas que no uses.
+4. Sube las fotos: **los paquetes no incluyen fotos**. Los items muestran una imagen gris hasta que subas la tuya (2.2), y las galerías de los servicios que la traen y la foto de «Sobre mí» también se ven como marcadores (en «Sobre mí», con las iniciales de tu nombre).
+
+El paquete elegido ya trae su *Tipo de catálogo* (solo servicios, solo productos o mixto). Si cambias de idea, ajústalo en General.
+
 ### 2.1 General
 
 Datos de tu negocio. Se muestran en el encabezado, el pie y los botones de contacto.
@@ -118,12 +138,14 @@ Es la portada. Tiene tres pestañas: **Portada**, **Apariencia y SEO** y **Secci
 
 | Tipo | Para qué sirve |
 |---|---|
-| **Texto** | Un párrafo con título (hasta 2000 caracteres). |
-| **Destacados** | Elige con casillas qué items del catálogo mostrar. |
-| **Galería** | Igual, como mosaico de fotos. |
-| **Sobre mí** | Tu presentación. Sube tu foto desde el propio editor (se guarda al momento). Si no hay foto, se muestran las iniciales de «Tu nombre». |
-| **Testimonios** | Hasta 8 opiniones con autor y detalle. **Solo opiniones reales y con permiso** de quien las dio. |
-| **Contacto** | Botones de WhatsApp y correo con los datos de General. |
+| **Mensaje** | Un título y uno o más párrafos (hasta 2000 caracteres). Puedes añadir varios. |
+| **Destacados** | Elige con casillas qué items del catálogo mostrar. Puedes añadir varios. |
+| **Galería** | Igual, como mosaico de fotos. Puedes añadir varias. |
+| **Sobre mí** (solo una) | Tu presentación. Sube tu foto desde el propio editor (se guarda al momento). Si no hay foto, se muestran las iniciales de «Tu nombre». |
+| **Testimonios** (solo una) | Hasta 8 opiniones con autor y detalle. **Solo opiniones reales y con permiso** de quien las dio. |
+| **Contacto** (solo una) | Botones de WhatsApp y correo con los datos de General. |
+
+*Sobre mí*, *Testimonios* y *Contacto* **solo pueden existir una vez**: si ya las tienes, en el selector aparecen atenuadas con «Ya la tienes» y no se pueden añadir de nuevo.
 
 Cada sección elige **dónde se muestra**: justo bajo la portada o debajo del catálogo. Puedes subirlas, bajarlas o eliminarlas. Al quitar un item del catálogo que usa una sección, aparece marcado en rojo: desmárcalo antes de guardar. Pulsa **Guardar**.
 
@@ -133,7 +155,7 @@ Hasta 15 preguntas frecuentes, con **+ Añadir pregunta**; cada una lleva pregun
 
 ### 2.5 Respaldo
 
-Descarga una copia de todo tu contenido (General, Catálogo, Mi página y FAQ) en un solo archivo. **Hazlo ahora y antes de cada cambio grande.** Las fotos no van incluidas: se vuelven a subir desde cada item. También sirve para restaurar o pasar tu contenido a otra instalación.
+Con **Descargar respaldo** obtienes una copia de todo tu contenido (General, Catálogo, Mi página y FAQ) en un solo archivo. **Hazlo ahora y antes de cada cambio grande.** Las fotos no van incluidas: se vuelven a subir desde cada item. Con **Importar respaldo** la restauras o pasas tu contenido a otra instalación (reemplaza lo guardado). Es el mismo mecanismo que usan los paquetes de inicio del 2.0.
 
 ### 2.6 Revisa tu sitio
 
