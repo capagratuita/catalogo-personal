@@ -13,6 +13,15 @@ Esta guía es para quien quiere publicar sus **servicios** (y, si quiere, alguno
 - Tu número de WhatsApp con código de país (por ejemplo `+51999999999`).
 - Una contraseña larga para el panel de administración (mínimo 12 caracteres; el sitio te avisará si es más corta).
 
+## Antes de empezar: elige la dirección de tu sitio
+
+Sin dominio propio, tu sitio queda en `https://<nombre-del-sitio>.<tu-subdominio>.workers.dev`. Cloudflare genera tu subdominio al azar al crear la cuenta (algo como `mute-haze-3d90`). **Cámbialo antes de desplegar** para tener una dirección con sentido, por ejemplo `https://catalogo-personal.tu-nombre.workers.dev`:
+
+1. En el dashboard de Cloudflare entra en **Workers & Pages**. En la barra lateral derecha, la tarjeta **Account details** muestra tu *Account ID* y tu **Subdomain**. Pulsa el lápiz junto al subdominio.
+2. Escribe el que quieras. Cloudflare comprueba al momento si está disponible: es único en todo Cloudflare, así que si está ocupado prueba otro. Vale para todos los Workers de tu cuenta.
+
+Si lo cambias **después** de desplegar también funciona, pero la dirección anterior deja de servir y la nueva tarda un par de minutos en tener su certificado (hasta entonces el navegador puede avisar de conexión no segura). Quien visite el enlace viejo no llegará al sitio.
+
 ## Paso 1. Despliega con un clic
 
 1. Pulsa el botón **Deploy to Cloudflare** del [README del proyecto](../README.md) (inicia sesión en Cloudflare y en GitHub si te lo pide).
@@ -43,6 +52,7 @@ Hasta que pulses **Guardar** en cada sección, el sitio muestra los datos de eje
 
 ## Paso 4 (opcional). Dominio propio y visitas
 
+- **Dirección sin dominio propio:** ver «Antes de empezar» arriba. El nombre del sitio (`catalogo-personal`) sale de `"name"` en `wrangler.jsonc`; cambiarlo crea un Worker nuevo y obliga a volver a crear `ADMIN_PASSWORD`, así que mejor déjalo.
 - **Dominio propio:** en tu Worker, **Settings → Domains & Routes → Add → Custom domain**.
 - **Visitas:** en Cloudflare, **Analytics & Logs → Web Analytics → Add a site**, copia el *token* y pégalo en **Admin → General → Token de Cloudflare Web Analytics**. No usa cookies.
 
