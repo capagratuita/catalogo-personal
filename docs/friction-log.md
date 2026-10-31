@@ -4,7 +4,7 @@ Aquí se anota todo lo que le cuesta a una persona real al desplegar y usar el t
 
 ## Cómo usarlo
 
-Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la guía](guia-paso-a-paso.md), sin ayuda. Anota el minuto en que se atasca, qué dijo y qué cambió la guía o el panel para evitarlo.
+Pide a alguien que **no conozca el proyecto** que despliegue siguiendo solo [la guía de capagratuita.com](https://capagratuita.com), sin ayuda. Anota el minuto en que se atasca, qué dijo y qué cambió la guía o el panel para evitarlo.
 
 ## Riesgos conocidos (por verificar)
 

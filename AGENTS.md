@@ -55,7 +55,7 @@ Comandos de desarrollo (`npm run dev`, `npm run deploy`, sembrar el KV local, LA
 El árbol de carpetas está en `README.md` («Estructura»). Módulos de `src/_lib/`: `auth, defaults, cache, paginas, validadores, intentos, seo, ficha`.
 
 - `public/` es `assets.directory`. Las rutas dinámicas están en `src/worker.js` (tabla `EXACTAS`/`CON_ID`) y deben coincidir con `assets.run_worker_first`; lo demás se sirve directo sin invocar el Worker. Si un manejador no atiende el método, la petición sigue a `env.ASSETS` (como en Pages).
-- `public/_headers` fija `nosniff`, `Referrer-Policy` y `X-Frame-Options` en los estáticos, caché de 30 días para la fuente, 1 día para las imágenes y `X-Robots-Tag: noindex` en `/admin/*` (no afecta a las respuestas de las Functions). Existe `docs/` (guía, checklist E2E, registro de fricciones). `VALIDATION_SUMMARY.md` es el log de pruebas; la memoria de sesión está en la sección 14 de este archivo.
+- `public/_headers` fija `nosniff`, `Referrer-Policy` y `X-Frame-Options` en los estáticos, caché de 30 días para la fuente, 1 día para las imágenes y `X-Robots-Tag: noindex` en `/admin/*` (no afecta a las respuestas de las Functions). Existe `docs/` (checklist E2E y registro de fricciones; la guía paso a paso se publica en capagratuita.com, ya no está en el repo). `VALIDATION_SUMMARY.md` es el log de pruebas; la memoria de sesión está en la sección 14 de este archivo.
 
 ## 6. Contratos de datos
 
@@ -135,7 +135,7 @@ Resumen de rutas en `README.md` («API»). Contratos exactos:
 5. Imagen unificada: subida -> `items/{id}.{ext}` -> `GET /api/image`.
 6. KV sembrado y flujo probado con `npm run dev` + curl.
 
-**Fases pendientes (plan de 6 fases, 2026-10-29):** las fases 1–5 están hechas (servicios sin carrito, modelo de servicio, identidad y confianza, reserva genérica y analítica, seguridad y calidad). La fase 6 (documentación) está escrita (`docs/guia-paso-a-paso.md`, `README.md`, `docs/e2e-checklist.md`, `docs/friction-log.md`) pero **falta validarla con una persona ajena** y pasar el checklist en un navegador real. `config/claude-prompts.md` y `docs/video-script.md` quedan descartados salvo que se pidan.
+**Fases pendientes (plan de 6 fases, 2026-10-29):** las fases 1–5 están hechas (servicios sin carrito, modelo de servicio, identidad y confianza, reserva genérica y analítica, seguridad y calidad). La fase 6 (documentación) está escrita (la guía paso a paso se publica en capagratuita.com y ya no vive en el repo; `README.md`, `docs/e2e-checklist.md`, `docs/friction-log.md`) pero **falta validarla con una persona ajena** y pasar el checklist en un navegador real. `config/claude-prompts.md` y `docs/video-script.md` quedan descartados salvo que se pidan.
 
 ## 10b. Despliegue con el botón «Deploy to Cloudflare» (verificado 2026-10-30)
 
