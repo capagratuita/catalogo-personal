@@ -38,7 +38,7 @@ El panel y la API validan estos topes al guardar; si te pasas, el guardado respo
 | Foto subida | JPEG, PNG o WebP de hasta 5 MB; el panel la convierte a JPEG de hasta 1200 px y unos 250 KB |
 | Intentos de acceso al panel | 5 fallos en 15 minutos por IP; luego se bloquea |
 
-Los límites de la capa gratuita de Cloudflare también cuentan: el KV de fotos admite 1 GB en total, y Workers KV 1.000 escrituras y 100.000 lecturas al día.
+Los límites de la capa gratuita de Cloudflare también cuentan: el KV de fotos admite 1 GB en total, y Workers KV 1.000 escrituras y 100.000 lecturas al día. Son los valores vigentes al escribir esto (octubre de 2026) y Cloudflare puede cambiarlos en el futuro; consulta los [límites de Workers KV](https://developers.cloudflare.com/kv/platform/limits/) para ver los actuales.
 
 ## Paquetes de inicio
 
