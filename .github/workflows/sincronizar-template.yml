@@ -30,6 +30,9 @@ jobs:
           repository: ${{ env.UPSTREAM }}
           path: _template
 
+      - name: Recordar el nombre de tu proyecto
+        run: jq -r .name package.json > "$RUNNER_TEMP/nombre-proyecto.txt"
+
       - name: Copiar los archivos del template
         run: |
           rsync -a --delete \
@@ -37,6 +40,15 @@ jobs:
             --exclude='node_modules/' --exclude='.wrangler/' --exclude='.dev.vars' \
             --exclude='wrangler.jsonc' --exclude='wrangler.toml' \
             _template/ ./
+
+      - name: Conservar el nombre de tu proyecto
+        run: |
+          # El template trae su propio «name»; el asistente del botón puso el tuyo en package.json
+          NOMBRE="$(cat "$RUNNER_TEMP/nombre-proyecto.txt")"
+          jq --arg n "$NOMBRE" '.name = $n' package.json > "$RUNNER_TEMP/p.json" && mv "$RUNNER_TEMP/p.json" package.json
+          if [ -f package-lock.json ]; then
+            jq --arg n "$NOMBRE" '.name = $n | if .packages[""] then .packages[""].name = $n else . end' package-lock.json > "$RUNNER_TEMP/l.json" && mv "$RUNNER_TEMP/l.json" package-lock.json
+          fi
 
       - name: Avisar si wrangler.jsonc del template cambió
         run: |
