@@ -105,7 +105,7 @@ Evaluación del SEO y mejoras aplicadas (detalle técnico en AGENTS.md, seccione
 - Licencia cambiada de MIT (solo declarada en README/package.json, sin archivo) a AGPL-3.0-only con `LICENSE`.
 - Workflow `sincronizar-template.yml`: `checkout@v5`, `ubuntu-24.04`, enlace al PR en el resumen si GitHub no deja crearlo.
 - PR automático verificado el 2026-10-31 (con el ajuste de Actions activado). El build de vista previa del PR falla por `wrangler preview` (falta `previews`): la guía pide desactivar «Enable Preview builds». El aviso «wrangler.jsonc cambió» salía siempre (por `name`/`id` de cada persona): ahora se compara la estructura con `jq`.
-- **Pendiente:** (1) prueba con una persona ajena; (2) comprobar que desactivar «Enable Preview builds» quita el ❌; (3) repetir el flujo si Cloudflare cambia el asistente.
+- **Pendiente:** (1) prueba con una persona ajena; (2) hecho: apagar «Builds for Preview branches» (Settings → Builds → Previews Base) quita el ❌ del PR, verificado el 2026-10-31; (3) repetir el flujo si Cloudflare cambia el asistente.
 
 ## Paquetes de inicio y secciones únicas (2026-10-31)
 

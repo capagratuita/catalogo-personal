@@ -204,4 +204,4 @@
 - Con *Allow GitHub Actions to create and approve pull requests* activado, el workflow abrió solo el PR «Sincronizar con el template».
 - El build de vista previa de la rama falló: `npx wrangler preview` (beta) exige un bloque `previews` con KV propios («Your Wrangler configuration is missing a `previews` block»). Producción no se ve afectada (`wrangler deploy`).
 - El aviso «wrangler.jsonc del template cambió» salió en falso (difieren `name` e `id` de KV). Corregido: comparación estructural con `jq`; probado en local con una copia reescrita por el asistente (igual) y con un cambio real en `run_worker_first` (detectado).
-- No verificado: que el workflow corregido no avise en falso en GitHub Actions; que desactivar «Enable Preview builds» elimine el ❌.
+- Verificado después (2026-10-31): el workflow corregido ya no avisa en falso (PR #2 sin la línea de `wrangler.jsonc`), y apagar «Builds for Preview branches» (Settings → Builds → Previews Base) elimina el check fallido del PR. El «Preview command» `npx wrangler versions upload` no sirve: falla por el nombre del Worker.
