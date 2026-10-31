@@ -205,3 +205,6 @@
 - El build de vista previa de la rama falló: `npx wrangler preview` (beta) exige un bloque `previews` con KV propios («Your Wrangler configuration is missing a `previews` block»). Producción no se ve afectada (`wrangler deploy`).
 - El aviso «wrangler.jsonc del template cambió» salió en falso (difieren `name` e `id` de KV). Corregido: comparación estructural con `jq`; probado en local con una copia reescrita por el asistente (igual) y con un cambio real en `run_worker_first` (detectado).
 - Verificado después (2026-10-31): el workflow corregido ya no avisa en falso (PR #2 sin la línea de `wrangler.jsonc`), y apagar «Builds for Preview branches» (Settings → Builds → Previews Base) elimina el check fallido del PR. El «Preview command» `npx wrangler versions upload` no sirve: falla por el nombre del Worker.
+
+## 2026-10-31 — Cambio de nombre a mi-catalogo-digital
+- `package.json`/`package-lock.json`, `wrangler.jsonc`, README, guía, workflow y `AGENTS.md` actualizados; `AGENTS_SUMMARY.md` consolidado en `AGENTS.md` (sección 14). Las entradas anteriores conservan los nombres y URLs con los que se probó entonces.

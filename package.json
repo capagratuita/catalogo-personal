@@ -1,5 +1,5 @@
 {
-  "name": "catalogo-personal",
+  "name": "mi-catalogo-digital",
   "version": "0.0.1",
   "description": "Template desplegable para publicar un catálogo personal de servicios (y productos) con Cloudflare Workers y Workers KV",
   "main": "src/worker.js",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/capagratuita/catalogo-personal.git"
+    "url": "git+https://github.com/capagratuita/mi-catalogo-digital.git"
   },
   "type": "module"
 }

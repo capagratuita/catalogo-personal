@@ -12,13 +12,13 @@ permissions:
   pull-requests: write
 
 env:
-  UPSTREAM: capagratuita/catalogo-personal
+  UPSTREAM: capagratuita/mi-catalogo-digital
   RAMA: sincronizar-template
 
 jobs:
   sincronizar:
     # En el repositorio original no hay nada que sincronizar
-    if: github.repository != 'capagratuita/catalogo-personal'
+    if: github.repository != 'capagratuita/mi-catalogo-digital'
     runs-on: ubuntu-24.04
     steps:
       - name: Descargar tu repositorio

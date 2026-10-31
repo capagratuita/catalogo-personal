@@ -17,7 +17,7 @@ Esta guía es para quien quiere publicar sus **servicios** (y, si quiere, alguno
 
 ## Antes de empezar: elige la dirección de tu sitio
 
-Sin dominio propio, tu sitio queda en `https://<nombre-del-sitio>.<tu-subdominio>.workers.dev`. Cloudflare genera tu subdominio al azar al crear la cuenta (algo como `mute-haze-3d90`). **Cámbialo antes de desplegar** para tener una dirección con sentido, por ejemplo `https://catalogo-personal.tu-nombre.workers.dev`:
+Sin dominio propio, tu sitio queda en `https://<nombre-del-sitio>.<tu-subdominio>.workers.dev`. Cloudflare genera tu subdominio al azar al crear la cuenta (algo como `mute-haze-3d90`). **Cámbialo antes de desplegar** para tener una dirección con sentido, por ejemplo `https://mi-catalogo-digital.tu-nombre.workers.dev`:
 
 1. En el dashboard de Cloudflare entra en **Workers & Pages**. En la barra lateral derecha, la tarjeta **Account details** muestra tu *Account ID* y tu **Subdomain**. Pulsa el lápiz junto al subdominio.
 2. Escribe el que quieras. Cloudflare comprueba al momento si está disponible: es único en todo Cloudflare, así que si está ocupado prueba otro. Vale para todos los Workers de tu cuenta.
@@ -54,9 +54,9 @@ Si prefieres editar a partir de un sitio ya completo en vez de rellenar desde ce
 
 | Paquete | Para quién | Archivo |
 |---|---|---|
-| **Solo servicios** | Profesionales y emprendedores que ofrecen servicios | [`solo-servicios.json`](https://github.com/capagratuita/catalogo-personal/blob/main/config/paquetes/solo-servicios.json) |
-| **Solo productos** | Quien vende productos, con carrito por WhatsApp | [`solo-productos.json`](https://github.com/capagratuita/catalogo-personal/blob/main/config/paquetes/solo-productos.json) |
-| **Mixto** | Servicios y productos a la vez | [`mixto.json`](https://github.com/capagratuita/catalogo-personal/blob/main/config/paquetes/mixto.json) |
+| **Solo servicios** | Profesionales y emprendedores que ofrecen servicios | [`solo-servicios.json`](https://github.com/capagratuita/mi-catalogo-digital/blob/main/config/paquetes/solo-servicios.json) |
+| **Solo productos** | Quien vende productos, con carrito por WhatsApp | [`solo-productos.json`](https://github.com/capagratuita/mi-catalogo-digital/blob/main/config/paquetes/solo-productos.json) |
+| **Mixto** | Servicios y productos a la vez | [`mixto.json`](https://github.com/capagratuita/mi-catalogo-digital/blob/main/config/paquetes/mixto.json) |
 
 1. Abre el archivo en GitHub y pulsa **Download raw file** (el icono de descarga, arriba a la derecha del contenido).
 2. En el panel entra en **Respaldo → Importar**, elige el archivo y pulsa **Importar respaldo**. Confirma el aviso: **reemplaza todo el contenido guardado** (General, Catálogo, Mi página y FAQ).
@@ -174,7 +174,7 @@ Abre la dirección pública, mejor desde el celular, y comprueba:
 
 ## Paso 4 (opcional). Dominio propio y visitas
 
-- **Dirección sin dominio propio:** ver «Antes de empezar» arriba. El nombre del sitio (`catalogo-personal`) sale de `"name"` en `wrangler.jsonc`; cambiarlo crea un Worker nuevo y obliga a volver a crear `ADMIN_PASSWORD`, así que mejor déjalo.
+- **Dirección sin dominio propio:** ver «Antes de empezar» arriba. El nombre del sitio (`mi-catalogo-digital`) sale de `"name"` en `wrangler.jsonc`; cambiarlo crea un Worker nuevo y obliga a volver a crear `ADMIN_PASSWORD`, así que mejor déjalo.
 - **Dominio propio:** en tu Worker, **Settings → Domains & Routes → Add → Custom domain**.
 - **Visitas:** en Cloudflare, **Analytics & Logs → Web Analytics → Add a site**, copia el *token* y pégalo en **Admin → General → Token de Cloudflare Web Analytics**. No usa cookies.
 
@@ -182,7 +182,7 @@ Abre la dirección pública, mejor desde el celular, y comprueba:
 
 Tu repositorio no se actualiza solo. El botón de Cloudflare no copia la carpeta `.github/`, así que el workflow de sincronización se instala a mano **una sola vez**:
 
-1. Abre [`sincronizar-template.yml`](https://github.com/capagratuita/catalogo-personal/blob/main/.github/workflows/sincronizar-template.yml) en el repositorio original y pulsa el icono **Copy raw file**.
+1. Abre [`sincronizar-template.yml`](https://github.com/capagratuita/mi-catalogo-digital/blob/main/.github/workflows/sincronizar-template.yml) en el repositorio original y pulsa el icono **Copy raw file**.
 2. En tu repositorio: **Add file → Create new file**. En el nombre escribe exactamente `.github/workflows/sincronizar-template.yml` (GitHub crea las carpetas al escribir las `/`) y pega el contenido.
 3. Pulsa **Commit changes** sobre `main`.
 4. Una sola vez, para que el workflow pueda abrir el pull request: **Settings → Actions → General → Workflow permissions** y marca **Allow GitHub Actions to create and approve pull requests**. Guarda.

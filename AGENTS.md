@@ -1,4 +1,4 @@
-# AGENTS.md — Catálogo Personal desplegable en Cloudflare
+# AGENTS.md — Mi Catálogo Digital desplegable en Cloudflare
 
 ## 1. Estado actual (verificado 2026-10-30)
 
@@ -18,27 +18,7 @@ El producto está orientado a **servicios de profesionales independientes y empr
 
 ## 2. Contexto y stack (cerrado)
 
-Template para que una persona sin terminal haga fork y despliegue su propia instancia en Cloudflare. **No es SaaS multi-inquilino.**
-
-| Capa | Servicio | Rol |
-|---|---|---|
-| Frontend | Workers Static Assets (`public/`) | Landing, catálogo, ficha, carrito, FAQ, admin |
-| API | Worker (`src/worker.js`) | Endpoints `/api/*` y páginas con SEO |
-| Contenido | Workers KV | Keys exactas: `config`, `catalogo`, `landing`, `faq` |
-| Imágenes | Workers KV (namespace separado, binding `IMAGES`) | Convención `items/{id}.{ext}`; R2 descartado porque exige método de pago |
-| Auth admin | `ADMIN_PASSWORD` | Protege `/admin/*` y escrituras en `/api/*` |
-| Citas | Enlace de reserva (Calendly, Cal.com, Google Calendar…) | Enlace global + override opcional por servicio |
-| WhatsApp | `wa.me` | Enlaces generados en cliente |
-| Carrito | `localStorage` | Estado efímero, sin servidor |
-
-Bindings:
-
-| Binding | Local | Producción |
-|---|---|---|
-| `env.KV` | KV local automático | Namespace KV real |
-| `env.IMAGES` | KV local automático | Segundo namespace KV real (fotos) |
-| `env.ADMIN_PASSWORD` | `.dev.vars` (gitignoreado; plantilla en `.dev.vars.example`) | Secret (el botón «Deploy to Cloudflare» lo pide desde `.dev.vars.example`) |
-| `env.ASSETS` | Automático | `assets.binding = "ASSETS"` en `wrangler.jsonc` |
+Template para que una persona sin terminal haga fork y despliegue su propia instancia en Cloudflare. **No es SaaS multi-inquilino.** Stack: Workers Static Assets (`public/`), un Worker (`src/worker.js`), Workers KV para contenido (keys exactas `config`, `catalogo`, `landing`, `faq`) y un segundo KV para fotos (binding `IMAGES`, convención `items/{id}.{ext}`; R2 descartado porque exige método de pago), auth con `ADMIN_PASSWORD`, reserva por enlace externo, WhatsApp por `wa.me` y carrito en `localStorage`. La tabla de capas, la de bindings y la estructura de carpetas están en `README.md` («Cómo está hecho»).
 
 Los dos `kv_namespaces` de `wrangler.jsonc` (formato JSONC, no TOML) van **sin `id`**: `wrangler deploy` y el botón «Deploy to Cloudflare» crean los namespaces solos. No pongas IDs reales en el repo (es público). No agregues `[site]`, `[build]`, `[vars]` ni `[[env]]` con secretos.
 
@@ -59,59 +39,23 @@ Los dos `kv_namespaces` de `wrangler.jsonc` (formato JSONC, no TOML) van **sin `
 13. **Móvil primero** (375px), HTML semántico, `alt`, contraste AA y navegación por teclado en el admin.
 14. **Verifica con `npm test` y con `npm run dev` + llamadas reales.** `npm test` cubre validadores, límite de intentos y la lógica de acciones del frontend (Node, sin dependencias); `npm run test:integracion` prueba el servidor real (ver sección 4); ninguno sustituye la prueba en el navegador.
 
-## 4. Comandos y setup local
+## 4. Comandos, pruebas y verificación
 
-```bash
-npm install
-npm run dev        # http://localhost:8788 y LAN 0.0.0.0:8788
-npm run deploy     # wrangler deploy
-```
+Comandos de desarrollo (`npm run dev`, `npm run deploy`, sembrar el KV local, LAN, `npm test`, `npm run test:integracion`) están en `README.md` («Probarlo en tu computador» y «Pruebas»). Lo que importa a quien trabaja en el repo:
 
-- Para abrir desde otro dispositivo: `hostname -I | awk '{print $1}'` y visita `http://<IP>:8788`; si no conecta, permite el puerto `8788` en el firewall.
-- `env.KV` y `env.IMAGES` funcionan en local sin login.
-- `npm run deploy` también requiere autenticación de Wrangler (`npx wrangler login`); no agregues tokens al repo.
-- Sembrar KV local (las keys deben ser exactamente `config`, `catalogo`, `landing`, `faq`):
-
-```bash
-npx wrangler kv key put --binding=KV --local config   --path=config/config.example.json
-npx wrangler kv key put --binding=KV --local catalogo --path=config/catalogo.example.json
-npx wrangler kv key put --binding=KV --local landing  --path=config/landing.example.json
-npx wrangler kv key put --binding=KV --local faq      --path=config/faq.example.json
-npx wrangler kv key get --binding=KV --local config
-```
-
+- `npm run deploy` requiere autenticación de Wrangler (`npx wrangler login`); no agregues tokens al repo.
 - Los `config/*.example.json` no se cargan solos; hay que sembrarlos y volver a sembrar tras editarlos.
-- `npm test` (runner integrado de Node, sin dependencias) ejecuta `test/*.test.mjs`: validadores, límite de intentos de login y `accionItem`/`textoPrecio` de `app.js`. No hay `npm run lint` ni typecheck. Los antiguos `validate-phase*.sh` y `test-all-phases.sh` se eliminaron (eran greps no fiables).
-- `npm run test:integracion` (`test/integracion/*.test.mjs`, separado de `npm test`; reporter propio `reporte.mjs`: solo fallos y «n ok, n fallos, n omitidas»; helper común `ayuda.mjs`). Dos modos:
-  - **Local (por defecto):** levanta su propio `wrangler dev` en un puerto libre (≠ 8788) con `--persist-to` en un directorio temporal, `ADMIN_PASSWORD` de prueba por `--var` y KV sembrado con `config/*.example.json`; lo apaga y borra el directorio al terminar. Cubre fichas, redirecciones 301/404, portada, JSON-LD (Organization/LocalBusiness), `og:locale`, sitemap (`lastmod`, no disponibles), recorte, FAQ/carrito, cabeceras de `_headers`, auth, login/sesión y subida de foto. Escribe datos solo en ese estado temporal (`publico.test.mjs` y `escritura.test.mjs` arrancan cada uno el suyo).
-  - **Remoto, solo lectura:** `BASE_URL=https://catalogo-personal.pages.dev npm run test:integracion` no arranca nada. **Regla estricta: solo GET/HEAD y un `PUT /api/content` sin cookie que debe dar 401; nunca login, subidas ni `PUT` autenticado.** Descubre un servicio y un producto leyendo `/api/content?key=catalogo`; las pruebas que necesitan modificar datos se omiten («requiere modo local») y las pasivas (dirección, items no disponibles, recorte, foto) corren solo si el sitio ya tiene esos datos.
-- Verificación real ya ejecutada: `npm run dev` compila; `GET /api/content?key=config|catalogo|landing|faq` devuelve 200; `POST /api/login` setea cookie; `/api/session` con cookie devuelve 200; `PUT /api/content` autenticado devuelve 200; `POST /api/upload` devuelve 200; `GET /api/image?id=pan-integral` devuelve la imagen; `POST /api/logout` invalida la sesión; `/admin/identidad` sin cookie redirige a `/admin/index.html`.
+- `npm test` ejecuta `test/*.test.mjs`: validadores, límite de intentos, `accionItem`/`textoPrecio` de `app.js`, paquetes y SEO. No hay lint ni typecheck. Los antiguos `validate-phase*.sh` y `test-all-phases.sh` se eliminaron (eran greps no fiables).
+- `npm run test:integracion` (`test/integracion/*.test.mjs`; reporter propio `reporte.mjs`: solo fallos y «n ok, n fallos, n omitidas»; helper común `ayuda.mjs`). **Local (por defecto):** levanta su propio `wrangler dev` en un puerto libre (≠ 8788) con `--persist-to` en un directorio temporal, `ADMIN_PASSWORD` de prueba por `--var` y KV sembrado con `config/*.example.json`; lo apaga y borra al terminar. Cubre fichas, redirecciones 301/404, portada, JSON-LD, `og:locale`, sitemap, recorte, FAQ/carrito, `_headers`, auth, login/sesión, subida de foto e importación de paquetes (`publico.test.mjs` y `escritura.test.mjs` arrancan cada uno el suyo).
+- **Remoto, solo lectura:** `BASE_URL=https://<tu-sitio>.workers.dev npm run test:integracion` no arranca nada. **Regla estricta: solo GET/HEAD y un `PUT /api/content` sin cookie que debe dar 401; nunca login, subidas ni `PUT` autenticado.** Descubre un servicio y un producto leyendo `/api/content?key=catalogo`; las pruebas que modifican datos se omiten («requiere modo local») y las pasivas corren solo si el sitio ya tiene esos datos.
+- Verificación real ya ejecutada: `npm run dev` compila; `GET /api/content?key=…` devuelve 200; `POST /api/login` setea cookie; `/api/session` con cookie 200; `PUT /api/content` autenticado 200; `POST /api/upload` 200; `GET /api/image?id=pan-integral` devuelve la imagen; `POST /api/logout` invalida la sesión; `/admin/identidad` sin cookie redirige a `/admin/index.html`.
 
 ## 5. Estructura real y entrypoints
 
-```text
-public/
-  index.html, producto.html, carrito.html, faq.html   # cargan /assets/app.js
-  admin/*.html                                       # cargan ../assets/admin.js
-  assets/{app.js,admin.js,styles.css}
-  assets/images/placeholder.png
-src/
-  worker.js                                          # router: rutas → módulos, middleware, ASSETS
-  _middleware.js
-  _lib/auth.js
-  index.js, faq.js, producto.js, producto/[id].js, servicio/[id].js, carrito.js     # páginas públicas con SEO y datos inyectados
-  sitemap.xml.js, robots.txt.js
-  _lib/{auth,defaults,cache,paginas,validadores,intentos}.js
-  api/{content,defaults,login,logout,session,upload,image}.js
-config/*.example.json
-wrangler.jsonc, package.json, README.md
-.github/workflows/sincronizar-template.yml   # manual: abre un PR con los cambios del template (excluye wrangler.jsonc y .github/)
-test/*.test.mjs
-AGENTS_SUMMARY.md, VALIDATION_SUMMARY.md
-```
+El árbol de carpetas está en `README.md` («Estructura»). Módulos de `src/_lib/`: `auth, defaults, cache, paginas, validadores, intentos, seo, ficha`.
 
 - `public/` es `assets.directory`. Las rutas dinámicas están en `src/worker.js` (tabla `EXACTAS`/`CON_ID`) y deben coincidir con `assets.run_worker_first`; lo demás se sirve directo sin invocar el Worker. Si un manejador no atiende el método, la petición sigue a `env.ASSETS` (como en Pages).
-- `public/_headers` fija `nosniff`, `Referrer-Policy` y `X-Frame-Options` en los estáticos, caché de 30 días para la fuente, 1 día para las imágenes y `X-Robots-Tag: noindex` en `/admin/*` (no afecta a las respuestas de las Functions). Existe `docs/` (guía, checklist E2E, registro de fricciones). `AGENTS_SUMMARY.md` es la memoria de sesión y `VALIDATION_SUMMARY.md` el log de pruebas; ambos se actualizaron el 2026-10-29.
+- `public/_headers` fija `nosniff`, `Referrer-Policy` y `X-Frame-Options` en los estáticos, caché de 30 días para la fuente, 1 día para las imágenes y `X-Robots-Tag: noindex` en `/admin/*` (no afecta a las respuestas de las Functions). Existe `docs/` (guía, checklist E2E, registro de fricciones). `VALIDATION_SUMMARY.md` es el log de pruebas; la memoria de sesión está en la sección 14 de este archivo.
 
 ## 6. Contratos de datos
 
@@ -129,17 +73,15 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 ## 7. API y autenticación
 
-| Ruta | Auth | Contrato |
-|---|---|---|
-| `GET /api/content?key=...` | pública | 200 JSON; 404 si no existe; keys `config`, `catalogo`, `landing`, `faq`. |
-| `PUT /api/content?key=...` | cookie `admin_session` | Valida schema y hace `KV.put`; 200 `{ok,updated_at}`; 400 `{error,detalle}`; 401. |
-| `POST /api/login` | pública | Body `{password}`; 200 `{ok:true, aviso?}` + `Set-Cookie` (`aviso` si `ADMIN_PASSWORD` tiene <12 caracteres); 401; 429 tras 5 fallos en 15 min por IP (`Retry-After`). |
-| `POST /api/logout` | cookie | 200 `{ok:true}`; borra la cookie. |
-| `GET /api/session` | cookie | 200 `{authenticated:true}`; 401 si no hay sesión válida. |
-| `POST /api/upload` | cookie `admin_session` | `multipart/form-data` con `id` y `file`; ≤5 MB; JPEG/PNG/WebP; item debe existir; guarda `items/{id}.{ext}` y borra extensiones viejas. Con `id` = `{servicio}-g{n}` (n 1–6) guarda una foto de la galería de ese servicio; 400 si el item base es un producto. |
-| `GET /api/defaults?key=...` | pública | 200 con el `config/*.example.json` de esa key (importado en el bundle); 400 si la key no es válida. Solo lectura: no escribe en KV. |
-| `GET /api/image?id=...` o `?url=items/...` | pública | 200 imagen desde KV; 404 si no existe o el id es inválido. |
+Resumen de rutas en `README.md` («API»). Contratos exactos:
 
+- `GET /api/content?key=…` pública: 200 JSON; 404 si no existe; keys `config`, `catalogo`, `landing`, `faq`.
+- `PUT /api/content?key=…` cookie `admin_session`: valida schema y hace `KV.put`; 200 `{ok,updated_at}`; 400 `{error,detalle}`; 401.
+- `POST /api/login` pública: body `{password}`; 200 `{ok:true, aviso?}` + `Set-Cookie` (`aviso` si `ADMIN_PASSWORD` tiene <12 caracteres); 401; 429 tras 5 fallos en 15 min por IP (`Retry-After`).
+- `POST /api/logout` cookie: 200 `{ok:true}`; borra la cookie. `GET /api/session` cookie: 200 `{authenticated:true}`; 401 sin sesión válida.
+- `POST /api/upload` cookie: `multipart/form-data` con `id` y `file`; ≤5 MB; JPEG/PNG/WebP; el item debe existir; guarda `items/{id}.{ext}` y borra extensiones viejas. Con `id` = `{servicio}-g{n}` (n 1–6) guarda una foto de la galería; 400 si el item base es un producto.
+- `GET /api/defaults?key=…` pública: 200 con el `config/*.example.json` de esa key (importado en el bundle); 400 si la key no es válida. Solo lectura.
+- `GET /api/image?id=…` o `?url=items/…` pública: 200 imagen desde KV; 404 si no existe o el id es inválido.
 - Cookie esperada: `admin_session=<token>; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`.
 - Implementado en `src/_lib/auth.js`: cookie firmada con HMAC-SHA256 usando `ADMIN_PASSWORD` como secreto; el middleware verifica `/admin/*` (excepto `/admin`, `/admin/` y `/admin/index.html`) y las escrituras. No hay sesiones en KV. Los intentos fallidos de login sí se guardan en KV (`intentos:{ip}`, TTL 15 min, `_lib/intentos.js`): solo se escribe al fallar y no se escribe más con la IP bloqueada, para no gastar las 1.000 escrituras diarias.
 - `window.admin.isAuthenticated()` es asíncrona; en las páginas admin debe usarse con `await`.
@@ -199,7 +141,7 @@ El validador ya comprueba unicidad de `id`, existencia de `categoria` en la list
 
 Lo observado en pruebas reales (cuentas de Cloudflare y GitHub limpias); no hay documentación oficial que lo respalde, así que si Cloudflare cambia el asistente hay que repetirlo.
 
-- **El botón no hace fork:** Cloudflare clona `capagratuita/catalogo-personal`, sobrescribe archivos y sube una copia nueva a la cuenta de GitHub de la persona (historial distinto) y crea el Worker con Workers Builds (comando de deploy `npm run deploy` = `wrangler deploy`). Un build creado así no se puede reintentar («seed_repo override»): para redesplegar hace falta un commit.
+- **El botón no hace fork:** Cloudflare clona `capagratuita/mi-catalogo-digital`, sobrescribe archivos y sube una copia nueva a la cuenta de GitHub de la persona (historial distinto) y crea el Worker con Workers Builds (comando de deploy `npm run deploy` = `wrangler deploy`). Un build creado así no se puede reintentar («seed_repo override»): para redesplegar hace falta un commit.
 - **Formato de la configuración:** con `wrangler.jsonc` el asistente crea los KV con los nombres escritos en el formulario y escribe sus `id` en el repo (los siguientes builds salen sin «Provisioning»). Con `wrangler.toml` no los enlazaba y `wrangler deploy` creaba otros (`<worker>-kv`, `<worker>-images`). No vuelvas a TOML.
 - **Nombre del proyecto:** se puede cambiar en el formulario (probado con `mi-portafolio`): el asistente renombra el repo de GitHub, el `"name"` de `wrangler.jsonc` (deducido: `wrangler deploy` no recibe `--name`) y el `name` de `package.json`; el Worker y la URL usan el nombre nuevo. Los KV se crean con los nombres del formulario y quedan enlazados. El workflow de sincronización conserva ese `name` en `package.json` y `package-lock.json` (pasos «Recordar/Conservar el nombre de tu proyecto», con `jq`); probado en local, aún no ejecutado en GitHub.
 - **Nombres de KV:** los dos campos del formulario traen el mismo nombre por defecto (el del Worker) y el despliegue falla («title already exists»). La guía pide dos nombres distintos (`catalogo-datos`, `catalogo-fotos`). Un intento fallido deja KV sobrantes: bórralos antes de repetir. Un nombre igual al automático de Wrangler (`<worker>-kv`/`-images`) daba el error 10014.
@@ -222,12 +164,40 @@ Lo observado en pruebas reales (cuentas de Cloudflare y GitHub limpias); no hay 
 - Lee la sección 1 antes de asumir que algo funciona.
 - Si tocas `wrangler.jsonc` o el script `dev`, respeta las reglas 11 y 12.
 - Si necesitas D1, tokens o commits automáticos, detente y pregunta.
-- Mantén `AGENTS.md`, `AGENTS_SUMMARY.md` y `VALIDATION_SUMMARY.md` sincronizados con el estado real.
+- Mantén `AGENTS.md` (incluida su sección 14), `README.md` y `VALIDATION_SUMMARY.md` sincronizados con el estado real. Reglas y contratos van aquí; lo que ve una persona que despliega o prueba el proyecto va en `README.md`.
 
-## 13. Continuar pruebas en otra sesión
+## 13. Retomar el trabajo en otra sesión
 
-- La memoria de trabajo está en `AGENTS_SUMMARY.md` y el log de pruebas en `VALIDATION_SUMMARY.md`.
-- Estado de partida: `npm run dev` escucha en `0.0.0.0:8788`; LAN `http://192.168.11.104:8788` (la IP puede cambiar; usa `hostname -I`). Las 4 keys KV están sembradas y el KV local `IMAGES` tiene las 5 fotos.
-- Para retomar: `cd /home/devops/proyectos/catalogo-personal`, libera el puerto con `lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill`, ejecuta `npm run dev` y abre `http://localhost:8788` o la IP LAN.
-- Si `.wrangler/state` se borra, vuelve a sembrar KV con los comandos de la sección 4.
-- Pruebas pendientes: checkboxes de `categorias_agendamiento` (servicio agendable oculta carrito), 375px/escritorio, y actualizar `README.md`.
+- La memoria de trabajo es la sección 14 de este archivo y el log de pruebas está en `VALIDATION_SUMMARY.md`.
+- Estado de partida: las 4 keys KV locales están sembradas y el KV local `IMAGES` tiene fotos de prueba.
+- Para retomar: entra en la carpeta del proyecto, libera el puerto con `lsof -t -iTCP:8788 -sTCP:LISTEN | xargs -r kill`, ejecuta `npm run dev` y abre `http://localhost:8788` (o la IP de la LAN). Si cae con `SQLITE_BUSY` tras editar archivos: `pkill -f workerd; pkill -f wrangler` y reiniciar.
+- Si `.wrangler/state` se borra, vuelve a sembrar KV (comandos en `README.md`). Si bloqueas tu IP local con contraseñas erróneas: `npx wrangler kv key delete --binding=KV --local "intentos:127.0.0.1"`.
+- Pruebas pendientes: checkboxes de `categorias_agendamiento` (servicio agendable oculta carrito), 375px/escritorio.
+
+## 14. Historial y decisiones (memoria de sesión, antes AGENTS_SUMMARY.md)
+
+Resumen cronológico para no repetir diagnósticos. El detalle técnico vigente está en las secciones 1–13; el log de pruebas, en `VALIDATION_SUMMARY.md`.
+
+**Plan de 6 fases (2026-10-29):** (1) servicios sin carrito (`accionItem`); (2) modelo de servicio (`modalidad`, `zona`, `incluye`, `variantes`); (3) identidad y confianza (`landing.secciones` se pinta, `sobre-mi`, `testimonios`, `color_acento` AA); (4) reserva genérica (`reserva_url`, lee `calendly_url`) y analítica; (5) seguridad y calidad (límite de intentos, `npm test`); (6) documentación.
+
+**Reorientación a catálogo personal (2026-10-29):** el producto no es un ecommerce; se cambiaron textos de admin, README y guía. «Modo del Negocio» pasó a **«Tipo de catálogo»** (`solo-servicios` primero). `config.example.json` sigue en `mixto` a propósito (con `solo-servicios` los productos de ejemplo quedarían sin acción). Refactor `config.negocio` → `config.perfil` y `modo_negocio` → `tipo_catalogo`, con `normalizarConfig` traduciendo datos antiguos al leer y guardar. Redes `tiktok` y `youtube` opcionales. El chat con IA se eliminó por completo (2026-10-30): sin `/api/chat`, sin `[ai]`, sin `tono_chat`/`tono`.
+
+**Admin de Portada (2026-10-29):** pestañas en dos niveles (ver sección 6). El tipo `texto` se llama **«Mensaje»** en el admin; el valor guardado sigue siendo `texto`. Arte de las secciones revisado en Chromium a 375 y 1200 px en los 4 estilos. Foto de «Sobre mí» probada con fotos reales; no hay botón para quitarla (no existe endpoint de borrado). Pendiente: títulos largos en `elegante` (mayúsculas) a 375px; un retrato real podría necesitar `object-position: center 25%`.
+
+**Fotos y Catálogo (2026-10-29):** se eliminó `admin/fotos.html` (cada fila sube su foto; `/admin/fotos` redirige en `public/_redirects`); pestañas Productos/Servicios; ID autogenerado del nombre en items sin guardar; campos que no aplican al tipo se ocultan, no se deshabilitan; moneda de General en solo lectura junto al precio. Orden de items, galería de servicios y tarjetas de producto estáticas: ver secciones 7 y 9.
+
+**Coherencia de UI (2026-10-29):** hex sueltos sustituidos por tokens, radios con `--radius-*`, notificación unificada en `.notificacion`. Error de la sesión: un `replace` sin límite metió `animation: slideUp` en varias reglas de `styles.css` y rompió el mosaico; se deshizo (un mosaico 4:3 se probó y se descartó). Pendiente: las pestañas de `catalogo.html` y `landing.html` siguen con estilos propios parecidos pero no compartidos.
+
+**SEO (2026-10-29):** HTML real sin JS (`#catalogo-estatico`, `h1` del hero y de la ficha); `updated_at` en la metadata de KV para `<lastmod>`; JSON-LD `LocalBusiness` solo con `perfil.direccion`; URLs limpias `/servicio/{id}` y `/producto/{id}`; descripción a 155 y títulos a 60; `og:image:alt`, `og:locale` por moneda y `_headers`. No hecho a propósito: sitemap de imágenes, `hreflang` (un solo idioma), cambios en `robots.txt`. Pendiente: revisar a ojo el formulario «Dirección» y el pie.
+
+**Migración a Workers (2026-10-30):** `functions/` → `src/`; `src/worker.js` enruta (tablas `EXACTAS`/`CON_ID`) y llama al middleware, que copia la respuesta antes de añadir CORS (las de ASSETS son inmutables). `wrangler.jsonc` reemplaza a `.toml`. Licencia cambiada a AGPL-3.0-only. Workflow de sincronización con `checkout@v5`, `ubuntu-24.04` y enlace al PR en el resumen si GitHub no deja crearlo; PR automático verificado el 2026-10-31. Detalle del botón: sección 10b.
+
+**Paquetes de inicio y secciones únicas (2026-10-31):** ver secciones 6 y 10b; la guía tiene la sección 2.0 «Empieza desde un paquete de inicio» y usa «Mensaje» para el tipo `texto`. Importación del paquete mixto verificada en el despliegue real. Pendiente: ¿bastan los textos genéricos o hace falta una versión con ejemplos reales?; probar solo-servicios y solo-productos en el despliegue real.
+
+**Cambio de nombre (2026-10-31):** el proyecto pasó de `catalogo-personal` a **`mi-catalogo-digital`** (`name` en `package.json`, `package-lock.json` y `wrangler.jsonc`, URLs de GitHub en README, guía y workflow, título «Mi Catálogo Digital»). Quedan por hacer fuera del código: renombrar el repositorio en GitHub (el botón y el `UPSTREAM` del workflow apuntan a `capagratuita/mi-catalogo-digital`) y, si se quiere, la carpeta local. Las menciones a `personal-ecommerce.pages.dev` y `catalogo-personal` en `VALIDATION_SUMMARY.md` son históricas. Un sitio ya desplegado con el nombre antiguo conserva su Worker y su URL.
+
+**Reorganización de documentos (2026-10-31):** `AGENTS_SUMMARY.md` se consolidó en esta sección y se eliminó; tablas de capas y bindings, árbol de carpetas, comandos locales, resumen de la API y notas del botón pasaron a `README.md`.
+
+**Estado de los datos locales:** el KV local tiene un catálogo de panadería de pruebas (no el de ejemplo) y una portada ficticia con los 6 tipos de sección; solo vive en `.wrangler/state`.
+
+**Pendientes globales:** prueba de la guía con una persona ajena (`docs/friction-log.md`); revisión visual completa en navegador real (`docs/e2e-checklist.md`); la barra del admin sigue diciendo «Landing» e `identidad.html` conserva su nombre de archivo; repetir el flujo del botón si Cloudflare cambia el asistente.
